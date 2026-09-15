@@ -1,0 +1,17 @@
+{
+  "workers": {
+    "free": "claude-free",
+    "local": "pi --provider ollama --model qwen3.8:27b-mlx"
+  },
+  "messaging": true,
+  "verify": {
+    "build": "xcodebuild -project glance.xcodeproj -scheme glance build CODE_SIGNING_ALLOWED=NO"
+  },
+  "commit": { "mode": "per-section", "lang": "en", "conventional": false },
+  "notes": [
+    "No test target in glance.xcodeproj — verification is build-only plus manual/spec-scenario review.",
+    "No SwiftLint config present — lint step omitted.",
+    "Project uses PBXFileSystemSynchronizedRootGroup (objectVersion 77): new .swift files inside glance/ are picked up automatically, no project.pbxproj edits needed for files added under the existing synced root.",
+    "Code and commit messages are in English; this conversation with the user is in Spanish."
+  ]
+}
