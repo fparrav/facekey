@@ -9,6 +9,7 @@
 
 import Foundation
 import CoreGraphics
+import AppKit
 import Observation
 
 @Observable
@@ -62,12 +63,23 @@ final class FaceUnlockCoordinator {
     /// Reads the space key on the lock screen for the "On space" trigger; only runs while locked + opted in.
     private let spaceKeyMonitor = SpaceKeyMonitor()
 
+    /// Token for the `didChangeScreenParametersNotification` observer registered in `init()`; kept for symmetry with `LockMonitor`'s observer bookkeeping (removed automatically by AppKit at process exit, so never explicitly removed).
+    private var screenParametersObserver: NSObjectProtocol?
+
     init(pocController: POCController) {
         self.pocController = pocController
         self.isEnabled = GlanceSettings.shared.isFaceUnlockEnabled
         self.matchThreshold = GlanceSettings.shared.matchThreshold
         spaceKeyMonitor.onSpaceKeyDown = { [weak self] in self?.handleSpaceKeyPress() }
         observeLockAndWakeEvents()
+        screenParametersObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard LockMonitor.isScreenActuallyLocked() else { return }
+            self?.evaluateTrigger()
+        }
     }
 
     /// Re-subscribes on every change — `withObservationTracking` only fires once per registration.
