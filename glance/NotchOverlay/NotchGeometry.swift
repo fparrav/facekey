@@ -216,14 +216,16 @@ struct NotchGeometry {
     }
 
     /// Picks the screen the overlay should show on. If a display is pinned
-    /// (`GlanceSettings.preferredDisplayID`), it's used only if still connected — no
-    /// fallback. Otherwise: the physical notch if any display has one, else the primary screen.
+    /// (`GlanceSettings.preferredDisplayID`), it's used if still connected. Otherwise —
+    /// including when the pinned display is gone: the physical notch if any display has
+    /// one, else the primary screen.
     @MainActor
     static func preferredScreen() -> NSScreen? {
+        let fallback = { NSScreen.screens.first { $0.safeAreaInsets.top > 0 } ?? NSScreen.main }
         if let targetID = GlanceSettings.shared.preferredDisplayID {
-            return NSScreen.screens.first { $0.stableDisplayID == targetID }
+            return NSScreen.screens.first { $0.stableDisplayID == targetID } ?? fallback()
         }
-        return NSScreen.screens.first { $0.safeAreaInsets.top > 0 } ?? NSScreen.main
+        return fallback()
     }
 }
 
