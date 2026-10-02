@@ -48,9 +48,7 @@ enum KeystrokeInjector {
         }
         let source = CGEventSource(stateID: .hidSystemState)
         try clearFocusedField(source: source)
-        for char in text {
-            try postUnicode(String(char), source: source)
-        }
+        try postUnicodeText(text, source: source)
         try postReturn(source: source)
     }
 
@@ -98,23 +96,56 @@ enum KeystrokeInjector {
         }
     }
 
-    /// Per-character Unicode injection — bypasses keyboard layout issues.
-    private nonisolated static func postUnicode(_ unicode: String, source: CGEventSource?) throws {
-        let utf16 = Array(unicode.utf16)
+    /// Quartz reliably delivers only a small Unicode payload per keyboard event.
+    /// Batching at this conservative limit avoids the undocumented truncation seen
+    /// with longer payloads, while replacing one down/up pair per character with
+    /// one pair per batch.
+    nonisolated private static let maximumUnicodeBatchLength = 20
+    nonisolated private static let unicodeEventInterval: TimeInterval = 0.004
+
+    /// Posts the password in small UTF-16 batches. Splitting occurs only between
+    /// surrogate pairs, so non-BMP password characters are never corrupted.
+    private nonisolated static func postUnicodeText(_ text: String, source: CGEventSource?) throws {
+        let utf16 = Array(text.utf16)
+        try utf16.withUnsafeBufferPointer { buffer in
+            guard let base = buffer.baseAddress else { return }
+            var start = 0
+
+            while start < buffer.count {
+                var end = min(start + maximumUnicodeBatchLength, buffer.count)
+                // Do not split a high/low-surrogate pair across separate key events.
+                if end < buffer.count,
+                   (0xD800...0xDBFF).contains(buffer[end - 1]) {
+                    end -= 1
+                }
+                try postUnicode(
+                    base.advanced(by: start),
+                    length: end - start,
+                    source: source
+                )
+                start = end
+            }
+        }
+    }
+
+    /// Unicode injection bypasses keyboard-layout issues. The password is placed
+    /// on a key-down event as a text batch; the matching key-up maintains normal
+    /// secure-field event semantics.
+    private nonisolated static func postUnicode(
+        _ unicode: UnsafePointer<UInt16>,
+        length: Int,
+        source: CGEventSource?
+    ) throws {
         guard let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true),
               let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: false) else {
             throw KeystrokeError.eventCreationFailed
         }
-        utf16.withUnsafeBufferPointer { buf in
-            if let base = buf.baseAddress {
-                keyDown.keyboardSetUnicodeString(stringLength: utf16.count, unicodeString: base)
-                keyUp.keyboardSetUnicodeString(stringLength: utf16.count, unicodeString: base)
-            }
-        }
+        keyDown.keyboardSetUnicodeString(stringLength: length, unicodeString: unicode)
+        keyUp.keyboardSetUnicodeString(stringLength: length, unicodeString: unicode)
         keyDown.post(tap: .cghidEventTap)
-        Thread.sleep(forTimeInterval: 0.012)
+        Thread.sleep(forTimeInterval: unicodeEventInterval)
         keyUp.post(tap: .cghidEventTap)
-        Thread.sleep(forTimeInterval: 0.012)
+        Thread.sleep(forTimeInterval: unicodeEventInterval)
     }
 
     /// Physical Return key (virtual key 0x24).
