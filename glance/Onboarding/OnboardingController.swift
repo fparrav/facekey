@@ -251,13 +251,13 @@ final class OnboardingController {
         NotchOverlayController.shared.presentOnboarding(controller)
     }
 
-    /// Entry point used by Settings' "Set up Face Unlock" / "Redo Face Enrollment" — presents
-    /// the guided pose-capture plus naming step and saves directly once done.
+    /// Entry point used by Settings' "Set up Face Unlock" — presents the guided pose-capture
+    /// plus naming step and saves directly once done.
     ///
-    /// The Your Face page is still single-identity, so this keeps targeting
-    /// `identities.first`: "Add Captures" adds samples to that identity (pruned
-    /// to the retention cap, or replaced if the embedding model changed), or
-    /// enrolls someone new.
+    /// That button is only shown while nothing is enrolled, so this normally enrolls a new
+    /// identity. If one already exists it targets `identities.first`, and the usual
+    /// Add Captures rules apply: new samples are appended and pruned to the retention cap,
+    /// or replace the old ones if the embedding model changed.
     static func startEnrollmentOnly() {
         Task { @MainActor in
             guard await unlockForEnrollment(reason: "Authenticate to re-enroll your face") else { return }
