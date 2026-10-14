@@ -115,6 +115,8 @@ enum EnrollmentPose: Int, CaseIterable {
         switch self {
         case .bottomLeft, .bottomRight: return 1.5
         case .bottom: return 1.2
+        case .topLeft, .topRight: return 1.25
+        case .top: return 1.2
         default: return 1
         }
     }
@@ -376,15 +378,15 @@ final class OnboardingController {
 
     // Pose-matching bands, in radians. Yaw: left turn is positive, matching the mirrored
     // preview. Pitch's sign is the opposite of the initial guess — see `pitchMatches` below.
-    private let yawInnerThreshold: Float = 0.24
+    private let yawInnerThreshold: Float = 0.18
     private let yawCenterTolerance: Float = 0.18
     private let yawOuterCap: Float = 0.51
-    private let pitchInnerThreshold: Float = 0.17
-    private let pitchCenterTolerance: Float = 0.15
+    private let pitchInnerThreshold: Float = 0.10
+    private let pitchCenterTolerance: Float = 0.20
     private let pitchOuterCap: Float = 0.37
     /// If a pose takes longer than this, matching bands widen by `stallWidenFactor` so an
     /// unusual camera angle can't permanently strand the user.
-    private let stallTimeout: Duration = .seconds(12)
+    private let stallTimeout: Duration = .seconds(6)
     private let stallWidenFactor: Float = 1.25
 
     private(set) var currentPoseIndex = 0
