@@ -47,27 +47,29 @@ struct AboutSettingsPage: View {
         .padding(.bottom, 16)
 
         SettingsGroup {
-            SettingsActionRowContent(
-                title: "Check for Updates",
-                buttonTitle: "Check",
-                isEnabled: updater.canCheckForUpdates
-            ) {
-                updater.checkForUpdates()
+            if updater.isConfigured {
+                SettingsActionRowContent(
+                    title: "Check for Updates",
+                    buttonTitle: "Check",
+                    isEnabled: updater.canCheckForUpdates
+                ) {
+                    updater.checkForUpdates()
+                }
+
+                SettingsGroupDivider()
+
+                SettingsRowContent(title: "Automatically check for updates") {
+                    FacekeyToggle(isOn: $updater.automaticallyChecksForUpdates)
+                }
+
+                SettingsGroupDivider()
             }
-
-            SettingsGroupDivider()
-
-            SettingsRowContent(title: "Automatically check for updates") {
-                FacekeyToggle(isOn: $updater.automaticallyChecksForUpdates)
-            }
-
-            SettingsGroupDivider()
 
             SettingsActionRowContent(
                 title: "Send Feedback",
                 buttonTitle: "Send"
             ) {
-                if let url = URL(string: "https://tryglance.app/feedback") {
+                if let url = URL(string: "https://github.com/fparrav/facekey/issues") {
                     NSWorkspace.shared.open(url)
                 }
             }

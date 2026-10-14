@@ -28,6 +28,10 @@ final class UpdaterController {
         set { controller.updater.automaticallyChecksForUpdates = newValue }
     }
 
+    /// False when the build ships no `SUFeedURL`: this fork publishes no appcast yet, so updating stays inert rather than
+    /// pointing at the upstream project's feed and signing key.
+    let isConfigured: Bool = Bundle.main.object(forInfoDictionaryKey: "SUFeedURL") != nil
+
     /// True while Sparkle is showing anything, so `AppDelegate.windowWillClose` doesn't drop the Dock icon to `.accessory` mid-update.
     var isPresentingUpdateUI: Bool { presentationDelegate.isPresentingUpdateUI }
 
@@ -53,14 +57,15 @@ final class UpdaterController {
         }
     }
 
-    /// Safe to call even with a placeholder `SUPublicEDKey` — `SPUStandardUpdaterController` logs and alerts on a misconfigured
-    /// Sparkle setup itself rather than throwing.
+    /// No-op without a configured feed (see `isConfigured`).
     func start() {
+        guard isConfigured else { return }
         controller.startUpdater()
     }
 
     /// User-initiated "Check for Updates" — shows Sparkle's standard progress UI.
     func checkForUpdates() {
+        guard isConfigured else { return }
         controller.checkForUpdates(nil)
     }
 }
