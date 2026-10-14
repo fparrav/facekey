@@ -146,4 +146,16 @@ extension FaceRecognitionPipeline {
         guard first.centroidSimilarity >= threshold, first.maxSampleSimilarity >= threshold else { return nil }
         return first
     }
+
+    /// Mean of equal-length embeddings, re-normalized to unit length — smooths per-frame noise before scoring.
+    nonisolated static func averagedEmbedding(_ embeddings: [[Float]]) -> [Float]? {
+        guard let first = embeddings.first, !embeddings.isEmpty else { return nil }
+        guard embeddings.allSatisfy({ $0.count == first.count }) else { return nil }
+        let averaged = (0..<first.count).map { i in
+            embeddings.reduce(0) { $0 + $1[i] } / Float(embeddings.count)
+        }
+        let norm = (averaged.map { $0 * $0 }.reduce(0, +)).squareRoot()
+        guard norm > 0, norm.isFinite else { return nil }
+        return averaged.map { $0 / norm }
+    }
 }
