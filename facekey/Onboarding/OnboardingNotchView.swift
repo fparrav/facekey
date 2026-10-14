@@ -37,6 +37,11 @@ struct OnboardingNotchView: View {
         .id(controller.step)
         .frame(width: controller.panelSize.width, height: controller.panelSize.height)
         .transition(stepTransition)
+        .overlay(alignment: .topTrailing) {
+            if controller.showsQuitControl {
+                QuitControl(action: controller.quit)
+            }
+        }
     }
 
     private var stepTransition: AnyTransition {
@@ -68,5 +73,27 @@ private struct OffsetBlurOpacity: ViewModifier {
             .offset(y: offset)
             .blur(radius: blur)
             .opacity(opacity)
+    }
+}
+
+/// Small close control that quits first-run setup; the app has no Dock icon or menu bar item until onboarding finishes.
+private struct QuitControl: View {
+    let action: () -> Void
+    @State private var isHovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "xmark")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(.white.opacity(isHovering ? 0.9 : 0.5))
+                .frame(width: 18, height: 18)
+                .background(Circle().fill(.white.opacity(isHovering ? 0.16 : 0.08)))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovering = $0 }
+        .padding(6)
+        .help("Quit Facekey")
+        .accessibilityLabel("Quit Facekey")
     }
 }

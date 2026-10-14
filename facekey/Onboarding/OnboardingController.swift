@@ -588,6 +588,17 @@ final class OnboardingController {
         }
     }
 
+    /// Whether the first-run flow shows its quit control: every step but enrollment (which has its own close control) and the
+    /// final one. The other flows (add captures, password-only, post-update) already have a cancel path.
+    var showsQuitControl: Bool {
+        isFirstRunFlow && step != .enroll && step != .complete
+    }
+
+    /// Leaves first-run setup. Quitting is safe at any step: the `step` `didSet` already persisted the resume point.
+    func quit() {
+        NSApp.terminate(nil)
+    }
+
     /// "No thanks" on the post-update notice. Declining isn't a real option — the app
     /// requires acknowledgment before it'll run — so this quits rather than dismissing back
     /// into use.
