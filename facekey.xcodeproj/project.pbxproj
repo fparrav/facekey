@@ -283,6 +283,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = facekey/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Facekey;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Facekey uses the camera on-device to recognize your face for unlocking your Mac, and to let you enroll and preview your face in Settings.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -319,6 +320,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = facekey/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Facekey;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Facekey uses the camera on-device to recognize your face for unlocking your Mac, and to let you enroll and preview your face in Settings.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
