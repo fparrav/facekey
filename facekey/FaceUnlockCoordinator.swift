@@ -36,10 +36,10 @@ final class FaceUnlockCoordinator {
     private var scanWindowDuration: TimeInterval {
         TimeInterval(FacekeySettings.shared.faceDetectionSeconds)
     }
-    /// A wake often catches the owner while they are still looking away from
-    /// the camera. Require a sustained non-match rather than a few early
-    /// frames before giving the failure animation.
-    private let wrongFaceGraceDuration: Duration = .seconds(2)
+    /// The owner usually keeps looking away from the camera for a few seconds
+    /// after the Mac wakes. Require a sustained 4 s non-match before giving
+    /// the failure animation.
+    private let wrongFaceGraceDuration: Duration = .seconds(4)
 
     private(set) var statusMessage = "Idle"
     private(set) var lastOutcome: String?
@@ -348,6 +348,9 @@ final class FaceUnlockCoordinator {
         let livenessEnabled = FacekeySettings.shared.livenessChecksEnabled
         let liveness = LivenessAnalyzer()
         liveness.modeProvider = { FacekeySettings.shared.livenessMode }
+        /// Early frames are dark while the camera auto-exposes, so skip them from the embedding buffer.
+        let scanStartedAt = ContinuousClock.now
+        let warmUpDuration: Duration = .milliseconds(300)
         /// Set by the first consecutive non-match. A gap in face detection or
         /// a valid match clears it, so only a sustained wrong face resolves the scan.
         var wrongFaceStartedAt: ContinuousClock.Instant?
@@ -360,6 +363,10 @@ final class FaceUnlockCoordinator {
         var lastFaceBoundingBox: CGRect?
         /// Cheap way to detect "no new camera frame yet" vs. "fresh frame" — without it a repeat frame would corrupt the liveness motion signal.
         var lastProcessedFrameID: UInt64?
+        /// Recent face embeddings, averaged before scoring so per-frame noise doesn't flip the match decision.
+        var embeddingBuffer: [[Float]] = []
+        let maxBufferedEmbeddings = 5
+        let minBufferedEmbeddings = 3
 
         while Date() < deadline, !Task.isCancelled,
               !requireOverlayScanning || NotchOverlayController.shared.phase == .scanning {
@@ -382,11 +389,29 @@ final class FaceUnlockCoordinator {
 
             guard let (result, livenessFrame) = outcome else {
                 wrongFaceStartedAt = nil
+                embeddingBuffer.removeAll()
                 lastFaceBoundingBox = nil
                 try? await Task.sleep(nanoseconds: 20_000_000)
                 continue
             }
             lastFaceBoundingBox = result.face.normalizedBoundingBox
+
+            // Same tolerance as `FaceRecognitionPipeline.continuityDistanceTolerance`: center drift at or beyond this in
+            // normalized coordinates means the tracked face is a different person, so the running average must not blend them.
+            let continuityDistanceTolerance: CGFloat = 0.3
+            if let previous = previousBoundingBox {
+                let previousCenter = CGPoint(x: previous.midX, y: previous.midY)
+                let center = CGPoint(x: result.face.normalizedBoundingBox.midX, y: result.face.normalizedBoundingBox.midY)
+                if hypot(center.x - previousCenter.x, center.y - previousCenter.y) >= continuityDistanceTolerance {
+                    embeddingBuffer.removeAll()
+                }
+            }
+            if ContinuousClock.now - scanStartedAt >= warmUpDuration {
+                embeddingBuffer.append(result.embedding)
+                if embeddingBuffer.count > maxBufferedEmbeddings {
+                    embeddingBuffer.removeFirst()
+                }
+            }
 
             // Fed regardless of match, so liveness stays a genuinely independent gate rather than one starved by recognition confidence.
             var confirmingCue: LivenessCue?
@@ -405,8 +430,17 @@ final class FaceUnlockCoordinator {
                 }
             }
 
+            // Not enough samples yet — keep scanning (liveness above keeps running; wrongFaceStartedAt/readyMatch are deliberately untouched).
+            if embeddingBuffer.count < minBufferedEmbeddings {
+                try? await Task.sleep(nanoseconds: 20_000_000)
+                continue
+            }
+            guard let smoothed = FaceRecognitionPipeline.averagedEmbedding(embeddingBuffer) else {
+                try? await Task.sleep(nanoseconds: 20_000_000)
+                continue
+            }
             // `activeIdentities`, not `identities`: someone switched off on the Your Face page stays enrolled but must not unlock.
-            let scored = pipeline.score(result.embedding, against: FaceEnrollmentStore.shared.activeIdentities)
+            let scored = pipeline.score(smoothed, against: FaceEnrollmentStore.shared.activeIdentities)
             let matched = pipeline.bestMatch(in: scored, threshold: matchThreshold)
 
             if let matched {
