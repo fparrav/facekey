@@ -232,7 +232,7 @@ final class FaceLabController {
 
     func startRecapture(of identity: FaceIdentity) {
         camera.stop()
-        log("Starting guided re-capture of \"\(identity.name)\".")
+        log("Starting guided Add Captures sweep for \"\(identity.name)\".")
         OnboardingController.startRecapture(of: identity)
     }
 

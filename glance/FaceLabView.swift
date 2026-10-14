@@ -660,7 +660,7 @@ private struct IdentityRow: View {
                             .foregroundStyle(.orange)
                     }
                     Spacer()
-                    Button("Recapture", action: recapture)
+                    Button("Add Captures", action: recapture)
                         .disabled(!canStartFlow)
                     Button(role: .destructive, action: delete) {
                         Image(systemName: "trash")
