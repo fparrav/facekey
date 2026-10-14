@@ -26,8 +26,8 @@ struct PillButton: View {
     var body: some View {
         let button = Button(action: action) {
             Text(title)
-                .font(GlanceTheme.Font.button)
-                .foregroundStyle(GlanceTheme.textPrimary)
+                .font(FacekeyTheme.Font.button)
+                .foregroundStyle(FacekeyTheme.textPrimary)
                 .frame(width: width, height: OnboardingMetrics.pillButtonHeight)
                 .background(background)
                 .clipShape(Capsule())
@@ -44,7 +44,7 @@ struct PillButton: View {
     }
 
     private var background: Color {
-        style == .primary ? GlanceTheme.accent : GlanceTheme.surface
+        style == .primary ? FacekeyTheme.accent : FacekeyTheme.surface
     }
 }
 
@@ -59,16 +59,16 @@ struct PermissionRow: View {
     var body: some View {
         HStack(spacing: 10) {
             Circle()
-                .fill(granted ? GlanceTheme.statusGranted : GlanceTheme.statusDenied)
+                .fill(granted ? FacekeyTheme.statusGranted : FacekeyTheme.statusDenied)
                 .frame(width: OnboardingMetrics.statusDotSize, height: OnboardingMetrics.statusDotSize)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
-                    .font(GlanceTheme.Font.rowTitle)
-                    .foregroundStyle(GlanceTheme.textPrimary)
+                    .font(FacekeyTheme.Font.rowTitle)
+                    .foregroundStyle(FacekeyTheme.textPrimary)
                 Text(detail)
-                    .font(GlanceTheme.Font.rowDetail)
-                    .foregroundStyle(GlanceTheme.textDetail)
+                    .font(FacekeyTheme.Font.rowDetail)
+                    .foregroundStyle(FacekeyTheme.textDetail)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
             }
@@ -77,10 +77,10 @@ struct PermissionRow: View {
 
             Button(action: grant) {
                 Text(granted ? "Granted" : "Grant")
-                    .font(GlanceTheme.Font.grantLabel)
-                    .foregroundStyle(GlanceTheme.textPrimary)
+                    .font(FacekeyTheme.Font.grantLabel)
+                    .foregroundStyle(FacekeyTheme.textPrimary)
                     .frame(width: OnboardingMetrics.grantButtonSize.width, height: OnboardingMetrics.grantButtonSize.height)
-                    .background(GlanceTheme.surfaceRaised)
+                    .background(FacekeyTheme.surfaceRaised)
                     .clipShape(Capsule())
             }
             .buttonStyle(.plain)
@@ -90,7 +90,7 @@ struct PermissionRow: View {
         .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
         .frame(height: OnboardingMetrics.permissionRowHeight)
-        .background(GlanceTheme.surface)
+        .background(FacekeyTheme.surface)
         .clipShape(Capsule())
     }
 }
@@ -117,7 +117,7 @@ struct CameraSelectionPill: View {
                 Text(label)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                    .foregroundStyle(GlanceTheme.textPrimary)
+                    .foregroundStyle(FacekeyTheme.textPrimary)
                     .font(.system(size: 12))
                     .padding(.horizontal, 0)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
@@ -127,7 +127,7 @@ struct CameraSelectionPill: View {
             .menuIndicator(.hidden)
             .buttonStyle(.plain)
             // Window-level accent tint otherwise paints the menu label blue.
-            .tint(GlanceTheme.textPrimary)
+            .tint(FacekeyTheme.textPrimary)
             .frame(width: 220, height: 30)
 
             Spacer(minLength: 0)
@@ -135,12 +135,12 @@ struct CameraSelectionPill: View {
             // Decorative only — the menu above is the actual tap target.
             Image(systemName: "chevron.up.chevron.down")
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(GlanceTheme.textSecondary)
+                .foregroundStyle(FacekeyTheme.textSecondary)
         }
         .padding(.trailing, 16)
         .frame(maxWidth: .infinity)
         .frame(height: OnboardingMetrics.permissionRowHeight)
-        .background(GlanceTheme.surface)
+        .background(FacekeyTheme.surface)
         .clipShape(Capsule())
     }
 }
@@ -154,17 +154,17 @@ struct PillSecureField: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        SecureField("", text: $text, prompt: Text(placeholder).foregroundStyle(GlanceTheme.placeholder))
+        SecureField("", text: $text, prompt: Text(placeholder).foregroundStyle(FacekeyTheme.placeholder))
             .textFieldStyle(.plain)
-            .font(GlanceTheme.Font.passwordPlaceholder)
-            .foregroundStyle(GlanceTheme.textPrimary)
+            .font(FacekeyTheme.Font.passwordPlaceholder)
+            .foregroundStyle(FacekeyTheme.textPrimary)
             .focused($isFocused)
             .onSubmit(onSubmit)
             .background(OnboardingFieldFirstResponder(enabled: autofocus, onReady: { isFocused = true }))
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity)
             .frame(height: 40)
-            .background(GlanceTheme.surface)
+            .background(FacekeyTheme.surface)
             .clipShape(Capsule())
     }
 }
@@ -179,17 +179,17 @@ struct PillTextField: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(GlanceTheme.placeholder))
+        TextField("", text: $text, prompt: Text(placeholder).foregroundStyle(FacekeyTheme.placeholder))
             .textFieldStyle(.plain)
-            .font(GlanceTheme.Font.passwordPlaceholder)
-            .foregroundStyle(GlanceTheme.textPrimary)
+            .font(FacekeyTheme.Font.passwordPlaceholder)
+            .foregroundStyle(FacekeyTheme.textPrimary)
             .focused($isFocused)
             .onSubmit(onSubmit)
             .background(OnboardingFieldFirstResponder(enabled: autofocus, onReady: { isFocused = true }))
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity)
             .frame(height: 40)
-            .background(GlanceTheme.surface)
+            .background(FacekeyTheme.surface)
             .clipShape(Capsule())
     }
 }

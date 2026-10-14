@@ -2,7 +2,7 @@
 //  SessionAutoLocker.swift
 //  glance
 //
-//  Enforces `GlanceSettings.autoLockInterval`: re-locks the session once idle past the user's chosen limit.
+//  Enforces `FacekeySettings.autoLockInterval`: re-locks the session once idle past the user's chosen limit.
 //
 
 import Foundation
@@ -50,7 +50,7 @@ final class SessionAutoLocker {
 
         // A "Never" preference still loses the in-memory session key on app
         // relaunch; it only disables the idle-timeout lock while Glance runs.
-        guard let idleLimit = GlanceSettings.shared.autoLockInterval.duration else { return }
+        guard let idleLimit = FacekeySettings.shared.autoLockInterval.duration else { return }
         guard Date().timeIntervalSince(lastActivityAt) >= idleLimit else { return }
 
         pocController.lockSession()

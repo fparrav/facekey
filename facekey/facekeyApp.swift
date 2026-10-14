@@ -1,5 +1,5 @@
 //
-//  glanceApp.swift
+//  facekeyApp.swift
 //  glance
 //
 //  Created by Jonathan Zhou on 2026-07-21.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct glanceApp: App {
+struct facekeyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     /// Only reliable way to reopen a `Window` scene once its `NSWindow` has fully closed.
@@ -55,7 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     /// Held so `menuNeedsUpdate` can refresh this row in place rather than rebuilding the whole menu.
     private var sessionMenuItem: NSMenuItem?
-    /// Bridges SwiftUI's `openWindow(\.settings)` action in from `glanceApp.body`, since this plain `NSObject` has no
+    /// Bridges SwiftUI's `openWindow(\.settings)` action in from `facekeyApp.body`, since this plain `NSObject` has no
     /// `@Environment` of its own. Bound from the scene body (not `onAppear`) so it's ready before Settings has ever shown —
     /// `NSApp.windows` stops containing the window once fully closed, so only `openWindow(id:)` can reliably re-create it.
     var openSettingsWindowAction: (() -> Void)?
@@ -76,7 +76,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        GlanceSettings.shared.bindMenuBarVisibility { [weak self] isVisible in
+        FacekeySettings.shared.bindMenuBarVisibility { [weak self] isVisible in
             self?.setMenuBarVisibility(isVisible)
         }
 
@@ -92,8 +92,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         // Deferred until onboarding is done — Sparkle's own "Check for updates automatically?" consent alert fires the moment
         // it starts on a fresh install, and starting unconditionally here used to pop it mid-onboarding.
-        if GlanceSettings.shared.hasCompletedOnboarding {
-            if GlanceSettings.shared.hasAcknowledgedSecurityNotice {
+        if FacekeySettings.shared.hasCompletedOnboarding {
+            if FacekeySettings.shared.hasAcknowledgedSecurityNotice {
                 startUpdaterIfNeeded()
             } else {
                 // Upgraded from a version before the notice existed — show it once, standalone.
@@ -163,7 +163,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         NSApp.setActivationPolicy(.accessory)
         OnboardingController.startFlow(
-            resumingAt: GlanceSettings.shared.onboardingResumeStep,
+            resumingAt: FacekeySettings.shared.onboardingResumeStep,
             onFirstRunComplete: { [weak self] in
                 // First time Settings should appear, which also brings the Dock icon back.
                 self?.revealSettingsWindow()
@@ -250,7 +250,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     /// True whenever an updated user hasn't acknowledged the post-update security notice yet.
     private var isBlockedByPostUpdateNotice: Bool {
-        GlanceSettings.shared.hasCompletedOnboarding && !GlanceSettings.shared.hasAcknowledgedSecurityNotice
+        FacekeySettings.shared.hasCompletedOnboarding && !FacekeySettings.shared.hasAcknowledgedSecurityNotice
     }
 
     /// Restores the Dock icon before bringing the window forward — doing it after the window is already key can leave the icon
@@ -261,7 +261,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             NSApp.activate(ignoringOtherApps: true)
             return
         }
-        guard GlanceSettings.shared.hasCompletedOnboarding else {
+        guard FacekeySettings.shared.hasCompletedOnboarding else {
             // Re-present rather than restart: a fresh startFlow() would throw away the in-session step already navigated to,
             // since it only knows the last step written to disk.
             if NotchOverlayController.shared.phase != .onboarding {

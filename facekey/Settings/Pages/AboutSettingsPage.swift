@@ -58,7 +58,7 @@ struct AboutSettingsPage: View {
             SettingsGroupDivider()
 
             SettingsRowContent(title: "Automatically check for updates") {
-                GlanceToggle(isOn: $updater.automaticallyChecksForUpdates)
+                FacekeyToggle(isOn: $updater.automaticallyChecksForUpdates)
             }
 
             SettingsGroupDivider()

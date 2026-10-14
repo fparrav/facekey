@@ -8,7 +8,7 @@ import SwiftUI
 struct RecognitionSettingsPage: View {
     @Bindable var coordinator: FaceUnlockCoordinator
     @Bindable var pocController: POCController
-    @Bindable private var settings = GlanceSettings.shared
+    @Bindable private var settings = FacekeySettings.shared
 
     @State private var isUnlocking = false
     @State private var sessionError: String?
@@ -82,7 +82,7 @@ struct RecognitionSettingsPage: View {
                         subtitle: "Checks that you're a live person, not a photo. May increase unlock time.",
                         subtitleMaxWidth: SettingsMetrics.rowSubtitleMaxWidth
                     ) {
-                        GlanceToggle(isOn: $settings.livenessChecksEnabled)
+                        FacekeyToggle(isOn: $settings.livenessChecksEnabled)
                     }
                     SettingsGroupDivider()
                     LivenessModePicker(

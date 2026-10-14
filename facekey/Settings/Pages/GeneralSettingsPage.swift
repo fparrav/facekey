@@ -9,7 +9,7 @@ import SwiftUI
 struct GeneralSettingsPage: View {
     @Bindable var coordinator: FaceUnlockCoordinator
     @Bindable var pocController: POCController
-    @Bindable private var settings = GlanceSettings.shared
+    @Bindable private var settings = FacekeySettings.shared
 
     @State private var launchAtLoginEnabled = LaunchAtLogin.isEnabled
     @State private var launchAtLoginError: String?
@@ -77,7 +77,7 @@ struct GeneralSettingsPage: View {
         VStack(alignment: .leading, spacing: SettingsMetrics.rowSpacing) {
             SettingsGroup {
                 SettingsRowContent(title: "Launch at login") {
-                    GlanceToggle(isOn: Binding(
+                    FacekeyToggle(isOn: Binding(
                         get: { launchAtLoginEnabled },
                         set: { newValue in
                             launchAtLoginEnabled = newValue
@@ -93,11 +93,11 @@ struct GeneralSettingsPage: View {
                 }
                 SettingsGroupDivider()
                 SettingsRowContent(title: "Show in menu bar") {
-                    GlanceToggle(isOn: $settings.showsInMenuBar)
+                    FacekeyToggle(isOn: $settings.showsInMenuBar)
                 }
                 SettingsGroupDivider()
                 SettingsRowContent(title: "Enable Face Unlock") {
-                    GlanceToggle(isOn: $coordinator.isEnabled)
+                    FacekeyToggle(isOn: $coordinator.isEnabled)
                 }
                 SettingsGroupDivider()
                 UnlockTriggerPicker(selection: $settings.unlockTriggers, isEnabled: coordinator.isEnabled)
@@ -135,15 +135,15 @@ struct GeneralSettingsPage: View {
                 SettingsSectionTitle(text: "Active when")
                 SettingsGroup {
                     SettingsRowContent(title: "Built-in only") {
-                        GlanceToggle(isOn: $settings.isFaceUnlockEnabledBuiltInOnly)
+                        FacekeyToggle(isOn: $settings.isFaceUnlockEnabledBuiltInOnly)
                     }
                     SettingsGroupDivider()
                     SettingsRowContent(title: "Built-in + external") {
-                        GlanceToggle(isOn: $settings.isFaceUnlockEnabledBuiltInAndExternal)
+                        FacekeyToggle(isOn: $settings.isFaceUnlockEnabledBuiltInAndExternal)
                     }
                     SettingsGroupDivider()
                     SettingsRowContent(title: "External only") {
-                        GlanceToggle(isOn: $settings.isFaceUnlockEnabledExternalOnly)
+                        FacekeyToggle(isOn: $settings.isFaceUnlockEnabledExternalOnly)
                     }
                 }
             }
@@ -152,25 +152,25 @@ struct GeneralSettingsPage: View {
                 SettingsSectionTitle(text: "Behaviour")
                 SettingsGroup {
                     SettingsRowContent(title: "Retry on notch hover") {
-                        GlanceToggle(isOn: $settings.retryOnHover)
+                        FacekeyToggle(isOn: $settings.retryOnHover)
                     }
                     SettingsGroupDivider()
                     SettingsRowContent(title: "Auto retry once after failure") {
-                        GlanceToggle(isOn: $settings.autoRetryOnce)
+                        FacekeyToggle(isOn: $settings.autoRetryOnce)
                     }
                     SettingsGroupDivider()
                     SettingsRowContent(title: "Haptic feedback") {
-                        GlanceToggle(isOn: $settings.hapticFeedbackEnabled)
+                        FacekeyToggle(isOn: $settings.hapticFeedbackEnabled)
                     }
                     SettingsGroupDivider()
                     SettingsSteppedSliderRowContent(
                         title: "Face detection duration",
                         valueLabel: "\(settings.faceDetectionSeconds)s",
                         index: Binding(
-                            get: { Double(settings.faceDetectionSeconds - GlanceSettings.faceDetectionRange.lowerBound) },
-                            set: { settings.faceDetectionSeconds = GlanceSettings.faceDetectionRange.lowerBound + Int($0.rounded()) }
+                            get: { Double(settings.faceDetectionSeconds - FacekeySettings.faceDetectionRange.lowerBound) },
+                            set: { settings.faceDetectionSeconds = FacekeySettings.faceDetectionRange.lowerBound + Int($0.rounded()) }
                         ),
-                        stopCount: GlanceSettings.faceDetectionRange.count
+                        stopCount: FacekeySettings.faceDetectionRange.count
                     )
                 }
             }
@@ -179,7 +179,7 @@ struct GeneralSettingsPage: View {
                 SettingsSectionTitle(text: "Animation")
                 SettingsGroup {
                     SettingsRowContent(title: "Show animation") {
-                        GlanceToggle(isOn: $settings.showUnlockAnimation)
+                        FacekeyToggle(isOn: $settings.showUnlockAnimation)
                     }
                     SettingsGroupDivider()
                     UnlockAnimationPicker(
@@ -215,7 +215,7 @@ struct GeneralSettingsPage: View {
             }
             .buttonStyle(.plain)
             .font(.system(size: 12))
-            .foregroundStyle(GlanceTheme.accent)
+            .foregroundStyle(FacekeyTheme.accent)
         }
     }
 

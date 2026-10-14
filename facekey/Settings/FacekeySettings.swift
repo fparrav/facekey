@@ -1,5 +1,5 @@
 //
-//  GlanceSettings.swift
+//  FacekeySettings.swift
 //  glance
 //
 //  Backed directly by `UserDefaults.standard` — each property's `didSet`
@@ -97,37 +97,37 @@ enum UnlockTrigger: String, CaseIterable, Identifiable {
 
 @Observable
 @MainActor
-final class GlanceSettings {
-    static let shared = GlanceSettings()
+final class FacekeySettings {
+    static let shared = FacekeySettings()
 
     private enum Key {
-        static let isFaceUnlockEnabled = "GlanceSettings.isFaceUnlockEnabled"
-        static let isFaceUnlockEnabledBuiltInOnly = "GlanceSettings.isFaceUnlockEnabledBuiltInOnly"
-        static let isFaceUnlockEnabledBuiltInAndExternal = "GlanceSettings.isFaceUnlockEnabledBuiltInAndExternal"
-        static let isFaceUnlockEnabledExternalOnly = "GlanceSettings.isFaceUnlockEnabledExternalOnly"
-        static let matchThreshold = "GlanceSettings.matchThreshold"
-        static let livenessChecksEnabled = "GlanceSettings.livenessChecksEnabled"
-        static let livenessMode = "GlanceSettings.livenessMode"
-        static let minimumFaceWidth = "GlanceSettings.minimumFaceWidth"
-        static let unlockAnimationStyle = "GlanceSettings.unlockAnimationStyle"
-        static let showUnlockAnimation = "GlanceSettings.showUnlockAnimation"
+        static let isFaceUnlockEnabled = "FacekeySettings.isFaceUnlockEnabled"
+        static let isFaceUnlockEnabledBuiltInOnly = "FacekeySettings.isFaceUnlockEnabledBuiltInOnly"
+        static let isFaceUnlockEnabledBuiltInAndExternal = "FacekeySettings.isFaceUnlockEnabledBuiltInAndExternal"
+        static let isFaceUnlockEnabledExternalOnly = "FacekeySettings.isFaceUnlockEnabledExternalOnly"
+        static let matchThreshold = "FacekeySettings.matchThreshold"
+        static let livenessChecksEnabled = "FacekeySettings.livenessChecksEnabled"
+        static let livenessMode = "FacekeySettings.livenessMode"
+        static let minimumFaceWidth = "FacekeySettings.minimumFaceWidth"
+        static let unlockAnimationStyle = "FacekeySettings.unlockAnimationStyle"
+        static let showUnlockAnimation = "FacekeySettings.showUnlockAnimation"
         /// Legacy bool key — read once during migration, then ignored.
-        static let playUnlockAnimation = "GlanceSettings.playUnlockAnimation"
-        static let unlockTriggers = "GlanceSettings.unlockTriggers"
-        static let retryOnHover = "GlanceSettings.retryOnHover"
-        static let faceDetectionSeconds = "GlanceSettings.faceDetectionSeconds"
-        static let autoRetryOnce = "GlanceSettings.autoRetryOnce"
-        static let hapticFeedbackEnabled = "GlanceSettings.hapticFeedbackEnabled"
-        static let showsInMenuBar = "GlanceSettings.showsInMenuBar"
-        static let preferredDisplayID = "GlanceSettings.preferredDisplayID"
-        static let preferredDisplayName = "GlanceSettings.preferredDisplayName"
-        static let autoLockIntervalDays = "GlanceSettings.autoLockIntervalDays"
-        static let defaultCameraID = "GlanceSettings.defaultCameraID"
-        static let builtInDisplayCameraID = "GlanceSettings.builtInDisplayCameraID"
-        static let externalDisplayCameraID = "GlanceSettings.externalDisplayCameraID"
-        static let hasCompletedOnboarding = "GlanceSettings.hasCompletedOnboarding"
-        static let onboardingResumeStep = "GlanceSettings.onboardingResumeStep"
-        static let hasAcknowledgedSecurityNotice = "GlanceSettings.hasAcknowledgedSecurityNotice"
+        static let playUnlockAnimation = "FacekeySettings.playUnlockAnimation"
+        static let unlockTriggers = "FacekeySettings.unlockTriggers"
+        static let retryOnHover = "FacekeySettings.retryOnHover"
+        static let faceDetectionSeconds = "FacekeySettings.faceDetectionSeconds"
+        static let autoRetryOnce = "FacekeySettings.autoRetryOnce"
+        static let hapticFeedbackEnabled = "FacekeySettings.hapticFeedbackEnabled"
+        static let showsInMenuBar = "FacekeySettings.showsInMenuBar"
+        static let preferredDisplayID = "FacekeySettings.preferredDisplayID"
+        static let preferredDisplayName = "FacekeySettings.preferredDisplayName"
+        static let autoLockIntervalDays = "FacekeySettings.autoLockIntervalDays"
+        static let defaultCameraID = "FacekeySettings.defaultCameraID"
+        static let builtInDisplayCameraID = "FacekeySettings.builtInDisplayCameraID"
+        static let externalDisplayCameraID = "FacekeySettings.externalDisplayCameraID"
+        static let hasCompletedOnboarding = "FacekeySettings.hasCompletedOnboarding"
+        static let onboardingResumeStep = "FacekeySettings.onboardingResumeStep"
+        static let hasAcknowledgedSecurityNotice = "FacekeySettings.hasAcknowledgedSecurityNotice"
     }
 
     @ObservationIgnored private let defaults = UserDefaults.standard

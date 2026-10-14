@@ -20,21 +20,21 @@ final class FaceUnlockCoordinator {
     let camera = CameraManager()
     let pipeline = FaceRecognitionPipeline()
 
-    /// Persisted via GlanceSettings. Setting to false cancels any in-flight scan and disarms the overlay immediately.
+    /// Persisted via FacekeySettings. Setting to false cancels any in-flight scan and disarms the overlay immediately.
     var isEnabled: Bool {
         didSet {
-            GlanceSettings.shared.isFaceUnlockEnabled = isEnabled
+            FacekeySettings.shared.isFaceUnlockEnabled = isEnabled
             if !isEnabled { disarmOverlay() }
         }
     }
 
     /// Kept independent from Face Lab's own `threshold` so tuning the debug tool never silently changes the real unlock gate.
     var matchThreshold: Float {
-        didSet { GlanceSettings.shared.matchThreshold = matchThreshold }
+        didSet { FacekeySettings.shared.matchThreshold = matchThreshold }
     }
     /// Shares its setting with NotchOverlayController's scanning timeout, so the background loop stops in step with the UI collapsing.
     private var scanWindowDuration: TimeInterval {
-        TimeInterval(GlanceSettings.shared.faceDetectionSeconds)
+        TimeInterval(FacekeySettings.shared.faceDetectionSeconds)
     }
     /// A wake often catches the owner while they are still looking away from
     /// the camera. Require a sustained non-match rather than a few early
@@ -60,7 +60,7 @@ final class FaceUnlockCoordinator {
     private let headlessRetryDelay: Duration = .seconds(1)
 
     /// When off, no notch/pill presence at all — every overlay call in this file is conditioned on this rather than just skipping the video.
-    private var showsUI: Bool { GlanceSettings.shared.showUnlockAnimation }
+    private var showsUI: Bool { FacekeySettings.shared.showUnlockAnimation }
 
     /// Reads the space key on the lock screen for the "On space" trigger; only runs while locked + opted in.
     private let spaceKeyMonitor = SpaceKeyMonitor()
@@ -70,8 +70,8 @@ final class FaceUnlockCoordinator {
 
     init(pocController: POCController) {
         self.pocController = pocController
-        self.isEnabled = GlanceSettings.shared.isFaceUnlockEnabled
-        self.matchThreshold = GlanceSettings.shared.matchThreshold
+        self.isEnabled = FacekeySettings.shared.isFaceUnlockEnabled
+        self.matchThreshold = FacekeySettings.shared.matchThreshold
         spaceKeyMonitor.onSpaceKeyDown = { [weak self] in self?.handleSpaceKeyPress() }
         observeLockAndWakeEvents()
         screenParametersObserver = NotificationCenter.default.addObserver(
@@ -125,7 +125,7 @@ final class FaceUnlockCoordinator {
         // A pinned display that isn't connected bails entirely rather than showing up elsewhere; "Main display" (nil) always resolves.
         guard NotchGeometry.preferredScreen() != nil else { return }
 
-        guard GlanceSettings.shared.isFaceUnlockEnabled(for: DisplayContext.current()) else {
+        guard FacekeySettings.shared.isFaceUnlockEnabled(for: DisplayContext.current()) else {
             disarmOverlay()
             return
         }
@@ -139,7 +139,7 @@ final class FaceUnlockCoordinator {
         }
 
         // A deselected trigger means "don't auto-scan for this signal," not "do nothing" — the user can still opt in by hand.
-        let shouldAutoScan = GlanceSettings.shared.unlockTriggers.contains(signal)
+        let shouldAutoScan = FacekeySettings.shared.unlockTriggers.contains(signal)
 
         // Headless has nothing to arm/hover, so if this signal isn't selected there's nothing to do — and hasArmedForCurrentLock
         // must stay false, or a later selected signal could never fire (nothing else calls arm() to reset it).
@@ -185,7 +185,7 @@ final class FaceUnlockCoordinator {
     /// Idempotent and safe to call on every lock/wake event. Deliberately does not prompt for Input Monitoring — a missing grant just means "don't listen."
     private func updateSpaceMonitor() {
         let shouldListen = isEnabled
-            && GlanceSettings.shared.unlockTriggers.contains(.onSpace)
+            && FacekeySettings.shared.unlockTriggers.contains(.onSpace)
             && LockMonitor.isScreenActuallyLocked()
             && SpaceKeyMonitor.hasInputMonitoringAccess()
         if shouldListen {
@@ -198,7 +198,7 @@ final class FaceUnlockCoordinator {
     /// Runs the same gate chain as `evaluateTrigger`, then starts a scan. Independent of `LockMonitor` events, so doesn't touch `hasArmedForCurrentLock`.
     private func handleSpaceKeyPress() {
         guard isEnabled,
-              GlanceSettings.shared.unlockTriggers.contains(.onSpace),
+              FacekeySettings.shared.unlockTriggers.contains(.onSpace),
               LockMonitor.isScreenActuallyLocked(),
               NotchGeometry.preferredScreen() != nil,
               SecureCredentialManager.isSessionUnlocked,
@@ -317,7 +317,7 @@ final class FaceUnlockCoordinator {
 
     /// `delay` waits out whatever the overlay is still showing so the retry doesn't start underneath the previous outcome.
     private func scheduleAutoRetryIfEnabled(after delay: Duration) {
-        guard GlanceSettings.shared.autoRetryOnce, !hasAutoRetriedForCurrentLock else { return }
+        guard FacekeySettings.shared.autoRetryOnce, !hasAutoRetriedForCurrentLock else { return }
         hasAutoRetriedForCurrentLock = true
         autoRetryTask?.cancel()
         autoRetryTask = Task { [weak self] in
@@ -345,9 +345,9 @@ final class FaceUnlockCoordinator {
     /// `requireOverlayScanning` bails early once the overlay's own timeout collapses the UI — only applied when there is an
     /// overlay, since headlessly `phase` never becomes `.scanning` at all.
     private func observeScanWindow(deadline: Date, requireOverlayScanning: Bool) async -> ScanOutcome {
-        let livenessEnabled = GlanceSettings.shared.livenessChecksEnabled
+        let livenessEnabled = FacekeySettings.shared.livenessChecksEnabled
         let liveness = LivenessAnalyzer()
-        liveness.modeProvider = { GlanceSettings.shared.livenessMode }
+        liveness.modeProvider = { FacekeySettings.shared.livenessMode }
         /// Set by the first consecutive non-match. A gap in face detection or
         /// a valid match clears it, so only a sustained wrong face resolves the scan.
         var wrongFaceStartedAt: ContinuousClock.Instant?

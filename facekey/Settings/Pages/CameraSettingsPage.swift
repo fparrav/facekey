@@ -8,7 +8,7 @@ import SwiftUI
 struct CameraSettingsPage: View {
     @Bindable var pocController: POCController
     @State private var devices: [CameraDevice] = CameraDeviceCatalog.availableDevices()
-    @Bindable private var settings = GlanceSettings.shared
+    @Bindable private var settings = FacekeySettings.shared
     @State private var previewCamera = CameraManager()
     @State private var isPreviewShown = false
 

@@ -389,7 +389,7 @@ struct NotchOverlayView: View {
     /// `defaultPerformer` isn't tied to this view/window, so this is safe to call even
     /// while this panel isn't key (hover on the lock screen never makes it key).
     private func performHapticFeedback(_ pattern: NSHapticFeedbackManager.FeedbackPattern) {
-        guard GlanceSettings.shared.hapticFeedbackEnabled else { return }
+        guard FacekeySettings.shared.hapticFeedbackEnabled else { return }
         NSHapticFeedbackManager.defaultPerformer.perform(pattern, performanceTime: .default)
     }
 

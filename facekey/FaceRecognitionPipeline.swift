@@ -89,7 +89,7 @@ final class FaceRecognitionPipeline {
         faces.max { $0.boundingBox.width * $0.boundingBox.height < $1.boundingBox.width * $1.boundingBox.height }
     }
 
-    /// Below this fraction of frame width, a face is treated as a bystander, not a candidate — shared with onboarding's "move closer" prompt. `nonisolated(unsafe)` because it's read from a background-task static func that can't touch GlanceSettings' MainActor-isolated storage.
+    /// Below this fraction of frame width, a face is treated as a bystander, not a candidate — shared with onboarding's "move closer" prompt. `nonisolated(unsafe)` because it's read from a background-task static func that can't touch FacekeySettings' MainActor-isolated storage.
     nonisolated(unsafe) static var minimumProminentFaceWidth: Float = 0.18
 
     /// Max normalized-coordinate drift between frames still counted as "the same person".
