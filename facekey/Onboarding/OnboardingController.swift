@@ -707,19 +707,15 @@ final class OnboardingController {
     }
 
     private func refreshPermissions() {
-        accessibilityGranted = KeystrokeInjector.isAccessibilityTrusted()
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized: cameraPermission = .granted
-        case .notDetermined: cameraPermission = .notDetermined
-        default: cameraPermission = .denied
-        }
+        accessibilityGranted = SystemPermissions.accessibilityGranted
+        cameraPermission = SystemPermissions.cameraState
     }
 
     private var hasPromptedAccessibility = false
 
     func grantAccessibility() {
         guard !hasPromptedAccessibility else {
-            openSystemSettings(pane: "Privacy_Accessibility")
+            SystemPermissions.openPane("Privacy_Accessibility")
             return
         }
         hasPromptedAccessibility = true
@@ -729,18 +725,9 @@ final class OnboardingController {
 
     func grantCamera() {
         Task {
-            if AVCaptureDevice.authorizationStatus(for: .video) == .notDetermined {
-                _ = await AVCaptureDevice.requestAccess(for: .video)
-                refreshPermissions()
-            } else {
-                openSystemSettings(pane: "Privacy_Camera")
-            }
+            await SystemPermissions.requestCamera()
+            refreshPermissions()
         }
-    }
-
-    private func openSystemSettings(pane: String) {
-        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?\(pane)") else { return }
-        NSWorkspace.shared.open(url)
     }
 
     // MARK: - Camera selection
