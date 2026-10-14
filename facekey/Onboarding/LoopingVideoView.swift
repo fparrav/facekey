@@ -1,6 +1,6 @@
 //
 //  LoopingVideoView.swift
-//  glance
+//  facekey
 //
 //  Plays a bundled video on loop, holding its last frame for `pauseBetweenLoops`
 //  before restarting. Distinct from ScanAnimationView, which plays once and holds.
@@ -60,7 +60,7 @@ final class LoopingVideoHostView: NSView {
         teardown()
 
         guard let url = Bundle.main.url(forResource: resourceName, withExtension: "mp4") else {
-            assertionFailure("\(resourceName).mp4 missing from bundle — check glance/Resources/")
+            assertionFailure("\(resourceName).mp4 missing from bundle — check facekey/Resources/")
             return
         }
 

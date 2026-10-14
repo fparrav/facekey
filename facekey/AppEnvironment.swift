@@ -1,6 +1,6 @@
 //
 //  AppEnvironment.swift
-//  glance
+//  facekey
 //
 //  Owns app-wide, long-lived controllers so Settings pages share one instance instead of racing duplicates.
 //

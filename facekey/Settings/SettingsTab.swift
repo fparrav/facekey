@@ -1,6 +1,6 @@
 //
 //  SettingsTab.swift
-//  glance
+//  facekey
 //
 //  The tab bar's tab list. Debug-only Face Lab — the remaining live test
 //  harness, kept for ongoing tuning — is appended only once revealed.

@@ -1,6 +1,6 @@
 //
 //  RecognitionSettingsPage.swift
-//  glance
+//  facekey
 //
 
 import SwiftUI

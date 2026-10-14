@@ -1,6 +1,6 @@
 //
 //  CameraDeviceCatalog.swift
-//  glance
+//  facekey
 //
 //  Resolves the app's camera preference (flat default, or split by built-in vs. external display) into the device to open.
 //

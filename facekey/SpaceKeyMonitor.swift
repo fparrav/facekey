@@ -1,10 +1,10 @@
 //
 //  SpaceKeyMonitor.swift
-//  glance
+//  facekey
 //
 //  Detects the space key on the lock screen via raw IOKit HID reads — Secure Event Input suppresses every other keyboard tap there.
 //
-//  glance never appears under Input Monitoring: TCC resolves that gate against Accessibility first, and glance already requires
+//  Facekey never appears under Input Monitoring: TCC resolves that gate against Accessibility first, and Facekey already requires
 //  Accessibility to type the password, so `IOHIDCheckAccess` grants without ever registering it there. Correct, not a bug.
 //
 //  Graceful degradation: if access isn't granted or `IOHIDManagerOpen` fails, `start()` no-ops rather than crashing.
@@ -52,8 +52,8 @@ final class SpaceKeyMonitor {
         inputMonitoringAccess == .granted
     }
 
-    /// True when launched by Xcode's Run button, which makes TCC decisions attribute to Xcode, not glance — test permission
-    /// behavior from an independently launched copy instead (`open /path/to/glance.app`, or a build in /Applications).
+    /// True when launched by Xcode's Run button, which makes TCC decisions attribute to Xcode, not Facekey — test permission
+    /// behavior from an independently launched copy instead (`open /path/to/facekey.app`, or a build in /Applications).
     static var isLaunchedByXcode: Bool {
         ProcessInfo.processInfo.environment["__XCODE_BUILT_PRODUCTS_DIR_PATHS"] != nil
     }

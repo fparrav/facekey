@@ -1,6 +1,6 @@
 //
 //  EnrollmentSweepWindowController.swift
-//  glance
+//  facekey
 //
 //  Owns the full-screen, click-through sweep overlay shown during guided enrollment;
 //  kept separate from NotchOverlay so the notch panel always composites on top of it.

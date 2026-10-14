@@ -1,6 +1,6 @@
 //
 //  NotchShape.swift
-//  glance
+//  facekey
 //
 //  The notch silhouette. Inverted (concave) top corners flare the panel into the
 //  menu bar; the flare has no standard-shape equivalent so it's a hand-built quad

@@ -1,6 +1,6 @@
 //
 //  POCController.swift
-//  glance
+//  facekey
 //
 //  Orchestration for credential storage: wires SecureCredentialManager to
 //  KeystrokeInjector and exposes session/password status for Settings.
@@ -43,7 +43,7 @@ final class POCController {
         sessionError = nil
         do {
             try await Task.detached(priority: .userInitiated) {
-                try SecureCredentialManager.unlockSession(reason: "Authenticate to set up or use glance")
+                try SecureCredentialManager.unlockSession(reason: "Authenticate to set up or use Facekey")
             }.value
             isSessionUnlocked = true
         } catch {
@@ -92,7 +92,7 @@ final class POCController {
     /// confirms the screen is actually locked.
     func injectStoredPassword(requireAuthoritativeLock: Bool = false) async {
         guard KeystrokeInjector.isAccessibilityTrusted() else {
-            statusMessage = "Accessibility not granted — open System Settings and enable glance."
+            statusMessage = "Accessibility not granted — open System Settings and enable Facekey."
             return
         }
         guard SecureCredentialManager.isSessionUnlocked else {

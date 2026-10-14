@@ -1,6 +1,6 @@
 //
 //  NotchWindowController.swift
-//  glance
+//  facekey
 //
 //  Owns the notch overlay window's lifecycle: creation, positioning, show/hide,
 //  and SkyLight lock-screen delegation. Knows nothing about face recognition,

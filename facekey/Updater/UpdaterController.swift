@@ -1,6 +1,6 @@
 //
 //  UpdaterController.swift
-//  glance
+//  facekey
 //
 //  Thin wrapper around Sparkle's `SPUStandardUpdaterController`.
 //  Split into two types because Sparkle's `@objc` delegate protocols need an `NSObject` conformer, which doesn't mix with

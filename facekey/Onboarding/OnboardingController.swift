@@ -1,6 +1,6 @@
 //
 //  OnboardingController.swift
-//  glance
+//  facekey
 //
 //  State machine behind the notch-hosted guided onboarding flow: permissions, guided
 //  nine-pose face enrollment, and password setup. Reuses the same camera/detection/
@@ -1086,7 +1086,7 @@ final class OnboardingController {
 
         do {
             try await Task.detached(priority: .userInitiated) {
-                try SecureCredentialManager.unlockSession(reason: "Set up Glance")
+                try SecureCredentialManager.unlockSession(reason: "Set up Facekey")
             }.value
 
             // Only now that the session key exists can samples be encrypted and saved.

@@ -1,6 +1,6 @@
 //
 //  FaceEmbedder.swift
-//  glance
+//  facekey
 //
 //  Two implementations: `VisionFeaturePrintEmbedder` (Apple's built-in, but only ~5-7% similarity gap between people —
 //  too thin to gate unlock on) and `ArcFaceEmbedder` (real face-discriminative model).

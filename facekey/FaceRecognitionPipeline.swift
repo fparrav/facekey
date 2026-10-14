@@ -1,6 +1,6 @@
 //
 //  FaceRecognitionPipeline.swift
-//  glance
+//  facekey
 //
 //  Only place that should construct a FaceEmbedder — keeps all consumers in sync.
 //

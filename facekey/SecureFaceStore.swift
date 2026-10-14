@@ -1,6 +1,6 @@
 //
 //  SecureFaceStore.swift
-//  glance
+//  facekey
 //
 //  Low-level encrypted persistence for enrolled face identities — AES-GCM under the same session key SecureCredentialManager
 //  uses for the Mac password, rather than a second key. `FaceEnrollmentStore` delegates its load/save here; no plaintext fallback.

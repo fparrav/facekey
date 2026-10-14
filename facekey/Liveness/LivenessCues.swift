@@ -1,6 +1,6 @@
 //
 //  LivenessCues.swift
-//  glance
+//  facekey
 //
 //  Liveness decision model: five independent cues, no combined score. DENY
 //  cues override CONFIRM cues unconditionally; a confirm cue's absence is never a failure.

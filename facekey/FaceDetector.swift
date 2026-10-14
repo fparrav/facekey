@@ -1,6 +1,6 @@
 //
 //  FaceDetector.swift
-//  glance
+//  facekey
 //
 //  Converts Vision's normalized (0...1), bottom-left-origin face boxes into pixel-space, top-left-origin `CGRect`s.
 //

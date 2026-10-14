@@ -1,6 +1,6 @@
 //
 //  NotchSkyLight.swift
-//  glance
+//  facekey
 //
 //  Private, undocumented SkyLight window-server API — the only way found to make
 //  a window visible on the real macOS lock screen. Adapted from Lakr233/SkyLightWindow

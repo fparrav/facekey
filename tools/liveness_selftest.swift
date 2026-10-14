@@ -1,18 +1,18 @@
 //
 //  liveness_selftest.swift
-//  glance (tools)
+//  facekey (tools)
 //
 //  Offline, camera-free test for the liveness cues and the fire/latch
 //  decision model. This project has no test target, so this compiles as a
 //  standalone script against the real files:
 //
 //      swiftc -O -o /tmp/liveness_selftest \
-//        glance/Liveness/LandmarkGeometry.swift \
-//        glance/Liveness/GeometryLiveness.swift \
-//        glance/Liveness/GlareCue.swift \
-//        glance/Liveness/LivenessCues.swift \
-//        glance/Liveness/LivenessScoring.swift \
-//        glance/Liveness/LivenessAnalyzer.swift \
+//        facekey/Liveness/LandmarkGeometry.swift \
+//        facekey/Liveness/GeometryLiveness.swift \
+//        facekey/Liveness/GlareCue.swift \
+//        facekey/Liveness/LivenessCues.swift \
+//        facekey/Liveness/LivenessScoring.swift \
+//        facekey/Liveness/LivenessAnalyzer.swift \
 //        tools/liveness_selftest.swift \
 //      && /tmp/liveness_selftest
 //

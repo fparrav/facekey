@@ -1,6 +1,6 @@
 //
 //  FaceEnrollmentStore.swift
-//  glance
+//  facekey
 //
 //  Persisted encrypted under the same Touch-ID-gated session key as the stored Mac password (see SecureFaceStore);
 //  `isLocked`/`reloadIfUnlocked()` let the UI distinguish "locked" from "nothing enrolled."

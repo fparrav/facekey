@@ -1,6 +1,6 @@
 //
 //  KeychainManager.swift
-//  glance
+//  facekey
 //
 //  Thin, password-agnostic wrapper around Keychain Services — save/read/delete/exists by account, plus a Touch-ID access control helper.
 //

@@ -1,6 +1,6 @@
 //
 //  CameraManager.swift
-//  glance
+//  facekey
 //
 //  Owns the AVCaptureSession and publishes the newest camera frame as a CGImage. Runs entirely on-device.
 //
@@ -60,7 +60,7 @@ final class CameraManager: NSObject {
             errorMessage = "Camera access not granted (status: \(describe(status))). " +
                 (status == .restricted
                     ? "macOS reports this as *restricted* — not a simple user denial. This usually means Screen Time content restrictions or an MDM/profile policy is blocking camera access for this app; toggling it in System Settings > Privacy & Security > Camera won't help until that restriction is lifted."
-                    : "Enable it in System Settings > Privacy & Security > Camera. If glance isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again.")
+                    : "Enable it in System Settings > Privacy & Security > Camera. If Facekey isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again.")
             return
         }
 

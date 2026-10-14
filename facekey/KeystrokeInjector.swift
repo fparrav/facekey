@@ -1,6 +1,6 @@
 //
 //  KeystrokeInjector.swift
-//  glance
+//  facekey
 //
 //  Synthesizes keystrokes via CGEvent, posted at the HID tap so they reach the lock screen's secure text field.
 //
@@ -16,7 +16,7 @@ enum KeystrokeError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .accessibilityNotGranted:
-            return "Accessibility permission required. Open System Settings → Privacy & Security → Accessibility and enable glance."
+            return "Accessibility permission required. Open System Settings → Privacy & Security → Accessibility and enable Facekey."
         case .eventCreationFailed:
             return "Couldn't create CGEvent for keystroke."
         }

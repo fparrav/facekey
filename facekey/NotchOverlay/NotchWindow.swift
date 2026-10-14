@@ -1,6 +1,6 @@
 //
 //  NotchWindow.swift
-//  glance
+//  facekey
 //
 //  Borderless, transparent, click-through panel. Created once and never resized —
 //  all expansion/collapse is SwiftUI animating content inside this fixed window

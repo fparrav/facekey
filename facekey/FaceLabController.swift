@@ -1,6 +1,6 @@
 //
 //  FaceLabController.swift
-//  glance
+//  facekey
 //
 //  Orchestrates the Face Lab debug tab. Deliberately never touches LockMonitor, KeystrokeInjector, or
 //  SecureCredentialManager for *unlocking* — that's handled separately by FaceUnlockCoordinator (off by default).

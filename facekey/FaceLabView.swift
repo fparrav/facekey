@@ -1,6 +1,6 @@
 //
 //  FaceLabView.swift
-//  glance
+//  facekey
 //
 //  Debug console: camera preview, face detection + alignment, enrollment,
 //  and recognition — all in one tab, independent of the credential/unlock

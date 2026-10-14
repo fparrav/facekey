@@ -1,6 +1,6 @@
 //
 //  SessionLockButton.swift
-//  glance
+//  facekey
 //
 //  The header's trailing pill: shows whether the Settings session is
 //  unlocked, and doubles as its on/off switch — unlocks while locked, locks

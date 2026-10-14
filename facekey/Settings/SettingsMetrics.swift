@@ -1,6 +1,6 @@
 //
 //  SettingsMetrics.swift
-//  glance
+//  facekey
 //
 //  Design tokens for the Settings window — one file to tune sizing/color
 //  in rather than scattered literals.

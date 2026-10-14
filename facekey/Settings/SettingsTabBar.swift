@@ -1,6 +1,6 @@
 //
 //  SettingsTabBar.swift
-//  glance
+//  facekey
 //
 //  Floating pill tab bar pinned to the bottom of the Settings window. The
 //  selected tab sits on its own highlight pill, which slides between tabs

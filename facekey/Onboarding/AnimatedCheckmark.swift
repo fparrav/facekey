@@ -1,6 +1,6 @@
 //
 //  AnimatedCheckmark.swift
-//  glance
+//  facekey
 //
 //  Draws itself on with a trim animation; scales to whatever frame the caller gives it.
 //

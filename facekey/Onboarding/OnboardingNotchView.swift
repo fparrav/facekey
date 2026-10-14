@@ -1,6 +1,6 @@
 //
 //  OnboardingNotchView.swift
-//  glance
+//  facekey
 //
 //  Routes `controller.step` to its screen and applies the scroll-with-blur transition
 //  between them: Next travels upward, Back is the mirror, travelling downward.

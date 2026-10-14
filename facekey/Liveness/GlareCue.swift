@@ -1,6 +1,6 @@
 //
 //  GlareCue.swift
-//  glance
+//  facekey
 //
 //  Pixel-domain half of the gloss/glare cue (see `LivenessCues.glossGlare`);
 //  no Vision/CoreImage import, so it stays usable from `tools/liveness_selftest.swift`.

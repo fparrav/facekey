@@ -1,6 +1,6 @@
 //
 //  NotchOverlayView.swift
-//  glance
+//  facekey
 //
 //  SwiftUI root hosted inside the fixed-size NotchWindow — only content moves/resizes.
 //  Two silhouettes per screen (see NotchPanelStyle): `.notch` sits on the physical

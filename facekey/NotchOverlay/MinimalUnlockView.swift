@@ -1,6 +1,6 @@
 //
 //  MinimalUnlockView.swift
-//  glance
+//  facekey
 //
 //  Layout: [ lock ][ gap ][ video ]. For `.notch` the gap is the physical
 //  cutout (nothing may be drawn there); for `.pill` it's just negative space.

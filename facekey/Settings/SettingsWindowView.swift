@@ -1,6 +1,6 @@
 //
 //  SettingsWindowView.swift
-//  glance
+//  facekey
 //
 //  Root layout: one `.sidebar` material behind the whole window, the
 //  selected page scrolling beneath a transparent header (traffic lights and

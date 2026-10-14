@@ -1,6 +1,6 @@
 //
 //  LockMonitor.swift
-//  glance
+//  facekey
 //
 //  Detects macOS lock/unlock state for the CGEvent injection POC.
 //

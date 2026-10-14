@@ -1,6 +1,6 @@
 //
 //  LivenessAnalyzer.swift
-//  glance
+//  facekey
 //
 //  Rolling-window driver for the liveness cues. Takes `LivenessFrame`, not
 //  `FaceRecognitionResult`, keeping this file's dependency graph shallow enough

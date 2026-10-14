@@ -1,6 +1,6 @@
 //
 //  FaceUnlockCoordinator.swift
-//  glance
+//  facekey
 //
 //  Connects face recognition to the actual unlock path. Off by default; user opts in after validating accuracy in Face Lab.
 //

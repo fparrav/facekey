@@ -1,6 +1,6 @@
 //
 //  ProgressiveHeaderBlur.swift
-//  glance
+//  facekey
 //
 //  A backdrop blur behind the header whose strength fades from strongest at
 //  the window's top edge to none by the bottom of the blur zone, so

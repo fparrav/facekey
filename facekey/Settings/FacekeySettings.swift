@@ -1,6 +1,6 @@
 //
 //  FacekeySettings.swift
-//  glance
+//  facekey
 //
 //  Backed directly by `UserDefaults.standard` — each property's `didSet`
 //  writes through immediately, so there's no explicit "save" step.
@@ -234,7 +234,7 @@ final class FacekeySettings {
     var hapticFeedbackEnabled: Bool {
         didSet { defaults.set(hapticFeedbackEnabled, forKey: Key.hapticFeedbackEnabled) }
     }
-    /// Hiding the status item does not quit Glance; a relaunch still routes
+    /// Hiding the status item does not quit Facekey; a relaunch still routes
     /// through `AppDelegate.applicationShouldHandleReopen` to show Settings.
     var showsInMenuBar: Bool {
         didSet {

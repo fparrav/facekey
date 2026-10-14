@@ -1,6 +1,6 @@
 //
 //  glare_cue_probe.swift
-//  glance (tools)
+//  facekey (tools)
 //
 //  Standalone calibration probe for the gloss/glare cue
 //  (`GlareCue.swift` / `GlareCueExtractor.swift`): loads image files from
@@ -14,12 +14,12 @@
 //  Build and run:
 //
 //      swiftc -O -o /tmp/glare_cue_probe \
-//        glance/Liveness/GlareCue.swift \
-//        glance/Liveness/GlareCueExtractor.swift \
-//        glance/Liveness/LivenessCues.swift \
-//        glance/Liveness/LivenessScoring.swift \
-//        glance/Liveness/LandmarkGeometry.swift \
-//        glance/Liveness/GeometryLiveness.swift \
+//        facekey/Liveness/GlareCue.swift \
+//        facekey/Liveness/GlareCueExtractor.swift \
+//        facekey/Liveness/LivenessCues.swift \
+//        facekey/Liveness/LivenessScoring.swift \
+//        facekey/Liveness/LandmarkGeometry.swift \
+//        facekey/Liveness/GeometryLiveness.swift \
 //        tools/glare_cue_probe.swift \
 //      && /tmp/glare_cue_probe path/to/live1.jpg path/to/screen1.jpg ...
 //

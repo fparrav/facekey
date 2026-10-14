@@ -1,6 +1,6 @@
 //
 //  FacekeyTheme.swift
-//  glance
+//  facekey
 //
 //  Color and type tokens, kept here so OnboardingStepViews/OnboardingControls don't
 //  repeat the same hex literals everywhere.

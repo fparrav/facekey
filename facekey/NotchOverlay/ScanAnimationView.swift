@@ -1,6 +1,6 @@
 //
 //  ScanAnimationView.swift
-//  glance
+//  facekey
 //
 //  Plays a scan animation once and holds its final frame — deliberately not
 //  looping, since each video ends on a meaningful resolved state.
@@ -92,7 +92,7 @@ final class ScanAnimationHostView: NSView {
         }
 
         guard let url = Bundle.main.url(forResource: resource, withExtension: "mp4") else {
-            assertionFailure("\(resource).mp4 missing from bundle — check glance/Resources/")
+            assertionFailure("\(resource).mp4 missing from bundle — check facekey/Resources/")
             return
         }
 

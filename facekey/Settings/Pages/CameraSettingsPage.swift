@@ -1,6 +1,6 @@
 //
 //  CameraSettingsPage.swift
-//  glance
+//  facekey
 //
 
 import SwiftUI

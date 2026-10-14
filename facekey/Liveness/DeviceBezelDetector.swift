@@ -1,6 +1,6 @@
 //
 //  DeviceBezelDetector.swift
-//  glance
+//  facekey
 //
 //  Looks for a device bezel (phone/tablet) around the face via
 //  VNDetectRectanglesRequest; only ever produces positive evidence of

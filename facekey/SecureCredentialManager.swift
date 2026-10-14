@@ -1,6 +1,6 @@
 //
 //  SecureCredentialManager.swift
-//  glance
+//  facekey
 //
 //  Two-tier storage on KeychainManager: a Touch-ID-gated session key (unwrapped once per launch) wraps an ungated encrypted
 //  password blob, safe to read anytime — including the lock screen, where no app UI exists to host a Touch ID prompt.

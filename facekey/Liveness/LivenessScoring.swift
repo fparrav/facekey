@@ -1,6 +1,6 @@
 //
 //  LivenessScoring.swift
-//  glance
+//  facekey
 //
 //  `LivenessFrame` plus the two cross-frame confirm cues that read it directly:
 //  `poseDepthConsistency` and `blinkDynamics`. No `import Vision`/AppKit, so it

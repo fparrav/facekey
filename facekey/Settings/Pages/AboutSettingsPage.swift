@@ -1,6 +1,6 @@
 //
 //  AboutSettingsPage.swift
-//  glance
+//  facekey
 //
 
 import SwiftUI
@@ -35,7 +35,7 @@ struct AboutSettingsPage: View {
                 .contentShape(Rectangle())
                 .onTapGesture(perform: handleIconTap)
 
-            Text("Glance")
+            Text("Facekey")
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(SettingsMetrics.textPrimary)
 

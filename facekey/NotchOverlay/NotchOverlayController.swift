@@ -1,6 +1,6 @@
 //
 //  NotchOverlayController.swift
-//  glance
+//  facekey
 //
 //  The only file other code should touch to show the notch overlay.
 //

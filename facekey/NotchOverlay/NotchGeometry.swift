@@ -1,6 +1,6 @@
 //
 //  NotchGeometry.swift
-//  glance
+//  facekey
 //
 //  Pure geometry — no AppKit window knowledge.
 //

@@ -1,6 +1,6 @@
 //
 //  ArcFaceEmbedder.swift
-//  glance
+//  facekey
 //
 //  Requires a canonically-aligned 112x112 input (see FaceAligner) — unlike VisionFeaturePrintEmbedder, accuracy depends on alignment.
 //
@@ -19,7 +19,7 @@ enum ArcFaceEmbedderError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .modelNotFound:
-            return "ArcFace.mlpackage/mlmodelc not found in the app bundle. Run tools/convert_arcface.py, then add glance/Models/ArcFace.mlpackage to the Xcode project."
+            return "ArcFace.mlpackage/mlmodelc not found in the app bundle. Run tools/convert_arcface.py, then add facekey/Models/ArcFace.mlpackage to the Xcode project."
         case .modelLoadFailed(let detail):
             return "Failed to load the ArcFace Core ML model: \(detail)"
         case .pixelBufferCreationFailed:

@@ -1,6 +1,6 @@
 //
 //  facekeyApp.swift
-//  glance
+//  facekey
 //
 //  Created by Jonathan Zhou on 2026-07-21.
 //
@@ -26,7 +26,7 @@ struct facekeyApp: App {
         DispatchQueue.main.async {
             delegate.bindOpenWindowAction { open(id: "settings") }
         }
-        return Window("Glance Settings", id: "settings") {
+        return Window("Facekey Settings", id: "settings") {
             SettingsWindowView(environment: appDelegate.environment)
                 .onAppear {
                     delegate.bindOpenWindowAction { open(id: "settings") }

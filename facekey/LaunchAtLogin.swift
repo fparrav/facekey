@@ -1,6 +1,6 @@
 //
 //  LaunchAtLogin.swift
-//  glance
+//  facekey
 //
 //  Thin wrapper around SMAppService.mainApp. Not persisted via FacekeySettings — SMAppService's own status is already the source of truth.
 //

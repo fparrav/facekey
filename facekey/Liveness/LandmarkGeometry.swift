@@ -1,6 +1,6 @@
 //
 //  LandmarkGeometry.swift
-//  glance
+//  facekey
 //
 //  Shared landmark math used by `FaceAligner` and the liveness analyzer —
 //  moved out of `FaceAligner` so the two call sites can't drift apart.
