@@ -210,13 +210,11 @@ struct GeneralSettingsPage: View {
             VStack(alignment: .leading, spacing: 8) {
                 SettingsSectionTitle(text: "Permissions")
                 SettingsGroup {
-                    SettingsActionRowContent(
+                    permissionRow(
                         title: "Accessibility",
-                        subtitle: accessibilityGranted
-                            ? "Granted"
-                            : "Not granted — Facekey recognizes you but cannot type your password. If it was granted before, remove and re-add Facekey in System Settings.",
-                        buttonTitle: hasPromptedAccessibility ? "Open Settings" : "Grant",
-                        isEnabled: !accessibilityGranted
+                        isGranted: accessibilityGranted,
+                        pendingSubtitle: "Facekey recognizes you but cannot type your password. If it was granted before, remove and re-add Facekey in System Settings.",
+                        buttonTitle: hasPromptedAccessibility ? "Open Settings" : "Grant"
                     ) {
                         if !hasPromptedAccessibility {
                             hasPromptedAccessibility = true
@@ -227,11 +225,11 @@ struct GeneralSettingsPage: View {
                         refreshPermissions()
                     }
                     SettingsGroupDivider()
-                    SettingsActionRowContent(
+                    permissionRow(
                         title: "Camera",
-                        subtitle: cameraSubtitle,
-                        buttonTitle: cameraState == .notDetermined ? "Grant" : "Open Settings",
-                        isEnabled: cameraState != .granted
+                        isGranted: cameraState == .granted,
+                        pendingSubtitle: cameraState == .denied ? "Denied — enable it in System Settings." : "Not requested yet.",
+                        buttonTitle: cameraState == .notDetermined ? "Grant" : "Open Settings"
                     ) {
                         Task {
                             await SystemPermissions.requestCamera()
@@ -260,12 +258,31 @@ struct GeneralSettingsPage: View {
         cameraState = SystemPermissions.cameraState
     }
 
-    /// Row subtitle for the Camera permission per its current state.
-    private var cameraSubtitle: String {
-        switch cameraState {
-        case .granted: return "Granted"
-        case .notDetermined: return "Not requested yet"
-        case .denied: return "Denied — enable it in System Settings"
+    /// One permission row. Granted shows a status mark instead of a disabled
+    /// button (which was nearly invisible); both states share one trailing
+    /// width so the controls line up across rows.
+    private func permissionRow(
+        title: String,
+        isGranted: Bool,
+        pendingSubtitle: String,
+        buttonTitle: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        SettingsRowContent(title: title, subtitle: isGranted ? nil : pendingSubtitle, subtitleMaxWidth: 230) {
+            Group {
+                if isGranted {
+                    HStack(spacing: 5) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(FacekeyTheme.statusGranted)
+                        Text("Granted")
+                            .foregroundStyle(SettingsMetrics.textSecondary)
+                    }
+                    .font(.system(size: 12, weight: .semibold))
+                } else {
+                    SettingsPrimaryButton(title: buttonTitle, compact: true, action: action)
+                }
+            }
+            .frame(width: 120, alignment: .trailing)
         }
     }
 
