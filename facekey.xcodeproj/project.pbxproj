@@ -11,26 +11,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		601C493C300FFC8400D3DE9D /* glance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glance.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		601C493C300FFC8400D3DE9D /* facekey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = facekey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B945412B3F4425C93A56263E /* Exceptions for "glance" folder in "glance" target */ = {
+		B945412B3F4425C93A56263E /* Exceptions for "facekey" folder in "facekey" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 601C493B300FFC8400D3DE9D /* glance */;
+			target = 601C493B300FFC8400D3DE9D /* facekey */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		601C493E300FFC8400D3DE9D /* glance */ = {
+		601C493E300FFC8400D3DE9D /* facekey */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B945412B3F4425C93A56263E /* Exceptions for "glance" folder in "glance" target */,
+				B945412B3F4425C93A56263E /* Exceptions for "facekey" folder in "facekey" target */,
 			);
-			path = glance;
+			path = facekey;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -50,7 +50,7 @@
 		601C4933300FFC8400D3DE9D = {
 			isa = PBXGroup;
 			children = (
-				601C493E300FFC8400D3DE9D /* glance */,
+				601C493E300FFC8400D3DE9D /* facekey */,
 				601C493D300FFC8400D3DE9D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,7 +58,7 @@
 		601C493D300FFC8400D3DE9D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				601C493C300FFC8400D3DE9D /* glance.app */,
+				601C493C300FFC8400D3DE9D /* facekey.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,9 +66,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		601C493B300FFC8400D3DE9D /* glance */ = {
+		601C493B300FFC8400D3DE9D /* facekey */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 601C4947300FFC8500D3DE9D /* Build configuration list for PBXNativeTarget "glance" */;
+			buildConfigurationList = 601C4947300FFC8500D3DE9D /* Build configuration list for PBXNativeTarget "facekey" */;
 			buildPhases = (
 				601C4938300FFC8400D3DE9D /* Sources */,
 				601C4939300FFC8400D3DE9D /* Frameworks */,
@@ -79,14 +79,14 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				601C493E300FFC8400D3DE9D /* glance */,
+				601C493E300FFC8400D3DE9D /* facekey */,
 			);
-			name = glance;
+			name = facekey;
 			packageProductDependencies = (
 				020486DA199A87C9F636359E /* Sparkle */,
 			);
-			productName = glance;
-			productReference = 601C493C300FFC8400D3DE9D /* glance.app */;
+			productName = facekey;
+			productReference = 601C493C300FFC8400D3DE9D /* facekey.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -104,7 +104,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 601C4937300FFC8400D3DE9D /* Build configuration list for PBXProject "glance" */;
+			buildConfigurationList = 601C4937300FFC8400D3DE9D /* Build configuration list for PBXProject "facekey" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -121,7 +121,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				601C493B300FFC8400D3DE9D /* glance */,
+				601C493B300FFC8400D3DE9D /* facekey */,
 			);
 		};
 /* End PBXProject section */
@@ -272,7 +272,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = GlanceIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = glance/glance.entitlements;
+				CODE_SIGN_ENTITLEMENTS = facekey/facekey.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 4;
@@ -282,7 +282,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = glance/Info.plist;
+				INFOPLIST_FILE = facekey/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "glance uses the camera on-device to recognize your face for unlocking your Mac, and to let you enroll and preview your face in Settings.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -308,7 +308,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = GlanceIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = glance/glance.entitlements;
+				CODE_SIGN_ENTITLEMENTS = facekey/facekey.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 4;
@@ -318,7 +318,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = glance/Info.plist;
+				INFOPLIST_FILE = facekey/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "glance uses the camera on-device to recognize your face for unlocking your Mac, and to let you enroll and preview your face in Settings.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -342,7 +342,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		601C4937300FFC8400D3DE9D /* Build configuration list for PBXProject "glance" */ = {
+		601C4937300FFC8400D3DE9D /* Build configuration list for PBXProject "facekey" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				601C4945300FFC8500D3DE9D /* Debug */,
@@ -351,7 +351,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		601C4947300FFC8500D3DE9D /* Build configuration list for PBXNativeTarget "glance" */ = {
+		601C4947300FFC8500D3DE9D /* Build configuration list for PBXNativeTarget "facekey" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				601C4948300FFC8500D3DE9D /* Debug */,
