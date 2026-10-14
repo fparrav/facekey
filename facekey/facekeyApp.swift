@@ -72,6 +72,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     /// Accessory before the Dock binds this launch to a persistent tile — starting `.regular` made the pinned icon bounce and
     /// get replaced by a Recents tile the moment the Dock icon was later hidden/shown.
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // Before anything touches the keychain or the face store, carry over data from the former "glance" name.
+        LegacyMigration.runIfNeeded()
         NSApp.setActivationPolicy(.accessory)
     }
 

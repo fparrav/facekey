@@ -37,7 +37,7 @@ enum KeychainManager {
     nonisolated static let service = "com.fparrav.facekey"
 
     /// Attributes-only existence check — never prompts, even for access-controlled items.
-    nonisolated static func exists(account: String) -> Bool {
+    nonisolated static func exists(account: String, service: String = service) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -50,7 +50,7 @@ enum KeychainManager {
     }
 
     /// Pass an `LAContext` to authorize a read on an access-controlled item — the OS presents the prompt during this call.
-    nonisolated static func read(account: String, context: LAContext? = nil) throws -> Data {
+    nonisolated static func read(account: String, service: String = service, context: LAContext? = nil) throws -> Data {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -80,7 +80,7 @@ enum KeychainManager {
     /// avoids the delete/add gap that can race with a second submit and produce
     /// `errSecDuplicateItem`. Existing access-control attributes are preserved;
     /// this method's access-control argument applies when adding a new item.
-    nonisolated static func save(account: String, data: Data, accessControl: SecAccessControl? = nil) throws {
+    nonisolated static func save(account: String, service: String = service, data: Data, accessControl: SecAccessControl? = nil) throws {
         let itemQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
