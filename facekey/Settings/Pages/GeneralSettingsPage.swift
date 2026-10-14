@@ -19,6 +19,13 @@ struct GeneralSettingsPage: View {
     /// Refreshed when the app regains focus, so granting the permission in
     /// System Settings clears the prompt below without a relaunch.
     @State private var inputMonitoring = SpaceKeyMonitor.inputMonitoringAccess
+    /// Re-read on focus regain and on a 1 s poll; feed the Permissions block
+    /// in `unlockedState`.
+    @State private var accessibilityGranted = SystemPermissions.accessibilityGranted
+    @State private var cameraState = SystemPermissions.cameraState
+    /// Flips once the system Accessibility prompt has been shown, so later
+    /// taps deep-link into System Settings instead of re-prompting.
+    @State private var hasPromptedAccessibility = false
     @State private var isUnlocking = false
     @State private var sessionError: String?
 
@@ -55,6 +62,14 @@ struct GeneralSettingsPage: View {
         .onChange(of: NotchOverlayController.shared.phase) { _, newPhase in
             guard newPhase == .closed else { return }
             pocController.refreshCredentialStatus()
+        }
+        // The tccd database flips without an observable notification, so poll
+        // while the page is visible; the task cancels itself on disappear.
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                refreshPermissions()
+            }
         }
     }
 
@@ -109,6 +124,7 @@ struct GeneralSettingsPage: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
                 inputMonitoring = SpaceKeyMonitor.inputMonitoringAccess
+                refreshPermissions()
             }
             .onChange(of: settings.unlockTriggers) { oldValue, newValue in
                 // Only prompt on the transition into selecting "On space".
@@ -188,6 +204,42 @@ struct GeneralSettingsPage: View {
                     )
                 }
             }
+
+            // System permissions the unlock flow depends on: Accessibility
+            // lets Facekey type the password, Camera lets it see your face.
+            VStack(alignment: .leading, spacing: 8) {
+                SettingsSectionTitle(text: "Permissions")
+                SettingsGroup {
+                    SettingsActionRowContent(
+                        title: "Accessibility",
+                        subtitle: accessibilityGranted
+                            ? "Granted"
+                            : "Not granted — Facekey recognizes you but cannot type your password. If it was granted before, remove and re-add Facekey in System Settings.",
+                        buttonTitle: hasPromptedAccessibility ? "Open Settings" : "Grant",
+                        isEnabled: !accessibilityGranted
+                    ) {
+                        if !hasPromptedAccessibility {
+                            hasPromptedAccessibility = true
+                            KeystrokeInjector.promptForAccessibility()
+                        } else {
+                            SystemPermissions.openPane("Privacy_Accessibility")
+                        }
+                        refreshPermissions()
+                    }
+                    SettingsGroupDivider()
+                    SettingsActionRowContent(
+                        title: "Camera",
+                        subtitle: cameraSubtitle,
+                        buttonTitle: cameraState == .notDetermined ? "Grant" : "Open Settings",
+                        isEnabled: cameraState != .granted
+                    ) {
+                        Task {
+                            await SystemPermissions.requestCamera()
+                            refreshPermissions()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -198,6 +250,22 @@ struct GeneralSettingsPage: View {
             await pocController.unlockSession()
             sessionError = pocController.sessionError
             isUnlocking = false
+        }
+    }
+
+    /// Re-reads the system permission states; the Permissions block renders
+    /// from these two values.
+    private func refreshPermissions() {
+        accessibilityGranted = SystemPermissions.accessibilityGranted
+        cameraState = SystemPermissions.cameraState
+    }
+
+    /// Row subtitle for the Camera permission per its current state.
+    private var cameraSubtitle: String {
+        switch cameraState {
+        case .granted: return "Granted"
+        case .notDetermined: return "Not requested yet"
+        case .denied: return "Denied — enable it in System Settings"
         }
     }
 
