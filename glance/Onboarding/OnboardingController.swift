@@ -218,6 +218,14 @@ final class OnboardingController {
 
     private let enrollmentTarget: EnrollmentTarget
 
+    /// Summary line for the enrollment-complete step, when this run committed samples
+    /// to an existing identity; `nil` for new identities and the post-update notice.
+    var completionDetail: String? {
+        guard !isPostUpdateNotice, enrollmentTarget.identityID != nil, let result = lastCommitResult else { return nil }
+        if result.replacedExisting { return "Samples replaced" }
+        return "Added \(result.added) \(result.added == 1 ? "sample" : "samples") · \(result.total) total"
+    }
+
     enum NavDirection { case forward, backward }
     /// Which way the step just changed — read by OnboardingNotchView to
     /// pick the scroll direction for the blur transition.
@@ -247,7 +255,9 @@ final class OnboardingController {
     /// the guided pose-capture plus naming step and saves directly once done.
     ///
     /// The Your Face page is still single-identity, so this keeps targeting
-    /// `identities.first`: "redo" replaces it in place, or enrolls someone new.
+    /// `identities.first`: "Add Captures" adds samples to that identity (pruned
+    /// to the retention cap, or replaced if the embedding model changed), or
+    /// enrolls someone new.
     static func startEnrollmentOnly() {
         Task { @MainActor in
             guard await unlockForEnrollment(reason: "Authenticate to re-enroll your face") else { return }
@@ -271,8 +281,9 @@ final class OnboardingController {
         }
     }
 
-    /// Entry point used by Face Lab's per-identity "Recapture" — replaces that identity's
-    /// samples wholesale, keeping its id and enrollment date.
+    /// Entry point used by Face Lab's per-identity "Add Captures" — adds a fresh scan to the
+    /// identity's samples (pruned to the retention cap) or replaces them if the embedding
+    /// model changed, keeping its id and enrollment date.
     static func startRecapture(of identity: FaceIdentity) {
         Task { @MainActor in
             guard await unlockForEnrollment(reason: "Authenticate to re-enroll this face") else { return }
@@ -435,6 +446,7 @@ final class OnboardingController {
     /// Held in memory (not persisted) until the identity has a name; in first-run setup
     /// saving additionally requires the session `finish(password:)` unlocks.
     private var collectedSamples: [CollectedSample] = []
+    private(set) var lastCommitResult: EnrollmentCommitResult? = nil
     private var matchStreak = 0
     private var isProcessingFrame = false
     private var poseStartedAt: ContinuousClock.Instant = .now
@@ -1041,7 +1053,8 @@ final class OnboardingController {
         let samples = collectedSamples.map {
             FaceSample(embedding: $0.embedding, pose: $0.pose.name, capturedAt: $0.capturedAt, quality: $0.quality)
         }
-        try store.commitEnrollment(
+        lastCommitResult = nil
+        lastCommitResult = try store.commitEnrollment(
             replacing: enrollmentTarget.identityID,
             name: name,
             samples: samples,

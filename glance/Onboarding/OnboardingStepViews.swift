@@ -369,8 +369,8 @@ private struct EnrollmentTooFarChevron: View {
 
 // MARK: - 9. Name
 
-/// Asks who was just captured — for a recapture, pre-filled with the existing name so
-/// this doubles as rename.
+/// Asks who was just captured — when adding captures to an existing identity,
+/// pre-filled with the existing name so this doubles as rename.
 struct NameStepView: View {
     @Bindable var controller: OnboardingController
 
@@ -476,15 +476,25 @@ struct PasswordStepView: View {
 // MARK: - 11. Complete
 
 struct CompleteStepView: View {
+    let detail: String?
+
     var body: some View {
-        HStack(spacing: 12) {
-            Text("You're all set")
-                .font(GlanceTheme.Font.title)
-                .foregroundStyle(GlanceTheme.textPrimary)
-            Spacer(minLength: 4)
-            AnimatedCheckmark(color: .white, lineWidth: 5)
-                .frame(width: 20, height: 15)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 12) {
+                Text("You're all set")
+                    .font(GlanceTheme.Font.title)
+                    .foregroundStyle(GlanceTheme.textPrimary)
+                Spacer(minLength: 4)
+                AnimatedCheckmark(color: .white, lineWidth: 5)
+                    .frame(width: 20, height: 15)
+            }
+            if let detail {
+                Text(detail)
+                    .font(GlanceTheme.Font.rowTitle)
+                    .foregroundStyle(GlanceTheme.textSecondary)
+            }
         }
+        .accessibilityElement(children: .combine)
         .onboardingContentHorizontalPadding()
         .padding(.top, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)

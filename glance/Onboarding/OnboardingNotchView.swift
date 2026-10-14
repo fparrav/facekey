@@ -31,7 +31,7 @@ struct OnboardingNotchView: View {
             case .password:
                 PasswordStepView(controller: controller)
             case .complete:
-                CompleteStepView()
+                CompleteStepView(detail: controller.completionDetail)
             }
         }
         .id(controller.step)
