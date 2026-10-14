@@ -108,9 +108,13 @@ struct SecurityNoticeStepView: View {
                 .padding(.top, 25)
                 .padding(.leading, 4)
 
+            // Capped at two lines (shrinking if needed): at full size the product name pushes this to three lines
+            // and the buttons out of the fixed-height panel.
             Text("Facekey is not as secure as Apple's FaceID or TouchID.")
                 .font(FacekeyTheme.Font.title)
                 .foregroundStyle(FacekeyTheme.textPrimary)
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.leading, 4)
 
