@@ -310,16 +310,16 @@ final class FacekeySettings {
         isFaceUnlockEnabledBuiltInOnly = defaults.object(forKey: Key.isFaceUnlockEnabledBuiltInOnly) as? Bool ?? true
         isFaceUnlockEnabledBuiltInAndExternal = defaults.object(forKey: Key.isFaceUnlockEnabledBuiltInAndExternal) as? Bool ?? true
         isFaceUnlockEnabledExternalOnly = defaults.object(forKey: Key.isFaceUnlockEnabledExternalOnly) as? Bool ?? true
-        // Matches `MatchConfidenceLevel.standard` — see RecognitionSettingsPage.swift.
-        matchThreshold = defaults.object(forKey: Key.matchThreshold) as? Float ?? 0.66
+        // Matches the "Default" level (`MatchConfidenceLevel.standard`) — see RecognitionSettingsPage.swift.
+        matchThreshold = defaults.object(forKey: Key.matchThreshold) as? Float ?? 0.63
         livenessChecksEnabled = defaults.object(forKey: Key.livenessChecksEnabled) as? Bool ?? true
         // Light by default — Heavy requires a blink/pose/depth signal a
         // still, non-blinking user may never produce, while Light still
         // catches the main attack (a photo on a phone screen).
         livenessMode = defaults.string(forKey: Key.livenessMode)
             .flatMap(LivenessMode.init(rawValue:)) ?? .light
-        // Matches `DetectionDistanceLevel.standard` — see RecognitionSettingsPage.swift.
-        minimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidth) as? Float ?? 0.21
+        // Matches the "Default" level (`DetectionDistanceLevel.standard`) — see RecognitionSettingsPage.swift.
+        minimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidth) as? Float ?? 0.19
 
         // Resolve the stored style first, `.none` included, then split it
         // into the pick + the on/off flag the UI now works in.
@@ -352,7 +352,7 @@ final class FacekeySettings {
         retryOnHover = defaults.object(forKey: Key.retryOnHover) as? Bool ?? true
         faceDetectionSeconds = (defaults.object(forKey: Key.faceDetectionSeconds) as? Int)
             .map { min(max($0, Self.faceDetectionRange.lowerBound), Self.faceDetectionRange.upperBound) }
-            ?? 5
+            ?? 8
         autoRetryOnce = defaults.object(forKey: Key.autoRetryOnce) as? Bool ?? false
         hapticFeedbackEnabled = defaults.object(forKey: Key.hapticFeedbackEnabled) as? Bool ?? true
         // Keep the icon available for existing and new installs unless the
