@@ -18,6 +18,15 @@ struct FaceSample: Codable, Equatable {
     let quality: Float?
 }
 
+/// Outcome of `commitEnrollment(replacing:name:samples:embedder:)` — the committed identity plus what the merge
+/// did to its samples.
+struct EnrollmentCommitResult {
+    let identity: FaceIdentity
+    let added: Int
+    let total: Int
+    let replacedExisting: Bool
+}
+
 extension FaceSample {
     /// Lives here rather than in a view so Face Lab's debug list and the settings tick strip can't drift apart.
     enum QualityTier {
@@ -158,8 +167,9 @@ final class FaceEnrollmentStore {
         isLocked = false
     }
 
-    /// Adds one captured sample to `name`'s identity (creating it if new). Existing samples from a different embedder
-    /// are discarded first, since mixing them would corrupt the template.
+    /// Adds one captured sample to `name`'s identity (creating it if new), respecting the per-identity sample cap.
+    /// Existing samples from a different embedder are discarded first, since mixing them would corrupt the template.
+    /// The write is atomic: in-memory state changes only if the encrypted save succeeds.
     @discardableResult
     func addSample(name: String, embedding: [Float], embedder: FaceEmbedder, pose: String? = nil, quality: Float? = nil) throws -> Bool {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -167,16 +177,21 @@ final class FaceEnrollmentStore {
 
         let sample = FaceSample(embedding: embedding, pose: pose, capturedAt: Date(), quality: quality)
 
-        if let index = identities.firstIndex(where: { $0.name == trimmed }) {
-            if identities[index].modelIdentifier != embedder.modelIdentifier {
-                identities[index].samples = [sample]
+        var updated = identities
+        if let index = updated.firstIndex(where: { $0.name == trimmed }) {
+            if updated[index].modelIdentifier != embedder.modelIdentifier {
+                updated[index].samples = [sample]
             } else {
-                identities[index].samples.append(sample)
+                updated[index].samples = Self.mergedAndPruned(
+                    existing: updated[index].samples,
+                    adding: [sample],
+                    cap: Self.maxSamplesPerIdentity
+                ).samples
             }
-            identities[index].modelIdentifier = embedder.modelIdentifier
-            identities[index].embeddingDimension = embedder.embeddingDimension
+            updated[index].modelIdentifier = embedder.modelIdentifier
+            updated[index].embeddingDimension = embedder.embeddingDimension
         } else {
-            identities.append(FaceIdentity(
+            updated.append(FaceIdentity(
                 id: UUID(),
                 name: trimmed,
                 samples: [sample],
@@ -185,28 +200,50 @@ final class FaceEnrollmentStore {
                 createdAt: Date()
             ))
         }
-        try persist()
+        // Same guarantees as `persist()`: never write over a store we couldn't read, and only assign once the save
+        // succeeds, so a failed write leaves the in-memory state untouched.
+        guard hasLoadedSuccessfully else {
+            throw FaceEnrollmentStoreError.storeUnreadable
+        }
+        try SecureFaceStore.save(updated)
+        identities = updated
         return true
     }
 
-    /// Commits a whole guided enrollment in a single write. When `existingID` names a known identity, its samples are
-    /// replaced wholesale (a recapture is a redo, not an append) and it can be renamed since matching is by id.
+    /// Commits a whole guided enrollment in a single write. When `existingID` names a known identity, its samples
+    /// receive the new ones appended and pruned to the per-identity cap — unless the identity's embedding model
+    /// differs, in which case they are replaced — and it can be renamed since matching is by id.
     @discardableResult
     func commitEnrollment(
         replacing existingID: UUID?,
         name: String,
         samples: [FaceSample],
         embedder: FaceEmbedder
-    ) throws -> FaceIdentity? {
+    ) throws -> EnrollmentCommitResult? {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, !samples.isEmpty else { return nil }
 
         // Local copy, only assigned once the write succeeds — otherwise a locked session would show an unsaved save.
         var updated = identities
         let committed: FaceIdentity
+        var added = samples.count
+        var replacedExisting = false
         if let existingID, let index = updated.firstIndex(where: { $0.id == existingID }) {
             updated[index].name = trimmed
-            updated[index].samples = samples
+            // Checked before `modelIdentifier` below is refreshed — afterwards the identity would never look stale.
+            if updated[index].isStale(comparedTo: embedder) {
+                updated[index].samples = samples
+                added = samples.count
+                replacedExisting = true
+            } else {
+                let merged = Self.mergedAndPruned(
+                    existing: updated[index].samples,
+                    adding: samples,
+                    cap: Self.maxSamplesPerIdentity
+                )
+                updated[index].samples = merged.samples
+                added = merged.addedRetained
+            }
             updated[index].modelIdentifier = embedder.modelIdentifier
             updated[index].embeddingDimension = embedder.embeddingDimension
             committed = updated[index]
@@ -220,11 +257,18 @@ final class FaceEnrollmentStore {
                 embeddingDimension: embedder.embeddingDimension,
                 createdAt: Date()
             )
+            added = samples.count
+            replacedExisting = false
             updated.append(committed)
         }
         try SecureFaceStore.save(updated)
         identities = updated
-        return committed
+        return EnrollmentCommitResult(
+            identity: committed,
+            added: added,
+            total: committed.samples.count,
+            replacedExisting: replacedExisting
+        )
     }
 
     /// Case- and diacritic-insensitive, unlike `addSample`'s exact match: "alex"/"Alex"/"Álex" are one person to the
@@ -264,6 +308,71 @@ final class FaceEnrollmentStore {
         SecureFaceStore.deleteAll()
         loadFailure = nil
         hasLoadedSuccessfully = true
+    }
+
+    /// Sample cap per identity: a full guided enrollment stays well below it, but untagged Face Lab captures would
+    /// otherwise grow an identity's template without bound.
+    private static let maxSamplesPerIdentity = 36
+
+    /// Merges `newSamples` into `existing` and prunes the result to at most `cap` entries. When over the cap,
+    /// removal runs in this order: lowest quality score first (ties: oldest capture, then earliest position), and
+    /// unrated samples only once the scored ones are exhausted (oldest first) — a NaN quality counts as unrated,
+    /// since it would otherwise break the strict sort order. Survivors keep their original relative order, and
+    /// `addedRetained` counts the newcomers that survived — FaceSample has no id, so entries are tagged by position.
+    private static func mergedAndPruned(
+        existing: [FaceSample],
+        adding newSamples: [FaceSample],
+        cap: Int
+    ) -> (samples: [FaceSample], addedRetained: Int) {
+        precondition(cap >= 0)
+        let combined = existing + newSamples
+        guard combined.count > cap else {
+            return (combined, newSamples.count)
+        }
+
+        struct Entry {
+            let sample: FaceSample
+            let isNew: Bool
+            let position: Int
+        }
+        let entries = combined.enumerated().map { index, sample in
+            Entry(sample: sample, isNew: index >= existing.count, position: index)
+        }
+
+        // A NaN score isn't usable — `Float` compares it as unequal-but-not-less, which would break the strict sort
+        // order below — so it counts as unrated.
+        func rating(_ s: FaceSample) -> Float? {
+            guard let quality = s.quality, !quality.isNaN else { return nil }
+            return quality
+        }
+
+        var removals = Set<Int>()
+        func remove(_ candidates: [Entry]) {
+            for entry in candidates where removals.count < combined.count - cap {
+                removals.insert(entry.position)
+            }
+        }
+        remove(entries.filter { rating($0.sample) != nil }.sorted { lhs, rhs in
+            // The filter above guarantees both ratings exist, so the unwraps can't trap.
+            let lhsRating = rating(lhs.sample)!
+            let rhsRating = rating(rhs.sample)!
+            if lhsRating != rhsRating {
+                return lhsRating < rhsRating
+            }
+            if lhs.sample.capturedAt != rhs.sample.capturedAt {
+                return lhs.sample.capturedAt < rhs.sample.capturedAt
+            }
+            return lhs.position < rhs.position
+        })
+        remove(entries.filter { rating($0.sample) == nil }.sorted {
+            if $0.sample.capturedAt != $1.sample.capturedAt {
+                return $0.sample.capturedAt < $1.sample.capturedAt
+            }
+            return $0.position < $1.position
+        })
+
+        let survivors = entries.filter { !removals.contains($0.position) }
+        return (survivors.map(\.sample), survivors.filter(\.isNew).count)
     }
 
     private func persist() throws {
