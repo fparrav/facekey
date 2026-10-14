@@ -367,6 +367,7 @@ final class FaceUnlockCoordinator {
         var embeddingBuffer: [[Float]] = []
         let maxBufferedEmbeddings = 5
         let minBufferedEmbeddings = 3
+        let perFrameFloorMargin: Float = 0.08
 
         while Date() < deadline, !Task.isCancelled,
               !requireOverlayScanning || NotchOverlayController.shared.phase == .scanning {
@@ -406,7 +407,15 @@ final class FaceUnlockCoordinator {
                     embeddingBuffer.removeAll()
                 }
             }
-            if ContinuousClock.now - scanStartedAt >= warmUpDuration {
+            // Each frame must clear a floor on its own: averaging alone would let a few frames of the owner lift a
+            // stranger who steps in front of the camera over the threshold. A frame below the floor drops the whole buffer.
+            // `activeIdentities`, not `identities`: someone switched off on the Your Face page stays enrolled but must not unlock.
+            let activeIdentities = FaceEnrollmentStore.shared.activeIdentities
+            let frameSimilarity = pipeline.score(result.embedding, against: activeIdentities).first?.centroidSimilarity ?? 0
+            let frameBelowFloor = frameSimilarity < matchThreshold - perFrameFloorMargin
+            if frameBelowFloor {
+                embeddingBuffer.removeAll()
+            } else if ContinuousClock.now - scanStartedAt >= warmUpDuration {
                 embeddingBuffer.append(result.embedding)
                 if embeddingBuffer.count > maxBufferedEmbeddings {
                     embeddingBuffer.removeFirst()
@@ -431,17 +440,20 @@ final class FaceUnlockCoordinator {
             }
 
             // Not enough samples yet — keep scanning (liveness above keeps running; wrongFaceStartedAt/readyMatch are deliberately untouched).
-            if embeddingBuffer.count < minBufferedEmbeddings {
+            // A frame below the per-frame floor is a confident non-match, so it falls through to the wrong-face handling.
+            if embeddingBuffer.count < minBufferedEmbeddings && !frameBelowFloor {
                 try? await Task.sleep(nanoseconds: 20_000_000)
                 continue
             }
-            guard let smoothed = FaceRecognitionPipeline.averagedEmbedding(embeddingBuffer) else {
-                try? await Task.sleep(nanoseconds: 20_000_000)
-                continue
+            var matched: ScoredIdentity?
+            if !frameBelowFloor {
+                guard let smoothed = FaceRecognitionPipeline.averagedEmbedding(embeddingBuffer) else {
+                    try? await Task.sleep(nanoseconds: 20_000_000)
+                    continue
+                }
+                let scored = pipeline.score(smoothed, against: activeIdentities)
+                matched = pipeline.bestMatch(in: scored, threshold: matchThreshold)
             }
-            // `activeIdentities`, not `identities`: someone switched off on the Your Face page stays enrolled but must not unlock.
-            let scored = pipeline.score(smoothed, against: FaceEnrollmentStore.shared.activeIdentities)
-            let matched = pipeline.bestMatch(in: scored, threshold: matchThreshold)
 
             if let matched {
                 wrongFaceStartedAt = nil
