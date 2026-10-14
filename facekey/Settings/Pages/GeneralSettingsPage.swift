@@ -213,7 +213,8 @@ struct GeneralSettingsPage: View {
                     permissionRow(
                         title: "Accessibility",
                         isGranted: accessibilityGranted,
-                        pendingSubtitle: "Facekey recognizes you but cannot type your password. If it was granted before, remove and re-add Facekey in System Settings.",
+                        reason: "Lets Facekey type your password on the lock screen.",
+                        pendingNote: "Without it Facekey recognizes you but can't unlock. If it was granted before, remove and re-add Facekey in System Settings.",
                         buttonTitle: hasPromptedAccessibility ? "Open Settings" : "Grant"
                     ) {
                         if !hasPromptedAccessibility {
@@ -228,7 +229,8 @@ struct GeneralSettingsPage: View {
                     permissionRow(
                         title: "Camera",
                         isGranted: cameraState == .granted,
-                        pendingSubtitle: cameraState == .denied ? "Denied — enable it in System Settings." : "Not requested yet.",
+                        reason: "Lets Facekey see your face to recognize you.",
+                        pendingNote: cameraState == .denied ? "Access was denied — enable it in System Settings." : nil,
                         buttonTitle: cameraState == .notDetermined ? "Grant" : "Open Settings"
                     ) {
                         Task {
@@ -264,11 +266,12 @@ struct GeneralSettingsPage: View {
     private func permissionRow(
         title: String,
         isGranted: Bool,
-        pendingSubtitle: String,
+        reason: String,
+        pendingNote: String?,
         buttonTitle: String,
         action: @escaping () -> Void
     ) -> some View {
-        SettingsRowContent(title: title, subtitle: isGranted ? nil : pendingSubtitle, subtitleMaxWidth: 230) {
+        SettingsRowContent(title: title, subtitle: isGranted ? reason : [reason, pendingNote].compactMap { $0 }.joined(separator: " "), subtitleMaxWidth: 250) {
             Group {
                 if isGranted {
                     HStack(spacing: 5) {
@@ -279,10 +282,19 @@ struct GeneralSettingsPage: View {
                     }
                     .font(.system(size: 12, weight: .semibold))
                 } else {
-                    SettingsPrimaryButton(title: buttonTitle, compact: true, action: action)
+                    Button(action: action) {
+                        Text(buttonTitle)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 112)
+                            .padding(.vertical, 6)
+                            .background(FacekeyTheme.accent)
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            .frame(width: 120, alignment: .trailing)
+            .frame(width: 112, alignment: .trailing)
         }
     }
 
