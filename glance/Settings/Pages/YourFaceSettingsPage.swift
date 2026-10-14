@@ -4,7 +4,7 @@
 //
 //  The multi-identity Your Face page. Every enrolled person gets a card:
 //  name, an enable switch, per-sample capture-quality ticks, and
-//  Recapture/Delete.
+//  Add Captures/Delete.
 //
 
 import SwiftUI
@@ -39,7 +39,7 @@ struct YourFaceSettingsPage: View {
         return store.identities.isEmpty ? .notEnrolled : .enrolled
     }
 
-    /// The notch hosts one flow at a time, so a second Add/Recapture would
+    /// The notch hosts one flow at a time, so a second Add Identity/Add Captures would
     /// swap the content out from under a capture already in progress.
     private var enrollmentFlowIsRunning: Bool {
         NotchOverlayController.shared.phase == .onboarding
@@ -320,7 +320,7 @@ private struct IdentityCard: View {
                         QualityTickStrip(samples: identity.samples)
                         .padding(.leading, 2)
                         Spacer(minLength: 12)
-                        PillActionButton(title: "Recapture", action: recapture)
+                        PillActionButton(title: "Add Captures", action: recapture)
                             .disabled(!canStartFlow)
                             .opacity(canStartFlow ? 1 : 0.4)
                         PillIconButton(systemImage: "trash", action: delete)
@@ -332,7 +332,7 @@ private struct IdentityCard: View {
                 .opacity(isEnabled ? 1 : 0.45)
 
                 if isStale {
-                    Text("Captured with a different recognition model — recapture before this face can unlock your Mac.")
+                    Text("Captured with a different recognition model — use Add Captures before this face can unlock your Mac.")
                         .font(.system(size: 11))
                         .foregroundStyle(SettingsMetrics.qualityFairColor)
                         .fixedSize(horizontal: false, vertical: true)
