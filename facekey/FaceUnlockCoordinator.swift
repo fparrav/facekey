@@ -260,6 +260,8 @@ final class FaceUnlockCoordinator {
             log.notice("scan #\(generation) skipped: screen not locked")
             return
         }
+        // The active camera profile can change between scans (display plugged or unplugged), so resolve its width per scan.
+        FacekeySettings.shared.refreshPipelineMinimumFaceWidth()
         log.notice("scan #\(generation) start (ui=\(self.showsUI), window=\(self.scanWindowDuration, privacy: .public)s, threshold=\(self.matchThreshold, privacy: .public))")
 
         await camera.start()
