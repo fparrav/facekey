@@ -12,6 +12,9 @@
 import AppKit
 import SwiftUI
 import Observation
+import os
+
+private let log = Logger(subsystem: "com.fparrav.facekey", category: "overlay")
 
 @Observable
 @MainActor
@@ -297,6 +300,7 @@ final class NotchOverlayController {
     /// Hover-driven activation: wakes from a closed/armed state, or retries from a held
     /// failure frame. No-op during scanning/success/collapsing.
     func activate() {
+        log.info("activate phase=\(String(describing: self.phase), privacy: .public) retryOnHover=\(FacekeySettings.shared.retryOnHover) armed=\(self.isArmed) hasHandler=\(self.onActivate != nil)")
         // Gated here rather than in `updateInteractivity()` so the cosmetic hover bump
         // stays unaffected — only the retry itself is removed.
         guard FacekeySettings.shared.retryOnHover else { return }
