@@ -34,6 +34,11 @@ struct LivenessFrame {
     /// Specular-highlight measurements from a native-resolution face crop; `nil` when no crop
     /// was available, in which case the `glossGlare` deny cue abstains.
     let glare: GlareSample?
+    /// Diagnostics only (logged when the device cue denies): the rectangle `DeviceBezelDetector` picked and the face box it was
+    /// compared with, both in image pixels, plus the image size. No cue reads these.
+    let deviceRectangle: CGRect?
+    let faceBox: CGRect?
+    let imageSize: CGSize?
 
     /// Explicit init so `glare` can default to `nil` — a defaulted `let` property is otherwise
     /// excluded from Swift's synthesized memberwise init rather than becoming optional.
@@ -47,7 +52,10 @@ struct LivenessFrame {
         noseOffsetRatio: CGFloat?,
         hasReliableLandmarks: Bool,
         deviceOverlapFraction: CGFloat?,
-        glare: GlareSample? = nil
+        glare: GlareSample? = nil,
+        deviceRectangle: CGRect? = nil,
+        faceBox: CGRect? = nil,
+        imageSize: CGSize? = nil
     ) {
         self.timestamp = timestamp
         self.landmarks = landmarks
@@ -59,6 +67,9 @@ struct LivenessFrame {
         self.hasReliableLandmarks = hasReliableLandmarks
         self.deviceOverlapFraction = deviceOverlapFraction
         self.glare = glare
+        self.deviceRectangle = deviceRectangle
+        self.faceBox = faceBox
+        self.imageSize = imageSize
     }
 }
 

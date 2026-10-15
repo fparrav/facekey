@@ -18,7 +18,9 @@ nonisolated enum LivenessFeatureExtractor {
         from result: FaceRecognitionResult, frame: CGImage, faceCrop: CGImage? = nil, timestamp: Date = Date()
     ) -> LivenessFrame {
         let face = result.face
-        let deviceOverlap = DeviceBezelDetector.detect(in: frame, faceBoundingBox: face.boundingBox).faceOverlapFraction
+        let bezel = DeviceBezelDetector.detect(in: frame, faceBoundingBox: face.boundingBox)
+        let deviceOverlap = bezel.faceOverlapFraction
+        let frameSize = CGSize(width: frame.width, height: frame.height)
         let glare = faceCrop.flatMap { GlareCueExtractor.extract(faceCrop: $0) }
 
         guard let landmarks = face.landmarks else {
@@ -29,7 +31,8 @@ nonisolated enum LivenessFeatureExtractor {
                 noseOffsetRatio: nil,
                 hasReliableLandmarks: false,
                 deviceOverlapFraction: deviceOverlap,
-                glare: glare
+                glare: glare,
+                deviceRectangle: bezel.rectangle, faceBox: face.boundingBox, imageSize: frameSize
             )
         }
 
@@ -58,7 +61,8 @@ nonisolated enum LivenessFeatureExtractor {
             noseOffsetRatio: noseOffsetRatio,
             hasReliableLandmarks: result.alignmentTier == .fivePoint,
             deviceOverlapFraction: deviceOverlap,
-            glare: glare
+            glare: glare,
+            deviceRectangle: bezel.rectangle, faceBox: face.boundingBox, imageSize: frameSize
         )
     }
 }

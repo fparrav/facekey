@@ -459,6 +459,13 @@ final class FaceUnlockCoordinator {
                     // Overrides everything, including a match and any confirmation that already happened.
                     lastOutcome = snapshot.decision.denialReason
                     let glare = livenessFrame.glare
+                    func box(_ r: CGRect?) -> String {
+                        guard let r else { return "none" }
+                        return "x=\(Int(r.minX)) y=\(Int(r.minY)) w=\(Int(r.width)) h=\(Int(r.height))"
+                    }
+                    let rectArea = (livenessFrame.deviceRectangle?.width ?? 0) * (livenessFrame.deviceRectangle?.height ?? 0)
+                    let faceArea = (livenessFrame.faceBox?.width ?? 0) * (livenessFrame.faceBox?.height ?? 0)
+                    log.notice("device rect: \(box(livenessFrame.deviceRectangle), privacy: .public) face: \(box(livenessFrame.faceBox), privacy: .public) image: \(Int(livenessFrame.imageSize?.width ?? 0))x\(Int(livenessFrame.imageSize?.height ?? 0)) rectToFaceArea=\(faceArea > 0 ? Double(rectArea / faceArea) : -1, privacy: .public)")
                     log.notice("liveness denied: \(self.lastOutcome ?? "?", privacy: .public) (frameSimilarity=\(frameSimilarity, privacy: .public), glareLevel=\(LivenessCues.glossGlare(livenessFrame).level, privacy: .public), specularFraction=\(glare?.specularFraction ?? -1, privacy: .public), cluster=\(glare?.specularClusterRatio ?? -1, privacy: .public), cropWidth=\(Double(glare?.cropPixelWidth ?? -1), privacy: .public), deviceOverlap=\(livenessFrame.deviceOverlapFraction ?? -1, privacy: .public))")
                     return .spoofSuspected
                 case .confirmed(let cue):
