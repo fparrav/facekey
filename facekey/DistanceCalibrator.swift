@@ -12,7 +12,7 @@ import Observation
 
 @Observable
 @MainActor
-final class DistanceCalibrator {
+final class DistanceCalibrator: Identifiable {
     enum State: Equatable {
         case starting
         /// No usable face yet; the message says why (no face, several faces, moving).

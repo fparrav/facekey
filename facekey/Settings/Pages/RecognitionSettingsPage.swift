@@ -15,7 +15,6 @@ struct RecognitionSettingsPage: View {
     @State private var sessionError: String?
     @State private var selectedProfile: CameraProfile = CameraProfile.current()
     @State private var calibrator: DistanceCalibrator?
-    @State private var isCalibrating = false
 
     /// Read from `POCController`, not a local copy — same reasoning as
     /// `PasswordSettingsPage`.
@@ -115,17 +114,15 @@ struct RecognitionSettingsPage: View {
                 }
             }
         }
-        .sheet(isPresented: $isCalibrating) {
-            if let calibrator {
-                DistanceCalibrationSheet(
-                    calibrator: calibrator,
-                    onAccept: { threshold, cameraID in
-                        settings.setMinimumFaceWidth(threshold, origin: .calibrated, cameraID: cameraID, for: calibrator.profile)
-                        isCalibrating = false
-                    },
-                    onCancel: { isCalibrating = false }
-                )
-            }
+        .sheet(item: $calibrator) { calibrator in
+            DistanceCalibrationSheet(
+                calibrator: calibrator,
+                onAccept: { threshold, cameraID in
+                    settings.setMinimumFaceWidth(threshold, origin: .calibrated, cameraID: cameraID, for: calibrator.profile)
+                    self.calibrator = nil
+                },
+                onCancel: { self.calibrator = nil }
+            )
         }
     }
 
@@ -190,7 +187,6 @@ struct RecognitionSettingsPage: View {
 
     private func startCalibration() {
         calibrator = DistanceCalibrator(profile: selectedProfile)
-        isCalibrating = true
     }
 
     private func unlock() {
