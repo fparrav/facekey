@@ -48,6 +48,10 @@ enum CameraDeviceCatalog {
         if profile == .builtIn, ClamshellState.isClosed() {
             return "The built-in camera is covered while the lid is closed."
         }
+        let access = AVCaptureDevice.authorizationStatus(for: .video)
+        if access == .denied || access == .restricted {
+            return "Camera access is off for Facekey in System Settings > Privacy & Security > Camera."
+        }
         if device(for: profile) == nil {
             return "No camera is available for this profile."
         }
