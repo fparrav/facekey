@@ -523,14 +523,20 @@ struct LivenessSelfTest {
         }
         print("PASS: scattered highlights from an overexposed face do not deny.")
 
-        // Device overlap above the fire level must deny, even well below
-        // the old 0.55 bezel threshold — 20% for a few frames is the rule.
-        let deviceFrames = (0..<8).map { makeCueFrame(at: Double($0) * 0.05, glare: skinGlare, deviceOverlap: 0.25) }
+        // Measured on a phone showing a face: the face sits inside the device rectangle (overlap 0.74-1.0), which must deny.
+        let deviceFrames = (0..<8).map { makeCueFrame(at: Double($0) * 0.05, glare: skinGlare, deviceOverlap: 0.74) }
         let deviceResult = evaluate(deviceFrames, mode: .light)
         guard case .denied(.deviceDetected) = deviceResult.decision else {
-            fatalError("FAIL: 25% device overlap over 8 frames should deny, got \(deviceResult.decision).")
+            fatalError("FAIL: 74% device overlap over 8 frames should deny, got \(deviceResult.decision).")
         }
-        print("PASS: modest but sustained device overlap denies.")
+        print("PASS: a face inside a device rectangle denies.")
+
+        // Measured on a live face: a background edge clipping part of the face box (overlap 0.23-0.27) must not deny.
+        let backgroundEdgeFrames = (0..<8).map { makeCueFrame(at: Double($0) * 0.05, glare: skinGlare, deviceOverlap: 0.27) }
+        if case .denied = evaluate(backgroundEdgeFrames, mode: .light).decision {
+            fatalError("FAIL: 27% partial overlap from a background edge should not deny.")
+        }
+        print("PASS: partial overlap from a background edge does not deny.")
 
         // A single glare frame is not enough — the frame count is what
         // separates a real tell from one bright reflection.
@@ -582,7 +588,7 @@ struct LivenessSelfTest {
             confirmedFirst.states[.flatVs3D]?.hasFired == true,
             "FAIL: the synthetic live sequence should fire flat-vs-3D so the override test is meaningful."
         )
-        mixed += (1...6).map { makeCueFrame(at: lastTime + Double($0) * 0.05, glare: skinGlare, deviceOverlap: 0.4) }
+        mixed += (1...6).map { makeCueFrame(at: lastTime + Double($0) * 0.05, glare: skinGlare, deviceOverlap: 0.75) }
         var overridden = LivenessEvaluator(mode: .heavy)
         window = []
         var finalDecision = LivenessDecision.pending

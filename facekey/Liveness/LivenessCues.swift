@@ -98,9 +98,9 @@ struct LivenessTuning: Equatable {
     var glossLevel: Float = 0.04
     var glossFrames: Int = 3
 
-    /// Deliberately lower than `glossLevel` — the device rectangle detector was already
-    /// the one signal proven reliable in real-device testing.
-    var deviceLevel: Float = 0.15
+    /// Real lock-screen readings: a phone showing the user's face gave overlap 0.74-1.0 (face inside the rectangle), while a
+    /// live face with a background edge across part of the box gave 0.23-0.27. 0.5 sits between the two.
+    var deviceLevel: Float = 0.5
     var deviceFrames: Int = 3
 
     /// Not the 0.5 you might expect: real-world Vision jitter alone measures ~0.21-0.46
