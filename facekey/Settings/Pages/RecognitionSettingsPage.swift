@@ -112,13 +112,21 @@ struct RecognitionSettingsPage: View {
     // MARK: - Detection distance
 
     private var detectionDistanceLevel: DetectionDistanceLevel {
-        .nearest(to: settings.minimumFaceWidth)
+        .nearest(to: settings.activeMinimumFaceWidth)
     }
 
+    // Provisional — task 5.1 redesigns the per-profile detection-distance flow.
     private var detectionDistanceIndex: Binding<Double> {
         Binding(
             get: { detectionDistanceLevel.sliderIndex },
-            set: { settings.minimumFaceWidth = DetectionDistanceLevel.from(sliderIndex: $0).minimumFaceWidth }
+            set: {
+                settings.setMinimumFaceWidth(
+                    DetectionDistanceLevel.from(sliderIndex: $0).minimumFaceWidth,
+                    origin: .manual,
+                    cameraID: nil,
+                    for: CameraProfile.current()
+                )
+            }
         )
     }
 

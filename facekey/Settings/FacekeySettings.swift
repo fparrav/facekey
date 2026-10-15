@@ -109,6 +109,12 @@ final class FacekeySettings {
         static let livenessChecksEnabled = "FacekeySettings.livenessChecksEnabled"
         static let livenessMode = "FacekeySettings.livenessMode"
         static let minimumFaceWidth = "FacekeySettings.minimumFaceWidth"
+        static let minimumFaceWidthBuiltIn = "FacekeySettings.minimumFaceWidthBuiltIn"
+        static let minimumFaceWidthExternal = "FacekeySettings.minimumFaceWidthExternal"
+        static let minimumFaceWidthOriginBuiltIn = "FacekeySettings.minimumFaceWidthOriginBuiltIn"
+        static let minimumFaceWidthOriginExternal = "FacekeySettings.minimumFaceWidthOriginExternal"
+        static let calibratedCameraIDBuiltIn = "FacekeySettings.calibratedCameraIDBuiltIn"
+        static let calibratedCameraIDExternal = "FacekeySettings.calibratedCameraIDExternal"
         static let unlockAnimationStyle = "FacekeySettings.unlockAnimationStyle"
         static let showUnlockAnimation = "FacekeySettings.showUnlockAnimation"
         /// Legacy bool key — read once during migration, then ignored.
@@ -170,13 +176,27 @@ final class FacekeySettings {
     var livenessMode: LivenessMode {
         didSet { defaults.set(livenessMode.rawValue, forKey: Key.livenessMode) }
     }
-    /// Mirrored into `FaceRecognitionPipeline.minimumProminentFaceWidth` on
-    /// every change, since that's read from a background `nonisolated` context.
-    var minimumFaceWidth: Float {
-        didSet {
-            defaults.set(minimumFaceWidth, forKey: Key.minimumFaceWidth)
-            FaceRecognitionPipeline.minimumProminentFaceWidth = minimumFaceWidth
-        }
+    /// The active camera profile's minimum face width (fraction of frame width).
+    var activeMinimumFaceWidth: Float {
+        minimumFaceWidth(for: CameraProfile.current())
+    }
+    var builtInMinimumFaceWidth: Float {
+        didSet { defaults.set(builtInMinimumFaceWidth, forKey: Key.minimumFaceWidthBuiltIn) }
+    }
+    var externalMinimumFaceWidth: Float {
+        didSet { defaults.set(externalMinimumFaceWidth, forKey: Key.minimumFaceWidthExternal) }
+    }
+    var builtInMinimumFaceWidthOrigin: DetectionDistanceOrigin {
+        didSet { defaults.set(builtInMinimumFaceWidthOrigin.rawValue, forKey: Key.minimumFaceWidthOriginBuiltIn) }
+    }
+    var externalMinimumFaceWidthOrigin: DetectionDistanceOrigin {
+        didSet { defaults.set(externalMinimumFaceWidthOrigin.rawValue, forKey: Key.minimumFaceWidthOriginExternal) }
+    }
+    var builtInCalibratedCameraID: String? {
+        didSet { defaults.set(builtInCalibratedCameraID, forKey: Key.calibratedCameraIDBuiltIn) }
+    }
+    var externalCalibratedCameraID: String? {
+        didSet { defaults.set(externalCalibratedCameraID, forKey: Key.calibratedCameraIDExternal) }
     }
     /// The remembered choice (`.minimal`/`.original` only); `showUnlockAnimation`
     /// tracks on/off separately so toggling back on restores the prior pick.
@@ -325,7 +345,16 @@ final class FacekeySettings {
         livenessMode = defaults.string(forKey: Key.livenessMode)
             .flatMap(LivenessMode.init(rawValue:)) ?? .light
         // Matches the "Default" level (`DetectionDistanceLevel.standard`) — see RecognitionSettingsPage.swift.
-        minimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidth) as? Float ?? 0.19
+        // Migrates the legacy global width to both profiles until a per-profile value is saved.
+        let legacyMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidth) as? Float ?? 0.19
+        builtInMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidthBuiltIn) as? Float ?? legacyMinimumFaceWidth
+        externalMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidthExternal) as? Float ?? legacyMinimumFaceWidth
+        builtInMinimumFaceWidthOrigin = defaults.string(forKey: Key.minimumFaceWidthOriginBuiltIn)
+            .flatMap(DetectionDistanceOrigin.init(rawValue:)) ?? .manual
+        externalMinimumFaceWidthOrigin = defaults.string(forKey: Key.minimumFaceWidthOriginExternal)
+            .flatMap(DetectionDistanceOrigin.init(rawValue:)) ?? .manual
+        builtInCalibratedCameraID = defaults.string(forKey: Key.calibratedCameraIDBuiltIn)
+        externalCalibratedCameraID = defaults.string(forKey: Key.calibratedCameraIDExternal)
 
         // Resolve the stored style first, `.none` included, then split it
         // into the pick + the on/off flag the UI now works in.
@@ -382,6 +411,66 @@ final class FacekeySettings {
 
         // Push into the nonisolated mirror immediately, or FaceRecognitionPipeline
         // would keep its own default until the slider is first touched.
-        FaceRecognitionPipeline.minimumProminentFaceWidth = minimumFaceWidth
+        // `didSet` doesn't run inside `init`, so persist the migrated widths once; the legacy key then stops mattering.
+        if defaults.object(forKey: Key.minimumFaceWidthBuiltIn) == nil {
+            defaults.set(builtInMinimumFaceWidth, forKey: Key.minimumFaceWidthBuiltIn)
+        }
+        if defaults.object(forKey: Key.minimumFaceWidthExternal) == nil {
+            defaults.set(externalMinimumFaceWidth, forKey: Key.minimumFaceWidthExternal)
+        }
+        refreshPipelineMinimumFaceWidth()
+    }
+
+    /// Per-profile minimum face width (fraction of the video frame width).
+    func minimumFaceWidth(for profile: CameraProfile) -> Float {
+        switch profile {
+        case .builtIn: builtInMinimumFaceWidth
+        case .external: externalMinimumFaceWidth
+        }
+    }
+
+    /// Whether the per-profile distance was picked manually or came from calibration.
+    func detectionDistanceOrigin(for profile: CameraProfile) -> DetectionDistanceOrigin {
+        switch profile {
+        case .builtIn: builtInMinimumFaceWidthOrigin
+        case .external: externalMinimumFaceWidthOrigin
+        }
+    }
+
+    /// Camera the profile was calibrated with; `nil` unless the origin is `.calibrated`.
+    func calibratedCameraID(for profile: CameraProfile) -> String? {
+        switch profile {
+        case .builtIn: builtInCalibratedCameraID
+        case .external: externalCalibratedCameraID
+        }
+    }
+
+    /// Pushes the active profile's width into the pipeline mirror, which is read
+    /// from a background `nonisolated` context.
+    func refreshPipelineMinimumFaceWidth() {
+        FaceRecognitionPipeline.minimumProminentFaceWidth = activeMinimumFaceWidth
+    }
+
+    /// Sets width + origin + calibrated camera for one profile. The camera ID is
+    /// only kept when the origin is `.calibrated`; otherwise it is dropped.
+    func setMinimumFaceWidth(
+        _ width: Float,
+        origin: DetectionDistanceOrigin,
+        cameraID: String?,
+        for profile: CameraProfile
+    ) {
+        switch profile {
+        case .builtIn:
+            builtInMinimumFaceWidth = width
+            builtInMinimumFaceWidthOrigin = origin
+            builtInCalibratedCameraID = origin == .calibrated ? cameraID : nil
+        case .external:
+            externalMinimumFaceWidth = width
+            externalMinimumFaceWidthOrigin = origin
+            externalCalibratedCameraID = origin == .calibrated ? cameraID : nil
+        }
+        if profile == CameraProfile.current() {
+            refreshPipelineMinimumFaceWidth()
+        }
     }
 }
