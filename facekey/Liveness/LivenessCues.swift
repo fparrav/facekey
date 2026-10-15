@@ -282,13 +282,15 @@ nonisolated enum LivenessCues {
     }
 
     /// Skin gives many small scattered specular points; glass gives one big
-    /// flat blob. `specularFraction` alone would fire on a bright forehead,
-    /// so it's gated by how concentrated that glare is.
+    /// flat blob. `specularFraction` alone would fire on a bright forehead
+    /// or an overexposed face (real readings: 2-10% saturated pixels, but a
+    /// cluster ratio of only 0.16-0.27), so concentration is a hard gate —
+    /// below the ramp floor the level is exactly 0, not merely attenuated.
     nonisolated static func glossGlare(_ frame: LivenessFrame?) -> CueReading {
         guard let glare = frame?.glare else { return .none }
         let fractionScore = ramp(glare.specularFraction, floor: 0.01, ceiling: 0.08)
         let clusterFactor = ramp(glare.specularClusterRatio, floor: 0.3, ceiling: 1.0)
-        let level = fractionScore * (0.3 + 0.7 * clusterFactor)
+        let level = fractionScore * clusterFactor
         // Below ~50 native px of face there isn't enough detail to tell a
         // glare blob from a bright patch; ramps to full trust by ~130px.
         let confidence = ramp(Float(glare.cropPixelWidth), floor: 50, ceiling: 130)

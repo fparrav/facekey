@@ -482,6 +482,9 @@ struct LivenessSelfTest {
     /// separation these stand in for.
     private static let skinGlare = GlareSample(cropPixelWidth: 140, specularFraction: 0.004, specularClusterRatio: 0.15)
     private static let screenGlare = GlareSample(cropPixelWidth: 140, specularFraction: 0.09, specularClusterRatio: 0.75)
+    /// Measured on a real, live face on the lock screen (overexposed): lots of near-saturated pixels, but scattered rather than
+    /// one blob. These were all wrongly denied while the cluster ratio only attenuated the level instead of gating it.
+    private static let overexposedSkinGlare = GlareSample(cropPixelWidth: 448, specularFraction: 0.097, specularClusterRatio: 0.16)
 
     private static func evaluate(
         _ frames: [LivenessFrame], mode: LivenessMode, cues: Set<LivenessCue> = Set(LivenessCue.allCases)
@@ -509,6 +512,16 @@ struct LivenessSelfTest {
             }
         }
         print("PASS: sustained glare denies in both Light and Heavy mode.")
+
+        // Many scattered bright pixels with no concentrated blob is an overexposed live face, not a screen.
+        let overexposedFrames = (0..<8).map { makeCueFrame(at: Double($0) * 0.05, glare: overexposedSkinGlare) }
+        for mode in LivenessMode.allCases {
+            let result = evaluate(overexposedFrames, mode: mode)
+            if case .denied = result.decision {
+                fatalError("FAIL: scattered highlights on an overexposed face should not deny in \(mode.title) mode, got \(result.decision).")
+            }
+        }
+        print("PASS: scattered highlights from an overexposed face do not deny.")
 
         // Device overlap above the fire level must deny, even well below
         // the old 0.55 bezel threshold — 20% for a few frames is the rule.
