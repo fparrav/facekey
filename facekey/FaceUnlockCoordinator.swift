@@ -257,10 +257,10 @@ final class FaceUnlockCoordinator {
     /// camera visibly switch on then die mid-warm-up, leaving the surviving cycle polling a dead session and never unlocking.
     private func runScanCycle(generation: Int) async {
         guard LockMonitor.isScreenActuallyLocked() else {
-            log.info("scan #\(generation) skipped: screen not locked")
+            log.notice("scan #\(generation) skipped: screen not locked")
             return
         }
-        log.info("scan #\(generation) start (ui=\(self.showsUI), window=\(self.scanWindowDuration, privacy: .public)s, threshold=\(self.matchThreshold, privacy: .public))")
+        log.notice("scan #\(generation) start (ui=\(self.showsUI), window=\(self.scanWindowDuration, privacy: .public)s, threshold=\(self.matchThreshold, privacy: .public))")
 
         await camera.start()
         guard generation == scanGeneration else { return }
@@ -285,10 +285,10 @@ final class FaceUnlockCoordinator {
 
         // A newer cycle now owns the camera and overlay — leave both alone, and leave the auto-retry one-shot unspent.
         guard generation == scanGeneration else {
-            log.info("scan #\(generation) superseded")
+            log.notice("scan #\(generation) superseded")
             return
         }
-        log.info("scan #\(generation) outcome: \(String(describing: outcome), privacy: .public) \(self.lastOutcome ?? "", privacy: .public)")
+        log.notice("scan #\(generation) outcome: \(String(describing: outcome), privacy: .public) \(self.lastOutcome ?? "", privacy: .public)")
 
         camera.stop()
 
@@ -331,10 +331,10 @@ final class FaceUnlockCoordinator {
     /// `delay` waits out whatever the overlay is still showing so the retry doesn't start underneath the previous outcome.
     private func scheduleAutoRetryIfEnabled(after delay: Duration) {
         guard FacekeySettings.shared.autoRetryOnce, !hasAutoRetriedForCurrentLock else {
-            log.info("auto-retry not scheduled (enabled=\(FacekeySettings.shared.autoRetryOnce), alreadyUsed=\(self.hasAutoRetriedForCurrentLock))")
+            log.notice("auto-retry not scheduled (enabled=\(FacekeySettings.shared.autoRetryOnce), alreadyUsed=\(self.hasAutoRetriedForCurrentLock))")
             return
         }
-        log.info("auto-retry scheduled")
+        log.notice("auto-retry scheduled")
         hasAutoRetriedForCurrentLock = true
         autoRetryTask?.cancel()
         autoRetryTask = Task { [weak self] in
@@ -348,14 +348,14 @@ final class FaceUnlockCoordinator {
                 let settleDeadline = ContinuousClock.now + .seconds(3)
                 while NotchOverlayController.shared.phase != .closed {
                     guard ContinuousClock.now < settleDeadline, !Task.isCancelled else {
-                        log.info("auto-retry aborted: overlay never settled")
+                        log.notice("auto-retry aborted: overlay never settled")
                         return
                     }
                     try? await Task.sleep(for: .milliseconds(100))
                 }
                 guard LockMonitor.isScreenActuallyLocked(), self.isEnabled else { return }
             }
-            log.info("auto-retry firing")
+            log.notice("auto-retry firing")
             self.startScanCycle()
         }
     }
@@ -458,7 +458,8 @@ final class FaceUnlockCoordinator {
                 case .denied:
                     // Overrides everything, including a match and any confirmation that already happened.
                     lastOutcome = snapshot.decision.denialReason
-                    log.notice("liveness denied: \(self.lastOutcome ?? "?", privacy: .public) (frameSimilarity=\(frameSimilarity, privacy: .public))")
+                    let glare = livenessFrame.glare
+                    log.notice("liveness denied: \(self.lastOutcome ?? "?", privacy: .public) (frameSimilarity=\(frameSimilarity, privacy: .public), glareLevel=\(LivenessCues.glossGlare(livenessFrame).level, privacy: .public), specularFraction=\(glare?.specularFraction ?? -1, privacy: .public), cluster=\(glare?.specularClusterRatio ?? -1, privacy: .public), cropWidth=\(Double(glare?.cropPixelWidth ?? -1), privacy: .public), deviceOverlap=\(livenessFrame.deviceOverlapFraction ?? -1, privacy: .public))")
                     return .spoofSuspected
                 case .confirmed(let cue):
                     livenessConfirmed = true
