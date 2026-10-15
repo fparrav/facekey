@@ -72,6 +72,12 @@ struct CameraSettingsPage: View {
                 SettingsGroupDivider()
                 cameraPicker(title: "Built-in display", selection: $settings.builtInDisplayCameraID)
                 SettingsGroupDivider()
+                cameraPicker(
+                    title: "Built-in + external display",
+                    selection: $settings.builtInAndExternalDisplayCameraID,
+                    emptyTitle: "Same as built-in display"
+                )
+                SettingsGroupDivider()
                 cameraPicker(title: "External display", selection: $settings.externalDisplayCameraID)
             }
 
@@ -128,10 +134,14 @@ struct CameraSettingsPage: View {
         Task { await previewCamera.start() }
     }
 
-    private func cameraPicker(title: String, selection: Binding<String?>) -> some View {
+    private func cameraPicker(
+        title: String,
+        selection: Binding<String?>,
+        emptyTitle: String = "System default"
+    ) -> some View {
         SettingsRowContent(title: title) {
-            SettingsMenuPickerPill(label: cameraLabel(for: selection.wrappedValue)) {
-                Button("System default") { selection.wrappedValue = nil }
+            SettingsMenuPickerPill(label: cameraLabel(for: selection.wrappedValue, emptyTitle: emptyTitle)) {
+                Button(emptyTitle) { selection.wrappedValue = nil }
                 ForEach(devices) { device in
                     Button(device.name) { selection.wrappedValue = device.id }
                 }
@@ -144,9 +154,9 @@ struct CameraSettingsPage: View {
         devices = CameraDeviceCatalog.availableDevices()
     }
 
-    private func cameraLabel(for id: String?) -> String {
+    private func cameraLabel(for id: String?, emptyTitle: String = "System default") -> String {
         guard let id, let device = devices.first(where: { $0.id == id }) else {
-            return "System default"
+            return emptyTitle
         }
         return device.name
     }
