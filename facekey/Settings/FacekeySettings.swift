@@ -115,6 +115,9 @@ final class FacekeySettings {
         static let minimumFaceWidthOriginExternal = "FacekeySettings.minimumFaceWidthOriginExternal"
         static let calibratedCameraIDBuiltIn = "FacekeySettings.calibratedCameraIDBuiltIn"
         static let calibratedCameraIDExternal = "FacekeySettings.calibratedCameraIDExternal"
+        static let minimumFaceWidthBuiltInAndExternal = "FacekeySettings.minimumFaceWidthBuiltInAndExternal"
+        static let minimumFaceWidthOriginBuiltInAndExternal = "FacekeySettings.minimumFaceWidthOriginBuiltInAndExternal"
+        static let calibratedCameraIDBuiltInAndExternal = "FacekeySettings.calibratedCameraIDBuiltInAndExternal"
         static let unlockAnimationStyle = "FacekeySettings.unlockAnimationStyle"
         static let showUnlockAnimation = "FacekeySettings.showUnlockAnimation"
         /// Legacy bool key — read once during migration, then ignored.
@@ -132,6 +135,7 @@ final class FacekeySettings {
         static let defaultCameraID = "FacekeySettings.defaultCameraID"
         static let builtInDisplayCameraID = "FacekeySettings.builtInDisplayCameraID"
         static let externalDisplayCameraID = "FacekeySettings.externalDisplayCameraID"
+        static let builtInAndExternalDisplayCameraID = "FacekeySettings.builtInAndExternalDisplayCameraID"
         static let hasCompletedOnboarding = "FacekeySettings.hasCompletedOnboarding"
         static let onboardingResumeStep = "FacekeySettings.onboardingResumeStep"
         static let hasAcknowledgedSecurityNotice = "FacekeySettings.hasAcknowledgedSecurityNotice"
@@ -197,6 +201,15 @@ final class FacekeySettings {
     }
     var externalCalibratedCameraID: String? {
         didSet { defaults.set(externalCalibratedCameraID, forKey: Key.calibratedCameraIDExternal) }
+    }
+    var builtInAndExternalMinimumFaceWidth: Float {
+        didSet { defaults.set(builtInAndExternalMinimumFaceWidth, forKey: Key.minimumFaceWidthBuiltInAndExternal) }
+    }
+    var builtInAndExternalMinimumFaceWidthOrigin: DetectionDistanceOrigin {
+        didSet { defaults.set(builtInAndExternalMinimumFaceWidthOrigin.rawValue, forKey: Key.minimumFaceWidthOriginBuiltInAndExternal) }
+    }
+    var builtInAndExternalCalibratedCameraID: String? {
+        didSet { defaults.set(builtInAndExternalCalibratedCameraID, forKey: Key.calibratedCameraIDBuiltInAndExternal) }
     }
     /// The remembered choice (`.minimal`/`.original` only); `showUnlockAnimation`
     /// tracks on/off separately so toggling back on restores the prior pick.
@@ -305,6 +318,9 @@ final class FacekeySettings {
     var externalDisplayCameraID: String? {
         didSet { defaults.set(externalDisplayCameraID, forKey: Key.externalDisplayCameraID) }
     }
+    var builtInAndExternalDisplayCameraID: String? {
+        didSet { defaults.set(builtInAndExternalDisplayCameraID, forKey: Key.builtInAndExternalDisplayCameraID) }
+    }
 
     /// Gates first-run onboarding — `AppDelegate` shows it instead of the
     /// Settings window until this is `true`. Set once, by `OnboardingController`
@@ -347,14 +363,25 @@ final class FacekeySettings {
         // Matches the "Default" level (`DetectionDistanceLevel.standard`) — see RecognitionSettingsPage.swift.
         // Migrates the legacy global width to both profiles until a per-profile value is saved.
         let legacyMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidth) as? Float ?? 0.19
-        builtInMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidthBuiltIn) as? Float ?? legacyMinimumFaceWidth
+        // The built-in values load into locals first: `self` is not fully
+        // initialized yet, so they cannot be read back for the defaults below.
+        let builtInMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidthBuiltIn) as? Float ?? legacyMinimumFaceWidth
+        self.builtInMinimumFaceWidth = builtInMinimumFaceWidth
         externalMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidthExternal) as? Float ?? legacyMinimumFaceWidth
-        builtInMinimumFaceWidthOrigin = defaults.string(forKey: Key.minimumFaceWidthOriginBuiltIn)
+        let builtInMinimumFaceWidthOrigin = defaults.string(forKey: Key.minimumFaceWidthOriginBuiltIn)
             .flatMap(DetectionDistanceOrigin.init(rawValue:)) ?? .manual
+        self.builtInMinimumFaceWidthOrigin = builtInMinimumFaceWidthOrigin
         externalMinimumFaceWidthOrigin = defaults.string(forKey: Key.minimumFaceWidthOriginExternal)
             .flatMap(DetectionDistanceOrigin.init(rawValue:)) ?? .manual
-        builtInCalibratedCameraID = defaults.string(forKey: Key.calibratedCameraIDBuiltIn)
+        let builtInCalibratedCameraID = defaults.string(forKey: Key.calibratedCameraIDBuiltIn)
+        self.builtInCalibratedCameraID = builtInCalibratedCameraID
         externalCalibratedCameraID = defaults.string(forKey: Key.calibratedCameraIDExternal)
+        // `.builtInAndExternal` starts as a copy of the built-in profile until it gets its own values.
+        builtInAndExternalMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidthBuiltInAndExternal) as? Float ?? builtInMinimumFaceWidth
+        builtInAndExternalMinimumFaceWidthOrigin = defaults.string(forKey: Key.minimumFaceWidthOriginBuiltInAndExternal)
+            .flatMap(DetectionDistanceOrigin.init(rawValue:)) ?? builtInMinimumFaceWidthOrigin
+        builtInAndExternalCalibratedCameraID = defaults.string(forKey: Key.calibratedCameraIDBuiltInAndExternal) ?? builtInCalibratedCameraID
+        builtInAndExternalDisplayCameraID = defaults.string(forKey: Key.builtInAndExternalDisplayCameraID)
 
         // Resolve the stored style first, `.none` included, then split it
         // into the pick + the on/off flag the UI now works in.
@@ -418,6 +445,15 @@ final class FacekeySettings {
         if defaults.object(forKey: Key.minimumFaceWidthExternal) == nil {
             defaults.set(externalMinimumFaceWidth, forKey: Key.minimumFaceWidthExternal)
         }
+        if defaults.object(forKey: Key.minimumFaceWidthBuiltInAndExternal) == nil {
+            defaults.set(builtInAndExternalMinimumFaceWidth, forKey: Key.minimumFaceWidthBuiltInAndExternal)
+        }
+        if defaults.object(forKey: Key.minimumFaceWidthOriginBuiltInAndExternal) == nil {
+            defaults.set(builtInAndExternalMinimumFaceWidthOrigin.rawValue, forKey: Key.minimumFaceWidthOriginBuiltInAndExternal)
+        }
+        if defaults.object(forKey: Key.calibratedCameraIDBuiltInAndExternal) == nil {
+            defaults.set(builtInAndExternalCalibratedCameraID, forKey: Key.calibratedCameraIDBuiltInAndExternal)
+        }
         refreshPipelineMinimumFaceWidth()
     }
 
@@ -426,6 +462,7 @@ final class FacekeySettings {
         switch profile {
         case .builtIn: builtInMinimumFaceWidth
         case .external: externalMinimumFaceWidth
+        case .builtInAndExternal: builtInAndExternalMinimumFaceWidth
         }
     }
 
@@ -434,6 +471,7 @@ final class FacekeySettings {
         switch profile {
         case .builtIn: builtInMinimumFaceWidthOrigin
         case .external: externalMinimumFaceWidthOrigin
+        case .builtInAndExternal: builtInAndExternalMinimumFaceWidthOrigin
         }
     }
 
@@ -442,6 +480,7 @@ final class FacekeySettings {
         switch profile {
         case .builtIn: builtInCalibratedCameraID
         case .external: externalCalibratedCameraID
+        case .builtInAndExternal: builtInAndExternalCalibratedCameraID
         }
     }
 
@@ -468,6 +507,10 @@ final class FacekeySettings {
             externalMinimumFaceWidth = width
             externalMinimumFaceWidthOrigin = origin
             externalCalibratedCameraID = origin == .calibrated ? cameraID : nil
+        case .builtInAndExternal:
+            builtInAndExternalMinimumFaceWidth = width
+            builtInAndExternalMinimumFaceWidthOrigin = origin
+            builtInAndExternalCalibratedCameraID = origin == .calibrated ? cameraID : nil
         }
         if profile == CameraProfile.current() {
             refreshPipelineMinimumFaceWidth()

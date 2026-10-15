@@ -2,6 +2,7 @@ import Foundation
 
 enum CameraProfile: String, CaseIterable, Identifiable, Sendable {
     case builtIn
+    case builtInAndExternal
     case external
 
     var id: String { rawValue }
@@ -10,13 +11,19 @@ enum CameraProfile: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .builtIn:
             "Built-in display"
+        case .builtInAndExternal:
+            "Built-in + external display"
         case .external:
             "External display"
         }
     }
 
     static func current() -> CameraProfile {
-        DisplayContext.current() == .externalOnly ? .external : .builtIn
+        switch DisplayContext.current() {
+        case .builtInOnly: .builtIn
+        case .builtInAndExternal: .builtInAndExternal
+        case .externalOnly: .external
+        }
     }
 }
 
