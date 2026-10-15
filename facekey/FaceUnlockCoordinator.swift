@@ -389,6 +389,8 @@ final class FaceUnlockCoordinator {
         var livenessConfirmed = !livenessEnabled
         /// Last frame's selected face, passed back so `selectDominantFace` stays on the same person instead of flip-flopping.
         var lastFaceBoundingBox: CGRect?
+        /// Counts frames with a selected face, so the face width is logged once per scan instead of per frame.
+        var faceWidthSamples = 0
         /// Cheap way to detect "no new camera frame yet" vs. "fresh frame" — without it a repeat frame would corrupt the liveness motion signal.
         var lastProcessedFrameID: UInt64?
         /// Recent face embeddings, averaged before scoring so per-frame noise doesn't flip the match decision.
@@ -424,6 +426,10 @@ final class FaceUnlockCoordinator {
                 continue
             }
             lastFaceBoundingBox = result.face.normalizedBoundingBox
+            faceWidthSamples += 1
+            if faceWidthSamples == 5 {
+                log.notice("scan face width=\(result.face.normalizedBoundingBox.width, privacy: .public) (min=\(FaceRecognitionPipeline.minimumProminentFaceWidth, privacy: .public)) frameSimilarity=\(pipeline.score(result.embedding, against: FaceEnrollmentStore.shared.activeIdentities).first?.centroidSimilarity ?? 0, privacy: .public)")
+            }
 
             // Same tolerance as `FaceRecognitionPipeline.continuityDistanceTolerance`: center drift at or beyond this in
             // normalized coordinates means the tracked face is a different person, so the running average must not blend them.
