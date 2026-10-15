@@ -159,7 +159,10 @@ debug section should appear in the sidebar.
   ```bash
    open facekey.xcodeproj
   ```
-3. Run the project:
+3. Set your signing team (optional, only needed to sign with your own Apple ID): create
+  `Local.xcconfig` next to `Signing.xcconfig` with `DEVELOPMENT_TEAM = YOURTEAMID`. The file is
+  git-ignored, so your team ID never lands in a commit.
+4. Run the project:
   - Click `run` or press `Cmd + R`.
 
 
@@ -172,6 +175,8 @@ App feedback goes to [GitHub issues](https://github.com/fparrav/facekey/issues).
 
 ## Acknowledgements
 
+- **[glance](https://github.com/jonnyoo/glance)** by [Jonathan Zhou](https://github.com/jonnyoo) — Facekey is a
+fork of this project. The original idea, architecture and most of the code are his work.
 - **[The Boring Notch](https://github.com/TheBoredTeam/boring.notch)** — for the notch window
 physics.
 - **[InsightFace](https://github.com/deepinsight/insightface)** — the ArcFace model doing the
@@ -181,4 +186,5 @@ recognition.
 
 ## License
 
-[MIT](LICENSE) © Jonathan Zhou
+[MIT](LICENSE) © Jonathan Zhou. Facekey is a fork of [glance](https://github.com/jonnyoo/glance); the
+original copyright notice is kept in `LICENSE`.
