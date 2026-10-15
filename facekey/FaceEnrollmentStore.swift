@@ -312,7 +312,7 @@ final class FaceEnrollmentStore {
 
     /// Sample cap per identity: a full guided enrollment stays well below it, but untagged Face Lab captures would
     /// otherwise grow an identity's template without bound.
-    private static let maxSamplesPerIdentity = 36
+    private static let maxSamplesPerIdentity = 72
 
     /// Merges `newSamples` into `existing` and prunes the result to at most `cap` entries. When over the cap,
     /// removal runs in this order: lowest quality score first (ties: oldest capture, then earliest position), and
