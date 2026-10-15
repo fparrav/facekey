@@ -3,6 +3,7 @@
 //  facekey
 //
 
+import AVFoundation
 import SwiftUI
 
 struct RecognitionSettingsPage: View {
@@ -12,6 +13,9 @@ struct RecognitionSettingsPage: View {
 
     @State private var isUnlocking = false
     @State private var sessionError: String?
+    @State private var selectedProfile: CameraProfile = CameraProfile.current()
+    @State private var calibrator: DistanceCalibrator?
+    @State private var isCalibrating = false
 
     /// Read from `POCController`, not a local copy — same reasoning as
     /// `PasswordSettingsPage`.
@@ -66,11 +70,30 @@ struct RecognitionSettingsPage: View {
 
                 SettingsGroupDivider()
 
+                SettingsRowContent(title: "Camera profile") {
+                    SettingsMenuPickerPill(label: selectedProfile.title) {
+                        ForEach(CameraProfile.allCases) { profile in
+                            Button(profile.title) { selectedProfile = profile }
+                        }
+                    }
+                }
+                SettingsGroupDivider()
+
                 SettingsOptionSliderRowContent(
                     title: "Detection distance",
                     stepLabels: DetectionDistanceLevel.allCases.map(\.title),
                     index: detectionDistanceIndex,
                     stopCount: DetectionDistanceLevel.allCases.count
+                )
+
+                SettingsGroupDivider()
+
+                SettingsActionRowContent(
+                    title: "Calibrate distance",
+                    subtitle: calibrationSubtitle,
+                    buttonTitle: "Calibrate",
+                    isEnabled: CameraDeviceCatalog.unusableReason(for: selectedProfile) == nil,
+                    action: startCalibration
                 )
             }
 
@@ -90,6 +113,18 @@ struct RecognitionSettingsPage: View {
                         isEnabled: settings.livenessChecksEnabled
                     )
                 }
+            }
+        }
+        .sheet(isPresented: $isCalibrating) {
+            if let calibrator {
+                DistanceCalibrationSheet(
+                    calibrator: calibrator,
+                    onAccept: { threshold, cameraID in
+                        settings.setMinimumFaceWidth(threshold, origin: .calibrated, cameraID: cameraID, for: calibrator.profile)
+                        isCalibrating = false
+                    },
+                    onCancel: { isCalibrating = false }
+                )
             }
         }
     }
@@ -112,10 +147,9 @@ struct RecognitionSettingsPage: View {
     // MARK: - Detection distance
 
     private var detectionDistanceLevel: DetectionDistanceLevel {
-        .nearest(to: settings.activeMinimumFaceWidth)
+        .nearest(to: settings.minimumFaceWidth(for: selectedProfile))
     }
 
-    // Provisional — task 5.1 redesigns the per-profile detection-distance flow.
     private var detectionDistanceIndex: Binding<Double> {
         Binding(
             get: { detectionDistanceLevel.sliderIndex },
@@ -124,13 +158,40 @@ struct RecognitionSettingsPage: View {
                     DetectionDistanceLevel.from(sliderIndex: $0).minimumFaceWidth,
                     origin: .manual,
                     cameraID: nil,
-                    for: CameraProfile.current()
+                    for: selectedProfile
                 )
             }
         )
     }
 
+    /// Origin of the stored width, plus a warning when the calibrated camera
+    /// no longer matches or no camera is usable.
+    private var calibrationSubtitle: String {
+        let label: String
+        switch settings.detectionDistanceOrigin(for: selectedProfile) {
+        case .manual:
+            label = "Manual."
+        case .calibrated:
+            let currentID = CameraDeviceCatalog.device(for: selectedProfile)?.uniqueID
+            if settings.calibratedCameraID(for: selectedProfile) != currentID {
+                label = "Camera changed, recalibrate."
+            } else {
+                let name = CameraDeviceCatalog.availableDevices().first { $0.id == currentID }?.name ?? "the profile camera"
+                label = "Calibrated with \(name)."
+            }
+        }
+        if let reason = CameraDeviceCatalog.unusableReason(for: selectedProfile) {
+            return label + " " + reason
+        }
+        return label
+    }
+
     // MARK: - Actions
+
+    private func startCalibration() {
+        calibrator = DistanceCalibrator(profile: selectedProfile)
+        isCalibrating = true
+    }
 
     private func unlock() {
         isUnlocking = true
