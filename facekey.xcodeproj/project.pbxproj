@@ -11,6 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A1B2C3D4E5F60718293A4B5C /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		601C493C300FFC8400D3DE9D /* facekey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = facekey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,6 +51,7 @@
 		601C4933300FFC8400D3DE9D = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F60718293A4B5C /* Signing.xcconfig */,
 				601C493E300FFC8400D3DE9D /* facekey */,
 				601C493D300FFC8400D3DE9D /* Products */,
 			);
@@ -149,6 +151,7 @@
 /* Begin XCBuildConfiguration section */
 		601C4945300FFC8500D3DE9D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F60718293A4B5C /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -182,7 +185,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = M5YR53CQW2;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -213,6 +215,7 @@
 		};
 		601C4946300FFC8500D3DE9D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1B2C3D4E5F60718293A4B5C /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -246,7 +249,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = M5YR53CQW2;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -276,7 +278,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 99KWT739F7;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -313,7 +314,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 99KWT739F7;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;

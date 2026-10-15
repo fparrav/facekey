@@ -1,0 +1,4 @@
+// Per-developer signing settings live in Local.xcconfig, which is not tracked.
+// Create it next to this file with, for example:
+//   DEVELOPMENT_TEAM = YOURTEAMID
+#include? "Local.xcconfig"
