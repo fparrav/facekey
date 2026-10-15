@@ -30,9 +30,9 @@ enum CameraDeviceCatalog {
     }
 
     /// Display-specific override, then flat default, then the system default camera.
-    static func resolvedDevice() -> AVCaptureDevice? {
+    static func device(for profile: CameraProfile) -> AVCaptureDevice? {
         let settings = FacekeySettings.shared
-        let preferredID = isUsingBuiltInDisplay()
+        let preferredID: String? = profile == .builtIn
             ? (settings.builtInDisplayCameraID ?? settings.defaultCameraID)
             : (settings.externalDisplayCameraID ?? settings.defaultCameraID)
 
@@ -41,5 +41,20 @@ enum CameraDeviceCatalog {
         }
         return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
             ?? AVCaptureDevice.default(for: .video)
+    }
+
+    /// Human-readable reason the selected profile has no usable camera right now, or nil if it does.
+    static func unusableReason(for profile: CameraProfile) -> String? {
+        if profile == .builtIn, ClamshellState.isClosed() {
+            return "The built-in camera is covered while the lid is closed."
+        }
+        if device(for: profile) == nil {
+            return "No camera is available for this profile."
+        }
+        return nil
+    }
+
+    static func resolvedDevice() -> AVCaptureDevice? {
+        device(for: isUsingBuiltInDisplay() ? .builtIn : .external)
     }
 }

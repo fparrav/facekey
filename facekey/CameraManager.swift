@@ -31,6 +31,9 @@ final class CameraManager: NSObject {
     private(set) var currentFrame: CameraFrame?
     private(set) var errorMessage: String?
 
+    /// When set, opens this camera instead of the one resolved from the current display; used by distance calibration.
+    var deviceIDOverride: String?
+
     /// Exposed read-only so `CameraPreviewView` can attach a preview layer to the same session.
     let session = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
@@ -120,7 +123,14 @@ final class CameraManager: NSObject {
 
     /// Called on every `start()` so a camera preference change in Settings takes effect without an app restart.
     private func reconcileDeviceIfNeeded() {
-        guard let device = CameraDeviceCatalog.resolvedDevice() else {
+        let resolved: AVCaptureDevice?
+        if let deviceIDOverride {
+            // A forced camera must never silently fall back to another one.
+            resolved = AVCaptureDevice(uniqueID: deviceIDOverride)
+        } else {
+            resolved = CameraDeviceCatalog.resolvedDevice()
+        }
+        guard let device = resolved else {
             errorMessage = "No camera device found."
             return
         }
