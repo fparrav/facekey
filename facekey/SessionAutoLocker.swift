@@ -44,6 +44,8 @@ final class SessionAutoLocker {
     /// Routed through `POCController.lockSession()` rather than `SecureCredentialManager` directly, so the Settings UI's
     /// `isSessionUnlocked` flag doesn't go stale.
     func evaluate() {
+        // With auto-unlock the key is not behind Touch ID anyway, so an idle re-lock would only strand the session until relaunch.
+        guard !FacekeySettings.shared.autoUnlockSession else { return }
         guard SecureCredentialManager.isSessionUnlocked,
               let lastActivityAt = SecureCredentialManager.lastActivityAt
         else { return }

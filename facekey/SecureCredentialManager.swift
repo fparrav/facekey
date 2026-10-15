@@ -161,6 +161,28 @@ enum SecureCredentialManager {
         KeychainManager.exists(account: passwordBlobAccount) || SecureFaceStore.exists
     }
 
+    /// Rewrites the session key's Keychain item with or without the user-presence gate, from the already-unlocked in-memory key
+    /// (no prompt). `KeychainManager.save` updates in place and keeps the old access control, so the item is deleted and re-added.
+    /// If the re-add fails the previous mode is restored; the cached key stays valid either way, so nothing is lost mid-session.
+    nonisolated static func setSessionKeyGated(_ gated: Bool) throws {
+        guard let key = cachedKey() else { throw SecureCredentialError.sessionLocked }
+        let data = key.withUnsafeBytes { Data($0) }
+        func store(gated: Bool) throws {
+            try KeychainManager.save(
+                account: sessionKeyAccount,
+                data: data,
+                accessControl: gated ? try KeychainManager.makeUserPresenceAccessControl() : nil
+            )
+        }
+        try KeychainManager.delete(account: sessionKeyAccount)
+        do {
+            try store(gated: gated)
+        } catch {
+            try? store(gated: !gated)
+            throw error
+        }
+    }
+
     /// Clears the cached session key. Next save/read requires Touch ID again.
     nonisolated static func lockSession() {
         setCachedKey(nil)

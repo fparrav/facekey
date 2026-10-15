@@ -115,6 +115,7 @@ final class FacekeySettings {
         static let playUnlockAnimation = "FacekeySettings.playUnlockAnimation"
         static let unlockTriggers = "FacekeySettings.unlockTriggers"
         static let retryOnHover = "FacekeySettings.retryOnHover"
+        static let autoUnlockSession = "FacekeySettings.autoUnlockSession"
         static let faceDetectionSeconds = "FacekeySettings.faceDetectionSeconds"
         static let autoRetryOnce = "FacekeySettings.autoRetryOnce"
         static let hapticFeedbackEnabled = "FacekeySettings.hapticFeedbackEnabled"
@@ -208,6 +209,11 @@ final class FacekeySettings {
     }
     var retryOnHover: Bool {
         didSet { defaults.set(retryOnHover, forKey: Key.retryOnHover) }
+    }
+    /// The session key sits in the Keychain without the Touch ID gate and Facekey unlocks it at launch. Persisted only after
+    /// `SecureCredentialManager.setSessionKeyGated` succeeds — the toggle in Password settings owns that rewrite.
+    var autoUnlockSession: Bool {
+        didSet { defaults.set(autoUnlockSession, forKey: Key.autoUnlockSession) }
     }
     /// How long each scan cycle looks for a face before giving up. Must stay
     /// equal to `FaceUnlockCoordinator.scanWindowDuration` and
@@ -350,6 +356,7 @@ final class FacekeySettings {
         unlockTriggers = storedTriggers.map(Set.init).flatMap { $0.isEmpty ? nil : $0 }
             ?? [.onWake, .onLock]
         retryOnHover = defaults.object(forKey: Key.retryOnHover) as? Bool ?? true
+        autoUnlockSession = defaults.object(forKey: Key.autoUnlockSession) as? Bool ?? false
         faceDetectionSeconds = (defaults.object(forKey: Key.faceDetectionSeconds) as? Int)
             .map { min(max($0, Self.faceDetectionRange.lowerBound), Self.faceDetectionRange.upperBound) }
             ?? 8

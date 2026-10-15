@@ -24,5 +24,13 @@ final class AppEnvironment {
     init() {
         faceUnlockCoordinator = FaceUnlockCoordinator(pocController: pocController)
         sessionAutoLocker = SessionAutoLocker(pocController: pocController)
+
+        if FacekeySettings.shared.autoUnlockSession, SecureCredentialManager.hasStoredPassword() {
+            let pocController = pocController
+            Task {
+                await pocController.unlockSession()
+                FaceEnrollmentStore.shared.reloadIfUnlocked()
+            }
+        }
     }
 }

@@ -110,6 +110,15 @@ struct PasswordSettingsPage: View {
 
                 SettingsGroupDivider()
 
+                SettingsRowContent(title: "Unlock automatically at launch") {
+                    FacekeyToggle(isOn: Binding(
+                        get: { settings.autoUnlockSession },
+                        set: setAutoUnlock
+                    ))
+                }
+
+                SettingsGroupDivider()
+
                 SettingsRowContent(title: "Change password") {
                     SettingsPrimaryButton(title: "Change", compact: true) {
                         OnboardingController.startPasswordOnly()
@@ -144,6 +153,20 @@ struct PasswordSettingsPage: View {
         }
     }
 
+    /// Skips Touch ID by keeping the session key in the Keychain without the user-presence gate, so anything running as you can
+    /// request it (macOS asks you to allow it). Turning it off puts the gate back.
+    private func setAutoUnlock(_ enabled: Bool) {
+        do {
+            try SecureCredentialManager.setSessionKeyGated(!enabled)
+            settings.autoUnlockSession = enabled
+            statusMessage = enabled
+                ? "Facekey will unlock itself at launch. Touch ID is no longer required."
+                : "Touch ID is required again to unlock the session."
+        } catch {
+            statusMessage = "Couldn't change it: \(error.localizedDescription)"
+        }
+    }
+
     /// Face samples must be deleted before the password/session key —
     /// `deletePassword()` clears the cached session key, and deleting the
     /// face store requires an unlocked session.
@@ -151,6 +174,7 @@ struct PasswordSettingsPage: View {
         do {
             FaceEnrollmentStore.shared.deleteAll()
             try SecureCredentialManager.deletePassword()
+            settings.autoUnlockSession = false
             pocController.refreshCredentialStatus()
             statusMessage = "Password and face enrollment removed."
         } catch {
