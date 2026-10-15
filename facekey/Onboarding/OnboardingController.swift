@@ -373,7 +373,7 @@ final class OnboardingController {
     private let initialCaptureDelay: Duration = .seconds(1.5)
     /// Enrollment wants a closer face than unlock's bystander cutoff
     private var enrollmentMinimumFaceWidth: Float {
-        max(FaceRecognitionPipeline.minimumProminentFaceWidth, 0.2)
+        max(FacekeySettings.shared.activeMinimumFaceWidth, 0.2)
     }
 
     // Pose-matching bands, in radians. Yaw: left turn is positive, matching the mirrored
