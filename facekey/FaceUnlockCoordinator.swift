@@ -11,6 +11,9 @@ import Foundation
 import CoreGraphics
 import AppKit
 import Observation
+import os
+
+private let log = Logger(subsystem: "com.fparrav.facekey", category: "unlock")
 
 @Observable
 @MainActor
@@ -103,6 +106,7 @@ final class FaceUnlockCoordinator {
     }
 
     private func evaluateTrigger() {
+        log.debug("evaluateTrigger lastEvent=\(String(describing: self.lockMonitor.lastEvent), privacy: .public) armed=\(self.hasArmedForCurrentLock)")
         guard LockMonitor.isScreenActuallyLocked() else {
             hasArmedForCurrentLock = false
             hasAutoRetriedForCurrentLock = false
@@ -252,12 +256,17 @@ final class FaceUnlockCoordinator {
     /// of itself. This was a real bug — a superseded `camera.stop()` queued behind the newer cycle's `startRunning()` made the
     /// camera visibly switch on then die mid-warm-up, leaving the surviving cycle polling a dead session and never unlocking.
     private func runScanCycle(generation: Int) async {
-        guard LockMonitor.isScreenActuallyLocked() else { return }
+        guard LockMonitor.isScreenActuallyLocked() else {
+            log.info("scan #\(generation) skipped: screen not locked")
+            return
+        }
+        log.info("scan #\(generation) start (ui=\(self.showsUI), window=\(self.scanWindowDuration, privacy: .public)s, threshold=\(self.matchThreshold, privacy: .public))")
 
         await camera.start()
         guard generation == scanGeneration else { return }
 
         if let error = camera.errorMessage {
+            log.error("scan #\(generation) camera error: \(error, privacy: .public)")
             statusMessage = error
             camera.stop()
             return
@@ -275,7 +284,11 @@ final class FaceUnlockCoordinator {
         )
 
         // A newer cycle now owns the camera and overlay — leave both alone, and leave the auto-retry one-shot unspent.
-        guard generation == scanGeneration else { return }
+        guard generation == scanGeneration else {
+            log.info("scan #\(generation) superseded")
+            return
+        }
+        log.info("scan #\(generation) outcome: \(String(describing: outcome), privacy: .public) \(self.lastOutcome ?? "", privacy: .public)")
 
         camera.stop()
 
@@ -317,7 +330,11 @@ final class FaceUnlockCoordinator {
 
     /// `delay` waits out whatever the overlay is still showing so the retry doesn't start underneath the previous outcome.
     private func scheduleAutoRetryIfEnabled(after delay: Duration) {
-        guard FacekeySettings.shared.autoRetryOnce, !hasAutoRetriedForCurrentLock else { return }
+        guard FacekeySettings.shared.autoRetryOnce, !hasAutoRetriedForCurrentLock else {
+            log.info("auto-retry not scheduled (enabled=\(FacekeySettings.shared.autoRetryOnce), alreadyUsed=\(self.hasAutoRetriedForCurrentLock))")
+            return
+        }
+        log.info("auto-retry scheduled")
         hasAutoRetriedForCurrentLock = true
         autoRetryTask?.cancel()
         autoRetryTask = Task { [weak self] in
@@ -326,8 +343,19 @@ final class FaceUnlockCoordinator {
             // Re-check rather than trust the delay: the user may have unlocked by password or retried manually while this waited.
             guard LockMonitor.isScreenActuallyLocked(), self.isEnabled else { return }
             if self.showsUI {
-                guard NotchOverlayController.shared.phase == .closed else { return }
+                // `delay` only matches the overlay's hold, not the collapse animation that follows it, so the phase is
+                // still `.failure`/`.collapsing` when this wakes. Wait for it to settle instead of bailing (that spent the one-shot for nothing).
+                let settleDeadline = ContinuousClock.now + .seconds(3)
+                while NotchOverlayController.shared.phase != .closed {
+                    guard ContinuousClock.now < settleDeadline, !Task.isCancelled else {
+                        log.info("auto-retry aborted: overlay never settled")
+                        return
+                    }
+                    try? await Task.sleep(for: .milliseconds(100))
+                }
+                guard LockMonitor.isScreenActuallyLocked(), self.isEnabled else { return }
             }
+            log.info("auto-retry firing")
             self.startScanCycle()
         }
     }
@@ -430,6 +458,7 @@ final class FaceUnlockCoordinator {
                 case .denied:
                     // Overrides everything, including a match and any confirmation that already happened.
                     lastOutcome = snapshot.decision.denialReason
+                    log.notice("liveness denied: \(self.lastOutcome ?? "?", privacy: .public) (frameSimilarity=\(frameSimilarity, privacy: .public))")
                     return .spoofSuspected
                 case .confirmed(let cue):
                     livenessConfirmed = true
@@ -464,12 +493,14 @@ final class FaceUnlockCoordinator {
                     wrongFaceStartedAt = .now
                 }
                 if ContinuousClock.now - wrongFaceStartedAt! >= wrongFaceGraceDuration {
+                    log.notice("wrong face for 4s (frameSimilarity=\(frameSimilarity, privacy: .public), threshold=\(self.matchThreshold, privacy: .public), buffer=\(embeddingBuffer.count))")
                     return .consistentlyWrongFace
                 }
             }
 
             if let readyMatch, livenessConfirmed {
                 statusMessage = "Recognized — unlocking…"
+                log.notice("matched, injecting password (similarity=\(readyMatch.centroidSimilarity, privacy: .public))")
                 let livenessNote = livenessEnabled
                     ? (confirmingCue.map { "live via \($0.title)" } ?? "liveness clear")
                     : "liveness off"
