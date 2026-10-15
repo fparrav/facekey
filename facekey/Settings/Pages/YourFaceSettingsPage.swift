@@ -367,13 +367,11 @@ private struct QualityTickStrip: View {
     let samples: [FaceSample]
 
     var body: some View {
-        HStack(spacing: SettingsMetrics.qualityTickSpacing) {
+        HStack(spacing: tickGap) {
             ForEach(Array(samples.enumerated()), id: \.offset) { _, sample in
                 Capsule()
                     .fill(color(for: sample.qualityTier))
-                    // maxWidth, not fixed, so more samples than a guided
-                    // enrollment's 18 compress instead of overflowing.
-                    .frame(maxWidth: SettingsMetrics.qualityTickWidth)
+                    .frame(width: tickWidth)
             }
         }
         .frame(width: stripWidth, height: SettingsMetrics.qualityTickHeight, alignment: .leading)
@@ -381,14 +379,31 @@ private struct QualityTickStrip: View {
         .accessibilityLabel("Capture quality for \(samples.count) samples")
     }
 
+    /// Width plus gap per tick: the natural pitch, shrunk when the samples would overflow the strip's max width. The gap has to
+    /// shrink with the tick — with a fixed gap, enough samples leave no width for the ticks at all and the strip vanishes.
+    private var pitch: CGFloat {
+        let natural = SettingsMetrics.qualityTickWidth + SettingsMetrics.qualityTickSpacing
+        guard samples.count > 0 else { return natural }
+        // n ticks and n-1 gaps: n*pitch - gapShare*pitch == maxWidth, with gapShare the gap's fraction of one pitch.
+        let gapShare = SettingsMetrics.qualityTickSpacing / natural
+        let fitted = SettingsMetrics.qualityStripMaxWidth / (CGFloat(samples.count) - gapShare)
+        return min(natural, fitted)
+    }
+
+    private var tickWidth: CGFloat {
+        pitch * SettingsMetrics.qualityTickWidth / (SettingsMetrics.qualityTickWidth + SettingsMetrics.qualityTickSpacing)
+    }
+
+    private var tickGap: CGFloat {
+        pitch - tickWidth
+    }
+
     /// Fixed rather than flexible: this strip shares a row with a `Spacer`
     /// and two buttons, and a `maxWidth` frame would negotiate against them
     /// for the slack instead of just sizing to its ticks.
     private var stripWidth: CGFloat {
-        let tick = SettingsMetrics.qualityTickWidth
-        let gap = SettingsMetrics.qualityTickSpacing
-        let natural = CGFloat(samples.count) * (tick + gap) - gap
-        return min(max(natural, 0), SettingsMetrics.qualityStripMaxWidth)
+        guard samples.count > 0 else { return 0 }
+        return CGFloat(samples.count) * pitch - tickGap
     }
 
     private func color(for tier: FaceSample.QualityTier) -> Color {
