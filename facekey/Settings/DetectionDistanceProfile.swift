@@ -10,11 +10,11 @@ enum CameraProfile: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .builtIn:
-            "Built-in display"
+            String(localized: "Built-in display")
         case .builtInAndExternal:
-            "Built-in + external display"
+            String(localized: "Built-in + external display")
         case .external:
-            "External display"
+            String(localized: "External display")
         }
     }
 
