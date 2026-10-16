@@ -62,7 +62,7 @@ enum LegacyMigration {
 
         do {
             let context = LAContext()
-            context.localizedReason = "Carry your existing face unlock setup over to Facekey"
+            context.localizedReason = String(localized: "Carry your existing face unlock setup over to Facekey")
             let key = try KeychainManager.read(account: sessionKeyAccount, service: legacyService, context: context)
             let access = try KeychainManager.makeUserPresenceAccessControl()
             try KeychainManager.save(account: sessionKeyAccount, data: key, accessControl: access)
