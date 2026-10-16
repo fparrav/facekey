@@ -78,6 +78,7 @@ Open the `.dmg` file and drag Facekey to `/Applications`, then open it.
 | **Notch UI** | A closed pill that expands into a scan animation with success and failure states. Hover to retry — or turn animations off entirely and Facekey stays invisible. |
 | **Camera & display** | Choose which camera to use, including different cameras for the built-in display vs. an external monitor. |
 | **Auto-locking sessions** | The Touch ID session re-locks itself after an idle period you choose, so an unattended Mac doesn't stay authorized forever. |
+| **Verify after other unlocks** | Optional, off by default. After something other than Facekey unlocks the Mac, such as an Apple Watch, a short scan checks who is at the screen and locks it again if it sees a face that isn't enrolled. It runs after the unlock, so it cannot stop the Apple Watch unlock, and an empty room leaves the Mac unlocked. |
 | **Trackpad haptics** | Hovering over the notch will trigger haptics |
 | **Notchless Mac support** | Macs without a notch will be replaced with a pill-shape, dynamic island style design. |
 | **Your data, your call** | Edit or delete your enrolment or stored password at any time. The encrypted files are removed immediately. |
@@ -111,6 +112,10 @@ Facekey won't type your password simply because a face matches. An unlock requir
 5. Accessibility permission is available to enter the password.
 
 Face recognition and liveness detection run independently and must both succeed before the password is entered. 
+
+### Unlocks by other methods
+
+macOS does not let an app approve or block an unlock by an Apple Watch, Touch ID or a typed password, so Facekey cannot gate them. With *Verify my face after other unlock methods* on (Settings → Recognition), Facekey looks at the screen for up to 6 seconds after such an unlock. A match with any enabled identity ends the check quietly. An unrecognised face that stays in view for 3 seconds locks the screen again. If nobody is in view, nothing happens. After a re-lock the check pauses for 2 minutes so it cannot lock you out in a loop. This is a safety net after the fact, not a gate.
 
 ### Local by design
 
