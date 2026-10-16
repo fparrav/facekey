@@ -115,7 +115,7 @@ Face recognition and liveness detection run independently and must both succeed 
 
 ### Unlocks by other methods
 
-macOS does not let an app approve or block an unlock by an Apple Watch, Touch ID or a typed password, so Facekey cannot gate them. With *Verify my face after other unlock methods* on (Settings → Recognition), Facekey looks at the screen for up to 6 seconds after such an unlock. A match with any enabled identity ends the check quietly. An unrecognised face that stays in view for 3 seconds locks the screen again. If nobody is in view, nothing happens. After a re-lock the check pauses for 2 minutes so it cannot lock you out in a loop. This is a safety net after the fact, not a gate.
+macOS does not let an app approve or block an unlock by an Apple Watch, Touch ID or a typed password, so Facekey cannot gate them. With *Verify my face after other unlock methods* on (Settings → Recognition), Facekey looks at the screen for up to 6 seconds after such an unlock. A match with any enabled identity ends the check quietly. An unrecognised face that stays in view for 2 seconds locks the screen again. If nobody is in view, nothing happens. After a re-lock the check pauses for 2 minutes so it cannot lock you out in a loop. This is a safety net after the fact, not a gate.
 
 ### Local by design
 
