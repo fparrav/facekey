@@ -1,0 +1,23 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSCameraUsageDescription" : {
+      "comment" : "Camera permission prompt",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey uses the camera on-device to recognize your face for unlocking your Mac, and to let you enroll and preview your face in Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey usa la cámara en tu Mac para reconocer tu rostro y desbloquearlo, y para que puedas registrar y previsualizar tu rostro en Ajustes."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}
