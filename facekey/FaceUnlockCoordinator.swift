@@ -18,6 +18,15 @@ private let log = Logger(subsystem: "com.fparrav.facekey", category: "unlock")
 @Observable
 @MainActor
 final class FaceUnlockCoordinator {
+    private enum TriggerSource: String {
+        case lockEvent
+        case screenParameters
+    }
+
+    private enum ScanTrigger: String {
+        case wake, lock, space, hover, autoRetry
+    }
+
     private let pocController: POCController
     let lockMonitor = LockMonitor()
     let camera = CameraManager()
@@ -50,6 +59,7 @@ final class FaceUnlockCoordinator {
     private var hasArmedForCurrentLock = false
     /// One-shot per lock session — an auto-retry that could itself auto-retry would loop the camera for the whole lock session.
     private var hasAutoRetriedForCurrentLock = false
+    private var lastDisplayIDs: Set<UInt32> = []
     private var scanTask: Task<Void, Never>?
     /// Bumped by every `startScanCycle()`; a cycle bails once superseded (see `runScanCycle(generation:)`).
     private var scanGeneration = 0
@@ -83,7 +93,7 @@ final class FaceUnlockCoordinator {
             queue: .main
         ) { [weak self] _ in
             guard LockMonitor.isScreenActuallyLocked() else { return }
-            self?.evaluateTrigger()
+            self?.evaluateTrigger(source: .screenParameters)
         }
     }
 
@@ -100,13 +110,16 @@ final class FaceUnlockCoordinator {
                 self?.observeLockAndWakeEvents()
                 // Brief settle delay: CGSession's reported state can lag the true state right after wake.
                 try? await Task.sleep(nanoseconds: 300_000_000)
-                self?.evaluateTrigger()
+                self?.evaluateTrigger(source: .lockEvent)
             }
         }
     }
 
-    private func evaluateTrigger() {
-        log.debug("evaluateTrigger lastEvent=\(String(describing: self.lockMonitor.lastEvent), privacy: .public) armed=\(self.hasArmedForCurrentLock)")
+    private func evaluateTrigger(source: TriggerSource) {
+        let displayIDs = Set(NSScreen.screens.compactMap { ($0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value })
+        let displaysChanged = displayIDs != lastDisplayIDs
+        lastDisplayIDs = displayIDs
+        log.notice("trigger source=\(source.rawValue, privacy: .public) lastEvent=\(String(describing: self.lockMonitor.lastEvent), privacy: .public) displays=\(displayIDs.count) displaysChanged=\(displaysChanged) armed=\(self.hasArmedForCurrentLock)")
         guard LockMonitor.isScreenActuallyLocked() else {
             hasArmedForCurrentLock = false
             hasAutoRetriedForCurrentLock = false
@@ -149,12 +162,14 @@ final class FaceUnlockCoordinator {
         // must stay false, or a later selected signal could never fire (nothing else calls arm() to reset it).
         guard showsUI || shouldAutoScan else { return }
 
+        log.notice("trigger decision=arm autoScan=\(shouldAutoScan)")
         hasArmedForCurrentLock = true
         lastArmedAt = .now
+        let scanTrigger: ScanTrigger = (signal == .onLock) ? .lock : .wake
         Task { [weak self] in
             // arm() only shows a small closed notch silhouette, so this only needs a brief buffer past the login window's entrance.
             try? await Task.sleep(nanoseconds: 250_000_000)
-            await self?.arm(autoScan: shouldAutoScan)
+            await self?.arm(autoScan: shouldAutoScan, trigger: scanTrigger)
         }
     }
 
@@ -214,40 +229,40 @@ final class FaceUnlockCoordinator {
 
         guard showsUI else {
             // Headless: no overlay, just scan.
-            startScanCycle()
+            startScanCycle(trigger: .space)
             return
         }
         if NotchOverlayController.shared.isArmed {
             // Closed pill/notch already up — expand and scan, like a hover retry.
-            startScanCycle()
+            startScanCycle(trigger: .space)
         } else {
-            Task { [weak self] in await self?.arm(autoScan: true) }
+            Task { [weak self] in await self?.arm(autoScan: true, trigger: .space) }
         }
     }
 
     /// Either way the overlay still arms — a deselected trigger only skips the automatic scan, leaving hover-to-start available.
-    private func arm(autoScan: Bool) async {
+    private func arm(autoScan: Bool, trigger: ScanTrigger) async {
         guard LockMonitor.isScreenActuallyLocked() else { return }
         guard showsUI else {
             // Headless: evaluateTrigger() already guaranteed autoScan is true here, so this is just "start scanning."
-            startScanCycle()
+            startScanCycle(trigger: trigger)
             return
         }
         NotchOverlayController.shared.arm { [weak self] in
-            self?.startScanCycle()
+            self?.startScanCycle(trigger: .hover)
         }
         if autoScan {
-            startScanCycle()
+            startScanCycle(trigger: trigger)
         }
     }
 
     /// Called on arm, and again whenever the overlay hover-activates.
-    private func startScanCycle() {
+    private func startScanCycle(trigger: ScanTrigger) {
         scanTask?.cancel()
         scanGeneration &+= 1
         let generation = scanGeneration
         scanTask = Task { [weak self] in
-            await self?.runScanCycle(generation: generation)
+            await self?.runScanCycle(generation: generation, trigger: trigger)
         }
     }
 
@@ -255,14 +270,14 @@ final class FaceUnlockCoordinator {
     /// end of this function, and its global side effects (`camera.stop()` etc.) could otherwise land on the newer cycle instead
     /// of itself. This was a real bug — a superseded `camera.stop()` queued behind the newer cycle's `startRunning()` made the
     /// camera visibly switch on then die mid-warm-up, leaving the surviving cycle polling a dead session and never unlocking.
-    private func runScanCycle(generation: Int) async {
+    private func runScanCycle(generation: Int, trigger: ScanTrigger) async {
         guard LockMonitor.isScreenActuallyLocked() else {
             log.notice("scan #\(generation) skipped: screen not locked")
             return
         }
         // The active camera profile can change between scans (display plugged or unplugged), so resolve its width per scan.
         FacekeySettings.shared.refreshPipelineMinimumFaceWidth()
-        log.notice("scan #\(generation) start (ui=\(self.showsUI), window=\(self.scanWindowDuration, privacy: .public)s, threshold=\(self.matchThreshold, privacy: .public))")
+        log.notice("scan #\(generation) start (ui=\(self.showsUI), window=\(self.scanWindowDuration, privacy: .public)s, threshold=\(self.matchThreshold, privacy: .public), trigger=\(trigger.rawValue, privacy: .public))")
 
         await camera.start()
         guard generation == scanGeneration else { return }
@@ -358,7 +373,7 @@ final class FaceUnlockCoordinator {
                 guard LockMonitor.isScreenActuallyLocked(), self.isEnabled else { return }
             }
             log.notice("auto-retry firing")
-            self.startScanCycle()
+            self.startScanCycle(trigger: .autoRetry)
         }
     }
 
