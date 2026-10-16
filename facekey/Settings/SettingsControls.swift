@@ -23,7 +23,7 @@ enum SettingsTabIcon {
 /// tap. Drop it next to a row's title (see `SettingsRowContent.info`) or
 /// standalone anywhere a setting needs a one-line explanation.
 struct SettingsInfoButton: View {
-    let text: String
+    let text: LocalizedStringKey
     @State private var isPresented = false
 
     var body: some View {
@@ -51,10 +51,10 @@ struct SettingsInfoButton: View {
 /// arbitrary trailing control. Pill-shaped, 430x50, radius 17, translucent
 /// fill + hairline border.
 struct SettingsRow<Trailing: View>: View {
-    let title: String
-    var subtitle: String? = nil
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
     /// Explanatory text for an inline `SettingsInfoButton`; `nil` renders no icon.
-    var info: String? = nil
+    var info: LocalizedStringKey? = nil
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
@@ -70,13 +70,13 @@ struct SettingsRow<Trailing: View>: View {
 
 /// Inner label + trailing control shared by standalone rows and grouped cards.
 struct SettingsRowContent<Trailing: View>: View {
-    let title: String
-    var subtitle: String? = nil
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
     /// Caps the subtitle's width so it wraps instead of stretching toward
     /// the trailing control; `nil` (the default) leaves it unconstrained.
     var subtitleMaxWidth: CGFloat? = nil
     /// Explanatory text for an inline `SettingsInfoButton`; `nil` renders no icon.
-    var info: String? = nil
+    var info: LocalizedStringKey? = nil
     @ViewBuilder var trailing: () -> Trailing
 
     var body: some View {
@@ -115,7 +115,7 @@ struct SettingsRowContent<Trailing: View>: View {
 /// at a fixed width. Shared by General's "Display on" row and Camera's
 /// per-slot device pickers, so every dropdown in Settings looks the same.
 struct SettingsMenuPickerPill<MenuContent: View>: View {
-    let label: String
+    let label: LocalizedStringKey
     @ViewBuilder var menuContent: () -> MenuContent
 
     var body: some View {
@@ -200,8 +200,8 @@ struct FacekeyToggle: View {
 /// A row combining a title/subtitle with a slider and its live numeric
 /// value — used for the raw threshold controls on the Recognition page.
 struct SettingsSlider: View {
-    let title: String
-    var subtitle: String? = nil
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
     let value: Binding<Float>
     let range: ClosedRange<Float>
     var format: (Float) -> String = { String(format: "%.2f", $0) }
@@ -247,9 +247,9 @@ struct SettingsSlider: View {
 /// A row pairing a title/subtitle with an action button — used for "Redo
 /// Face Enrollment", "Change Password", etc.
 struct SettingsActionRow: View {
-    let title: String
-    var subtitle: String? = nil
-    let buttonTitle: String
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
+    let buttonTitle: LocalizedStringKey
     var isDestructive: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -264,9 +264,9 @@ struct SettingsActionRow: View {
 /// The un-chromed twin of `SettingsActionRow`, for dropping directly inside
 /// a `SettingsGroup` alongside other rows.
 struct SettingsActionRowContent: View {
-    let title: String
-    var subtitle: String? = nil
-    let buttonTitle: String
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
+    let buttonTitle: LocalizedStringKey
     var isDestructive: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -280,7 +280,7 @@ struct SettingsActionRowContent: View {
 
 /// The accent pill button both action-row flavors above render.
 private struct SettingsActionButton: View {
-    let title: String
+    let title: LocalizedStringKey
     var isDestructive: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -306,7 +306,7 @@ private struct SettingsActionButton: View {
 /// the slider itself beneath both. Sized by its content, not
 /// `SettingsMetrics.rowHeight`, since it needs two stacked lines.
 struct SettingsSteppedSliderRowContent: View {
-    let title: String
+    let title: LocalizedStringKey
     let valueLabel: String
     /// Index into the option list, not a real quantity — see `AutoLockInterval.sliderIndex`.
     @Binding var index: Double
@@ -339,7 +339,7 @@ struct SettingsSteppedSliderRowContent: View {
 /// Recognition's confidence and distance sliders, both of which snap to
 /// three named stops.
 struct SettingsOptionSliderRowContent: View {
-    let title: String
+    let title: LocalizedStringKey
     /// One label per stop, left-to-right; the first is leading-aligned, the
     /// last trailing-aligned, and any in between centered.
     let stepLabels: [String]
@@ -385,7 +385,7 @@ struct SettingsOptionSliderRowContent: View {
 /// instead of a confirmation dialog so the commitment is cancellable
 /// mid-hold rather than a single easy-to-reflex click.
 struct HoldToConfirmButton: View {
-    let title: String
+    let title: LocalizedStringKey
     var holdDuration: TimeInterval = 3
     let action: () -> Void
 
@@ -428,7 +428,7 @@ struct HoldToConfirmButton: View {
 /// button. Used both inside rows (`compact`) and on its own in centered
 /// empty/locked states.
 struct SettingsPrimaryButton: View {
-    let title: String
+    let title: LocalizedStringKey
     var isEnabled: Bool = true
     /// Row-height padding; `false` gives the roomier standalone size.
     var compact: Bool = false
@@ -455,10 +455,10 @@ struct SettingsPrimaryButton: View {
 /// Face rather than each page keeping its own copy.
 struct SettingsEmptyStateView: View {
     let icon: String
-    let message: String
-    let buttonTitle: String
+    let message: LocalizedStringKey
+    let buttonTitle: LocalizedStringKey
     var isButtonEnabled: Bool = true
-    var caption: String? = nil
+    var caption: LocalizedStringKey? = nil
     let action: () -> Void
 
     var body: some View {
@@ -485,7 +485,7 @@ struct SettingsEmptyStateView: View {
 /// Section caption used above a group of rows on a settings page (distinct
 /// from the sidebar's own section headers).
 struct SettingsCaption: View {
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         Text(text)
@@ -497,7 +497,7 @@ struct SettingsCaption: View {
 
 /// Left-aligned section title sitting above a settings card.
 struct SettingsSectionTitle: View {
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         Text(text)
@@ -546,8 +546,8 @@ struct SettingsOptionCard<Content: View>: View {
 /// fixed-width `SettingsOptionTile`s — for pickers compact enough to share
 /// a row with their label. Drop directly inside a `SettingsGroup`.
 struct SettingsLabeledOptionRow<Content: View>: View {
-    let title: String
-    var subtitle: String? = nil
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
     @ViewBuilder var content: () -> Content
 
     var body: some View {
@@ -588,7 +588,7 @@ struct SettingsLabeledOptionRow<Content: View>: View {
 /// beneath, and an accent ring when selected. Selection is just a `Bool`, so
 /// this serves single-select and multi-select pickers alike.
 struct SettingsOptionTile<Preview: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     let isSelected: Bool
     let action: () -> Void
     /// Defaults to the standard swatch height every other option picker
@@ -697,7 +697,7 @@ struct UnlockAnimationPicker: View {
         ) {
             ForEach(UnlockAnimationStyle.selectableCases) { style in
                 SettingsOptionTile(
-                    title: style.title,
+                    title: LocalizedStringKey(style.title),
                     isSelected: selection == style,
                     action: { selectAndPreview(style) },
                     previewHeight: SettingsMetrics.unlockAnimationOptionPreviewSize.height,
@@ -784,7 +784,7 @@ struct LivenessModePicker: View {
         ) {
             ForEach(LivenessMode.allCases) { mode in
                 SettingsOptionTile(
-                    title: mode.title,
+                    title: LocalizedStringKey(mode.title),
                     isSelected: selection == mode,
                     action: { selection = mode },
                     previewHeight: SettingsMetrics.triggerOptionPreviewSize.height,
@@ -823,7 +823,7 @@ struct UnlockTriggerPicker: View {
             ForEach(UnlockTrigger.allCases) { trigger in
                 let isSelected = selection.contains(trigger)
                 SettingsOptionTile(
-                    title: trigger.title,
+                    title: LocalizedStringKey(trigger.title),
                     isSelected: isSelected,
                     action: { toggle(trigger, isSelected: isSelected) },
                     previewHeight: SettingsMetrics.triggerOptionPreviewSize.height,

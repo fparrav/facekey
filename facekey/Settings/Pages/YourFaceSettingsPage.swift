@@ -99,7 +99,7 @@ struct YourFaceSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError,
+            caption: sessionError.map { LocalizedStringKey($0) },
             action: unlock
         )
     }
@@ -119,7 +119,7 @@ struct YourFaceSettingsPage: View {
                 .font(SettingsMetrics.rowFont)
                 .foregroundStyle(SettingsMetrics.textSecondary)
 
-            SettingsCaption(text: store.loadFailure ?? "The stored data couldn't be decrypted with this session key.")
+            SettingsCaption(text: store.loadFailure.map { LocalizedStringKey($0) } ?? "The stored data couldn't be decrypted with this session key.")
                 .multilineTextAlignment(.center)
 
             SettingsCaption(text: "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again.")
@@ -166,7 +166,7 @@ struct YourFaceSettingsPage: View {
             }
 
             if let writeError {
-                SettingsCaption(text: writeError)
+                SettingsCaption(text: LocalizedStringKey(writeError))
             }
         }
     }

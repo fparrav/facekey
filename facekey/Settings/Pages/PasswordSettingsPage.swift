@@ -11,7 +11,7 @@ struct PasswordSettingsPage: View {
 
     @State private var isUnlocking = false
     @State private var sessionError: String?
-    @State private var statusMessage: String?
+    @State private var statusMessage: LocalizedStringKey?
 
     /// Read from `POCController`, not a local copy — `SessionAutoLocker` can
     /// lock the session from outside this view.
@@ -80,7 +80,7 @@ struct PasswordSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError,
+            caption: sessionError.map { LocalizedStringKey($0) },
             action: unlock
         )
     }

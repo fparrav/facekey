@@ -50,7 +50,7 @@ struct RecognitionSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError,
+            caption: sessionError.map { LocalizedStringKey($0) },
             action: unlock
         )
     }
@@ -70,7 +70,7 @@ struct RecognitionSettingsPage: View {
                 SettingsGroupDivider()
 
                 SettingsRowContent(title: "Camera profile") {
-                    SettingsMenuPickerPill(label: selectedProfile.title) {
+                    SettingsMenuPickerPill(label: LocalizedStringKey(selectedProfile.title)) {
                         ForEach(CameraProfile.allCases) { profile in
                             Button(profile.title) { selectedProfile = profile }
                         }
@@ -89,7 +89,7 @@ struct RecognitionSettingsPage: View {
 
                 SettingsActionRowContent(
                     title: "Calibrate distance",
-                    subtitle: calibrationSubtitle,
+                    subtitle: LocalizedStringKey(calibrationSubtitle),
                     buttonTitle: "Calibrate",
                     isEnabled: CameraDeviceCatalog.unusableReason(for: selectedProfile) == nil,
                     action: startCalibration
@@ -180,14 +180,14 @@ struct RecognitionSettingsPage: View {
         let label: String
         switch settings.detectionDistanceOrigin(for: selectedProfile) {
         case .manual:
-            label = "Manual."
+            label = String(localized: "Manual.")
         case .calibrated:
             let currentID = CameraDeviceCatalog.device(for: selectedProfile)?.uniqueID
             if settings.calibratedCameraID(for: selectedProfile) != currentID {
-                label = "Camera changed, recalibrate."
+                label = String(localized: "Camera changed, recalibrate.")
             } else {
-                let name = CameraDeviceCatalog.availableDevices().first { $0.id == currentID }?.name ?? "the profile camera"
-                label = "Calibrated with \(name)."
+                let name = CameraDeviceCatalog.availableDevices().first { $0.id == currentID }?.name ?? String(localized: "the profile camera")
+                label = String(localized: "Calibrated with \(name).")
             }
         }
         if let reason = CameraDeviceCatalog.unusableReason(for: selectedProfile) {

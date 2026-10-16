@@ -58,7 +58,7 @@ struct CameraSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError,
+            caption: sessionError.map { LocalizedStringKey($0) },
             action: unlock
         )
     }
@@ -75,7 +75,7 @@ struct CameraSettingsPage: View {
                 cameraPicker(
                     title: "Built-in + external display",
                     selection: $settings.builtInAndExternalDisplayCameraID,
-                    emptyTitle: "Same as built-in display"
+                    emptyTitle: String(localized: "Same as built-in display")
                 )
                 SettingsGroupDivider()
                 cameraPicker(title: "External display", selection: $settings.externalDisplayCameraID)
@@ -92,7 +92,7 @@ struct CameraSettingsPage: View {
                 )
 
             if isPreviewShown, let error = previewCamera.errorMessage {
-                SettingsCaption(text: error)
+                SettingsCaption(text: LocalizedStringKey(error))
             }
         }
         .onChange(of: settings.defaultCameraID) { restartPreview() }
@@ -135,12 +135,12 @@ struct CameraSettingsPage: View {
     }
 
     private func cameraPicker(
-        title: String,
+        title: LocalizedStringKey,
         selection: Binding<String?>,
-        emptyTitle: String = "System default"
+        emptyTitle: String = String(localized: "System default")
     ) -> some View {
         SettingsRowContent(title: title) {
-            SettingsMenuPickerPill(label: cameraLabel(for: selection.wrappedValue, emptyTitle: emptyTitle)) {
+            SettingsMenuPickerPill(label: LocalizedStringKey(cameraLabel(for: selection.wrappedValue, emptyTitle: emptyTitle))) {
                 Button(emptyTitle) { selection.wrappedValue = nil }
                 ForEach(devices) { device in
                     Button(device.name) { selection.wrappedValue = device.id }
@@ -154,7 +154,7 @@ struct CameraSettingsPage: View {
         devices = CameraDeviceCatalog.availableDevices()
     }
 
-    private func cameraLabel(for id: String?, emptyTitle: String = "System default") -> String {
+    private func cameraLabel(for id: String?, emptyTitle: String = String(localized: "System default")) -> String {
         guard let id, let device = devices.first(where: { $0.id == id }) else {
             return emptyTitle
         }

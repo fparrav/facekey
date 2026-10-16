@@ -81,7 +81,7 @@ struct GeneralSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError,
+            caption: sessionError.map { LocalizedStringKey($0) },
             action: unlock
         )
     }
@@ -139,7 +139,7 @@ struct GeneralSettingsPage: View {
                 }
             }
             if let launchAtLoginError {
-                SettingsCaption(text: launchAtLoginError)
+                SettingsCaption(text: LocalizedStringKey(launchAtLoginError))
             }
             if hasInheritedXcodePermission {
                 SettingsCaption(text: "Running from Xcode — permission checks resolve against Xcode’s grants, not Facekey’s, so this reading is meaningless. Launch facekey.app on its own to see the real state.")
@@ -213,8 +213,8 @@ struct GeneralSettingsPage: View {
                     permissionRow(
                         title: "Accessibility",
                         isGranted: accessibilityGranted,
-                        reason: "Lets Facekey type your password on the lock screen.",
-                        pendingNote: "Without it Facekey recognizes you but can't unlock. If it was granted before, remove and re-add Facekey in System Settings.",
+                        reason: String(localized: "Lets Facekey type your password on the lock screen."),
+                        pendingNote: String(localized: "Without it Facekey recognizes you but can't unlock. If it was granted before, remove and re-add Facekey in System Settings."),
                         buttonTitle: hasPromptedAccessibility ? "Open Settings" : "Grant"
                     ) {
                         if !hasPromptedAccessibility {
@@ -229,8 +229,8 @@ struct GeneralSettingsPage: View {
                     permissionRow(
                         title: "Camera",
                         isGranted: cameraState == .granted,
-                        reason: "Lets Facekey see your face to recognize you.",
-                        pendingNote: cameraState == .denied ? "Access was denied — enable it in System Settings." : nil,
+                        reason: String(localized: "Lets Facekey see your face to recognize you."),
+                        pendingNote: cameraState == .denied ? String(localized: "Access was denied — enable it in System Settings.") : nil,
                         buttonTitle: cameraState == .notDetermined ? "Grant" : "Open Settings"
                     ) {
                         Task {
@@ -264,14 +264,14 @@ struct GeneralSettingsPage: View {
     /// button (which was nearly invisible); both states share one trailing
     /// width so the controls line up across rows.
     private func permissionRow(
-        title: String,
+        title: LocalizedStringKey,
         isGranted: Bool,
         reason: String,
         pendingNote: String?,
-        buttonTitle: String,
+        buttonTitle: LocalizedStringKey,
         action: @escaping () -> Void
     ) -> some View {
-        SettingsRowContent(title: title, subtitle: isGranted ? reason : [reason, pendingNote].compactMap { $0 }.joined(separator: " "), subtitleMaxWidth: 250) {
+        SettingsRowContent(title: title, subtitle: LocalizedStringKey(isGranted ? reason : [reason, pendingNote].compactMap { $0 }.joined(separator: " ")), subtitleMaxWidth: 250) {
             Group {
                 if isGranted {
                     HStack(spacing: 5) {
@@ -323,7 +323,7 @@ struct GeneralSettingsPage: View {
 
     private func displayPicker() -> some View {
         SettingsRowContent(title: "Display on") {
-            SettingsMenuPickerPill(label: displayLabel) {
+            SettingsMenuPickerPill(label: LocalizedStringKey(displayLabel)) {
                 Button("Main display") {
                     settings.preferredDisplayID = nil
                     settings.preferredDisplayName = nil
@@ -352,13 +352,13 @@ struct GeneralSettingsPage: View {
     }
 
     private var displayLabel: String {
-        guard let targetID = settings.preferredDisplayID else { return "Main display" }
+        guard let targetID = settings.preferredDisplayID else { return String(localized: "Main display") }
         if let connected = screens.first(where: { $0.stableDisplayID == targetID }) {
             return connected.localizedName
         }
         // Picked, but not currently connected — say so rather than showing
         // a bare ID or falling back to another display's name.
-        guard let name = settings.preferredDisplayName else { return "Selected display (disconnected)" }
-        return "\(name) (disconnected)"
+        guard let name = settings.preferredDisplayName else { return String(localized: "Selected display (disconnected)") }
+        return String(localized: "\(name) (disconnected)")
     }
 }
