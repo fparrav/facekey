@@ -64,7 +64,7 @@ final class DistanceCalibrator: Identifiable {
             state = .failed(error)
             return
         }
-        state = .waiting("Looking for your face…")
+        state = .waiting(String(localized: "Looking for your face…"))
         beginMeasuring()
     }
 
@@ -72,7 +72,7 @@ final class DistanceCalibrator: Identifiable {
     func retry() {
         guard case .ready = state else { return }
         widths.removeAll()
-        state = .waiting("Looking for your face…")
+        state = .waiting(String(localized: "Looking for your face…"))
         beginMeasuring()
     }
 
@@ -109,18 +109,18 @@ final class DistanceCalibrator: Identifiable {
         faces = detected
         guard detected.count == 1, let face = detected.first else {
             widths.removeAll()
-            state = .waiting(detected.isEmpty ? "Looking for your face…" : "Only one person should be in view.")
+            state = .waiting(detected.isEmpty ? String(localized: "Looking for your face…") : String(localized: "Only one person should be in view."))
             return false
         }
         widths.append(Float(face.normalizedBoundingBox.width))
         if widths.count > Self.windowSize { widths.removeFirst(widths.count - Self.windowSize) }
 
         guard widths.count >= Self.minimumSamples else {
-            state = .waiting("Hold still…")
+            state = .waiting(String(localized: "Hold still…"))
             return false
         }
         guard DistanceCalibrationMath.isStable(widths), let median = DistanceCalibrationMath.median(widths) else {
-            state = .waiting("Hold still…")
+            state = .waiting(String(localized: "Hold still…"))
             return false
         }
         state = .ready(measuredWidth: median)
