@@ -127,6 +127,7 @@ final class FacekeySettings {
         static let autoUnlockSession = "FacekeySettings.autoUnlockSession"
         static let faceDetectionSeconds = "FacekeySettings.faceDetectionSeconds"
         static let autoRetryOnce = "FacekeySettings.autoRetryOnce"
+        static let verifyAfterExternalUnlock = "FacekeySettings.verifyAfterExternalUnlock"
         static let hapticFeedbackEnabled = "FacekeySettings.hapticFeedbackEnabled"
         static let showsInMenuBar = "FacekeySettings.showsInMenuBar"
         static let preferredDisplayID = "FacekeySettings.preferredDisplayID"
@@ -267,6 +268,9 @@ final class FacekeySettings {
     }
     var autoRetryOnce: Bool {
         didSet { defaults.set(autoRetryOnce, forKey: Key.autoRetryOnce) }
+    }
+    var verifyAfterExternalUnlock: Bool {
+        didSet { defaults.set(verifyAfterExternalUnlock, forKey: Key.verifyAfterExternalUnlock) }
     }
     /// Trackpad haptic on hovering the notch/pill and on a successful unlock —
     /// see `NotchOverlayView`'s hover handler and `.onChange(of: controller.phase)`.
@@ -417,6 +421,7 @@ final class FacekeySettings {
             .map { min(max($0, Self.faceDetectionRange.lowerBound), Self.faceDetectionRange.upperBound) }
             ?? 8
         autoRetryOnce = defaults.object(forKey: Key.autoRetryOnce) as? Bool ?? false
+        verifyAfterExternalUnlock = defaults.object(forKey: Key.verifyAfterExternalUnlock) as? Bool ?? false
         hapticFeedbackEnabled = defaults.object(forKey: Key.hapticFeedbackEnabled) as? Bool ?? true
         // Keep the icon available for existing and new installs unless the
         // user explicitly opts into the background-only mode.
