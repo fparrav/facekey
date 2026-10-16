@@ -9,7 +9,7 @@
 import SwiftUI
 
 enum SettingsMetrics {
-    static let windowSize = CGSize(width: 500, height: 620)
+    static let windowSize = CGSize(width: 540, height: 620)
     /// No `outerCornerRadius` token — the window's outer corner is AppKit's
     /// own native mask (see WindowConfiguringView), not a hardcoded clip.
     ///

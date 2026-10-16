@@ -260,7 +260,7 @@ private enum DetectionDistanceLevel: Int, CaseIterable {
         switch self {
         case .closest: return String(localized: "Closest")
         case .close: return String(localized: "Close distance", defaultValue: "Close")
-        case .standard: return String(localized: "Default")
+        case .standard: return String(localized: "Default distance", defaultValue: "Default")
         case .far: return String(localized: "Far")
         case .farther: return String(localized: "Farther")
         case .farthest: return String(localized: "Farthest")
