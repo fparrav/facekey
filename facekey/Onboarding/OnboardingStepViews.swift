@@ -217,7 +217,7 @@ struct SelectCameraStepView: View {
             Spacer(minLength: 2)
 
             CameraSelectionPill(
-                label: LocalizedStringKey(controller.cameraSelectionLabel),
+                label: LocalizedStringKey.verbatim(controller.cameraSelectionLabel),
                 devices: controller.cameraDevices
             ) { id in
                 controller.selectCamera(id: id)
@@ -412,7 +412,7 @@ struct NameStepView: View {
                 PillButton(title: "Back", style: .secondary) {
                     controller.back()
                 }
-                PillButton(title: LocalizedStringKey(controller.nameStepPrimaryTitle), isEnabled: !trimmedName.isEmpty, isDefault: true) {
+                PillButton(title: LocalizedStringKey.verbatim(controller.nameStepPrimaryTitle), isEnabled: !trimmedName.isEmpty, isDefault: true) {
                     controller.confirmName()
                 }
             }

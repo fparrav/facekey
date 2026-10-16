@@ -43,14 +43,14 @@ enum EnrollmentSweepDirection: CaseIterable, Hashable {
 
     var previewLabel: String {
         switch self {
-        case .left:        return "Left"
-        case .right:       return "Right"
-        case .up:          return "Up"
-        case .down:        return "Down"
-        case .topLeft:     return "Top left"
-        case .topRight:    return "Top right"
-        case .bottomLeft:  return "Bottom left"
-        case .bottomRight: return "Bottom right"
+        case .left:        return String(localized: "Left")
+        case .right:       return String(localized: "Right")
+        case .up:          return String(localized: "Up")
+        case .down:        return String(localized: "Down")
+        case .topLeft:     return String(localized: "Top left")
+        case .topRight:    return String(localized: "Top right")
+        case .bottomLeft:  return String(localized: "Bottom left")
+        case .bottomRight: return String(localized: "Bottom right")
         }
     }
 }
