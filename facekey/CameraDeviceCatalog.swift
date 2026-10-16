@@ -47,14 +47,14 @@ enum CameraDeviceCatalog {
     static func unusableReason(for profile: CameraProfile) -> String? {
         let selected = device(for: profile)
         if ClamshellState.isClosed(), selected?.deviceType == .builtInWideAngleCamera {
-            return "The built-in camera is covered while the lid is closed."
+            return String(localized: "The built-in camera is covered while the lid is closed.")
         }
         let access = AVCaptureDevice.authorizationStatus(for: .video)
         if access == .denied || access == .restricted {
-            return "Camera access is off for Facekey in System Settings > Privacy & Security > Camera."
+            return String(localized: "Camera access is off for Facekey in System Settings > Privacy & Security > Camera.")
         }
         if selected == nil {
-            return "No camera is available for this profile."
+            return String(localized: "No camera is available for this profile.")
         }
         return nil
     }
