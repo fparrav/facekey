@@ -14,7 +14,7 @@ import AppKit
 struct PillButton: View {
     enum Style { case primary, secondary }
 
-    let title: String
+    let title: LocalizedStringKey
     var style: Style = .primary
     var width: CGFloat = OnboardingMetrics.primaryButtonWidth
     var isEnabled = true
@@ -51,8 +51,8 @@ struct PillButton: View {
 /// One row on the Permissions screen: status dot, title/detail, and a Grant
 /// pill that disables once granted.
 struct PermissionRow: View {
-    let title: String
-    let detail: String
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
     let granted: Bool
     let grant: () -> Void
 
@@ -102,7 +102,7 @@ struct PermissionRow: View {
 /// row breaks its internal label layout; left hugging its own content, at the width those
 /// two already prove out, it behaves correctly.
 struct CameraSelectionPill: View {
-    let label: String
+    let label: LocalizedStringKey
     let devices: [CameraDevice]
     let onSelect: (String?) -> Void
 
@@ -147,7 +147,7 @@ struct CameraSelectionPill: View {
 
 /// The password entry field — a pill-shaped `SecureField`.
 struct PillSecureField: View {
-    let placeholder: String
+    let placeholder: LocalizedStringKey
     @Binding var text: String
     var autofocus = false
     var onSubmit: () -> Void = {}
@@ -172,7 +172,7 @@ struct PillSecureField: View {
 /// The plain-text twin of `PillSecureField`, used by the naming step. Same
 /// capsule so the two read as one control family — only the echo differs.
 struct PillTextField: View {
-    let placeholder: String
+    let placeholder: LocalizedStringKey
     @Binding var text: String
     var autofocus = false
     var onSubmit: () -> Void = {}
