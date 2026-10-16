@@ -60,10 +60,9 @@ final class CameraManager: NSObject {
         }
 
         guard permission == .granted else {
-            errorMessage = "Camera access not granted (status: \(describe(status))). " +
-                (status == .restricted
-                    ? "macOS reports this as *restricted* — not a simple user denial. This usually means Screen Time content restrictions or an MDM/profile policy is blocking camera access for this app; toggling it in System Settings > Privacy & Security > Camera won't help until that restriction is lifted."
-                    : "Enable it in System Settings > Privacy & Security > Camera. If Facekey isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again.")
+            errorMessage = status == .restricted
+                ? String(localized: "Camera access not granted (status: \(describe(status))). macOS reports this as *restricted* — not a simple user denial. This usually means Screen Time content restrictions or an MDM/profile policy is blocking camera access for this app; toggling it in System Settings > Privacy & Security > Camera won't help until that restriction is lifted.")
+                : String(localized: "Camera access not granted (status: \(describe(status))). Enable it in System Settings > Privacy & Security > Camera. If Facekey isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again.")
             return
         }
 
@@ -131,7 +130,7 @@ final class CameraManager: NSObject {
             resolved = CameraDeviceCatalog.resolvedDevice()
         }
         guard let device = resolved else {
-            errorMessage = "No camera device found."
+            errorMessage = String(localized: "No camera device found.")
             return
         }
         guard device.uniqueID != currentInput?.device.uniqueID else { return }
@@ -146,7 +145,7 @@ final class CameraManager: NSObject {
             selectHighestResolutionFormat(for: device)
         } else {
             currentInput = nil
-            errorMessage = "No camera device found."
+            errorMessage = String(localized: "No camera device found.")
         }
         session.commitConfiguration()
     }
@@ -165,7 +164,7 @@ final class CameraManager: NSObject {
             device.activeFormat = best
             device.unlockForConfiguration()
         } catch {
-            errorMessage = "Couldn't select the camera's highest-resolution format: \(error.localizedDescription)"
+            errorMessage = String(localized: "Couldn't select the camera's highest-resolution format: \(error.localizedDescription)")
         }
     }
 
