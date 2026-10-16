@@ -2,36 +2,75 @@
   "sourceLanguage" : "en",
   "strings" : {
     "\"%@\" will stop being recognized until you enroll them again." : {},
+    "%@" : {
+      "shouldTranslate" : false
+    },
     "%@ (disconnected)" : {},
-    "%lld enrolled" : {},
-    "%lld frames" : {},
-    "%lld of %lld samples are low quality" : {},
-    "%lld sample%@" : {},
-    "%lld/%lld" : {},
-    "%lld/9 poses · %lld samples · enrolled %@" : {},
-    "(ArcFace unavailable — see log)" : {},
+    "%lld enrolled" : {
+      "shouldTranslate" : false
+    },
+    "%lld frames" : {
+      "shouldTranslate" : false
+    },
+    "%lld of %lld samples are low quality" : {
+      "shouldTranslate" : false
+    },
+    "%lld sample%@" : {
+      "shouldTranslate" : false
+    },
+    "%lld/%lld" : {
+      "shouldTranslate" : false
+    },
+    "%lld/9 poses · %lld samples · enrolled %@" : {
+      "shouldTranslate" : false
+    },
+    "(ArcFace unavailable — see log)" : {
+      "shouldTranslate" : false
+    },
     "14 days" : {},
     "30 days" : {},
     "7 days" : {},
-    "Abstaining — not enough head rotation to tell a plane from a still 3D face." : {},
+    "A face named \"%@\" is already enrolled." : {},
+    "About" : {},
+    "Abstaining — not enough head rotation to tell a plane from a still 3D face." : {
+      "shouldTranslate" : false
+    },
     "Accept" : {},
     "Access was denied — enable it in System Settings." : {},
     "Accessibility" : {},
     "Accessibility not granted — open System Settings and enable Facekey." : {},
     "Accessibility permission required. Open System Settings → Privacy & Security → Accessibility and enable Facekey." : {},
     "Active when" : {},
-    "Add Captures" : {},
-    "Add Identity" : {},
+    "Add Captures" : {
+      "shouldTranslate" : false
+    },
+    "Add Identity" : {
+      "shouldTranslate" : false
+    },
+    "Added %lld sample · %lld total" : {},
+    "Added %lld samples · %lld total" : {},
     "After unlock" : {},
-    "Aligned face" : {},
-    "Aligned input" : {},
-    "Alignment: %@" : {},
+    "Aligned face" : {
+      "shouldTranslate" : false
+    },
+    "Aligned input" : {
+      "shouldTranslate" : false
+    },
+    "Alignment: %@" : {
+      "shouldTranslate" : false
+    },
     "Allow Facekey to recognize your face" : {},
     "Allow Facekey to unlock your Mac" : {},
+    "Also requires proof of a real face." : {},
     "Animation" : {},
     "ArcFace model produced an unexpected output: %@" : {},
     "ArcFace.mlpackage/mlmodelc not found in the app bundle. Run tools/convert_arcface.py, then add facekey/Models/ArcFace.mlpackage to the Xcode project." : {},
     "ArcFaceEmbedder expects a %lldx%lld aligned image, got %lldx%lld. Run the face through FaceAligner first." : {},
+    "Authenticate to enroll another face" : {},
+    "Authenticate to re-enroll this face" : {},
+    "Authenticate to re-enroll your face" : {},
+    "Authenticate to set up or use Facekey" : {},
+    "Authenticate to view your enrolled face" : {},
     "Authenticating…" : {},
     "Authentication was cancelled or failed." : {},
     "Auto lock session" : {},
@@ -39,7 +78,12 @@
     "Automatically check for updates" : {},
     "Back" : {},
     "Behaviour" : {},
-    "Best match: %@ — centroid %@, max %@" : {},
+    "Best match: %@ — centroid %@, max %@" : {
+      "shouldTranslate" : false
+    },
+    "Bottom left" : {},
+    "Bottom right" : {},
+    "Bring your face closer" : {},
     "Built-in + external" : {},
     "Built-in + external display" : {},
     "Built-in display" : {},
@@ -49,29 +93,51 @@
     "Calibrate distance" : {},
     "Calibrated with %@." : {},
     "Camera" : {},
+    "Camera access is off for Facekey in System Settings > Privacy & Security > Camera." : {},
     "Camera access not granted (status: %@). Enable it in System Settings > Privacy & Security > Camera. If Facekey isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again." : {},
     "Camera access not granted (status: %@). macOS reports this as *restricted* — not a simple user denial. This usually means Screen Time content restrictions or an MDM/profile policy is blocking camera access for this app; toggling it in System Settings > Privacy & Security > Camera won't help until that restriction is lifted." : {},
     "Camera changed, recalibrate." : {},
-    "Camera Preview" : {},
+    "Camera Preview" : {
+      "shouldTranslate" : false
+    },
     "Camera profile" : {},
     "Cancel" : {},
     "Capture quality for %lld samples" : {},
-    "Capture quality: %@" : {},
-    "Capture quality: —" : {},
-    "Capture Sample" : {},
+    "Capture quality • %lld%%" : {},
+    "Capture quality • not recorded" : {},
+    "Capture quality: %@" : {
+      "shouldTranslate" : false
+    },
+    "Capture quality: —" : {
+      "shouldTranslate" : false
+    },
+    "Capture Sample" : {
+      "shouldTranslate" : false
+    },
     "Captured with a different recognition model — use Add Captures before this face can unlock your Mac." : {},
-    "centroid %@" : {},
+    "Carry your existing face unlock setup over to Facekey" : {},
+    "centroid %@" : {
+      "shouldTranslate" : false
+    },
     "Change" : {},
     "Change password" : {},
     "Check" : {},
     "Check for Updates" : {},
     "Checks that you're a live person, not a photo. May increase unlock time." : {},
     "Checks who is at the screen after the Mac was unlocked by something other than Facekey, such as an Apple Watch, and locks it again if an unknown face is seen. It runs after the unlock and cannot stop it." : {},
-    "Clear" : {},
+    "Clear" : {
+      "shouldTranslate" : false
+    },
     "Close" : {},
-    "Closest: %@ — centroid %@, max %@" : {},
-    "Coherence: %@  Motion: %@" : {},
+    "Closest" : {},
+    "Closest: %@ — centroid %@, max %@" : {
+      "shouldTranslate" : false
+    },
+    "Coherence: %@  Motion: %@" : {
+      "shouldTranslate" : false
+    },
     "Confirm" : {},
+    "Continue" : {},
     "Could not align the detected face." : {},
     "Couldn't change it: %@" : {},
     "Couldn't confirm a live face — hover the notch to try again." : {},
@@ -81,35 +147,57 @@
     "Couldn't prepare the aligned face image for Core ML." : {},
     "Couldn't remove: %@" : {},
     "Couldn't select the camera's highest-resolution format: %@" : {},
-    "Cue firing latches for the whole scan — reset to re-test." : {},
+    "Cue firing latches for the whole scan — reset to re-test." : {
+      "shouldTranslate" : false
+    },
     "Decryption failed. The stored credential may be corrupted." : {},
     "Default" : {},
     "Delete" : {},
     "Delete %@" : {},
     "Delete this enrolled face?" : {},
-    "Detection" : {},
+    "Detection" : {
+      "shouldTranslate" : false
+    },
     "Detection distance" : {},
-    "Device overlap: %@" : {},
+    "Device overlap: %@" : {
+      "shouldTranslate" : false
+    },
     "Display on" : {},
-    "Distributions overlap — no single cutoff perfectly separates these samples yet." : {},
-    "Embedder: %@" : {},
-    "Embedding: %lld numbers" : {},
+    "Distributions overlap — no single cutoff perfectly separates these samples yet." : {
+      "shouldTranslate" : false
+    },
+    "Down" : {},
+    "Embedder: %@" : {
+      "shouldTranslate" : false
+    },
+    "Embedding: %lld numbers" : {
+      "shouldTranslate" : false
+    },
     "Enable Face Unlock" : {},
     "Encryption failed." : {},
-    "Enroll" : {},
+    "Enroll" : {
+      "shouldTranslate" : false
+    },
     "Enroll another face" : {},
     "Enroll separate identities to use Facekey with multiple people, accessories (ex. glasses), facial expressions, or new lighting environments. This improves recognition quality." : {},
     "Enrolled faces couldn't be read" : {},
+    "Enter a name." : {},
     "Enter a name..." : {},
     "Enter a password first." : {},
+    "Enter a password." : {},
     "Enter password..." : {},
     "Enter your password" : {},
     "External display" : {},
     "External only" : {},
+    "Face" : {},
+    "Face captured" : {},
     "Face detection duration" : {},
     "Face encrypted" : {},
     "Face enrollment" : {},
-    "Face Lab — On-Device Face Recognition (Debug)" : {},
+    "Face Lab" : {},
+    "Face Lab — On-Device Face Recognition (Debug)" : {
+      "shouldTranslate" : false
+    },
     "Face not recognized — hover the notch to try again." : {},
     "Face not recognized." : {},
     "Face Unlock for Mac" : {},
@@ -119,20 +207,37 @@
     "Facekey is not as secure as Apple's FaceID or TouchID." : {},
     "Facekey Settings" : {},
     "Facekey will unlock itself at launch. Touch ID is no longer required." : {},
-    "Faces detected: %lld" : {},
+    "Faces detected: %lld" : {
+      "shouldTranslate" : false
+    },
     "Failed to load the ArcFace Core ML model: %@" : {},
+    "Far" : {},
+    "Farther" : {},
+    "Farthest" : {},
     "Feature print used an unexpected element type." : {},
-    "FIRED" : {},
-    "Fit residual: %@  Probe residual: %@  Excess: %@" : {},
-    "Flat vs 3D diagnostics" : {},
+    "FIRED" : {
+      "shouldTranslate" : false
+    },
+    "Fit residual: %@  Probe residual: %@  Excess: %@" : {
+      "shouldTranslate" : false
+    },
+    "Flat vs 3D diagnostics" : {
+      "shouldTranslate" : false
+    },
     "Follow the directions\nshown on the screen" : {},
+    "General" : {},
     "Grant" : {},
     "Granted" : {},
     "Haptic feedback" : {},
-    "Heavy: a deny cue fails the scan; at least one confirm cue must fire before it can pass." : {},
+    "Heavy" : {},
+    "Heavy: a deny cue fails the scan; at least one confirm cue must fire before it can pass." : {
+      "shouldTranslate" : false
+    },
     "Hold still…" : {},
     "I understand" : {},
-    "Identify" : {},
+    "Identify" : {
+      "shouldTranslate" : false
+    },
     "Identities" : {},
     "Idle" : {},
     "Injected stored password + Return at %@" : {},
@@ -142,43 +247,80 @@
     "Keychain error: %@" : {},
     "Keychain item had an unexpected format." : {},
     "Keychain item not found." : {},
-    "Landmarks: %lld   Pairs: %lld   Rejected: %lld" : {},
+    "Landmarks: %lld   Pairs: %lld   Rejected: %lld" : {
+      "shouldTranslate" : false
+    },
     "Launch at login" : {},
-    "Left EAR: %@  Right EAR: %@  Nose offset: %@" : {},
+    "Left" : {},
+    "Left EAR: %@  Right EAR: %@  Nose offset: %@" : {
+      "shouldTranslate" : false
+    },
+    "Less strict" : {},
     "Lets Facekey see your face to recognize you." : {},
     "Lets Facekey type your password on the lock screen." : {},
+    "Light" : {},
     "Light includes basic protection. Heavy requires you to blink or slightly move your head." : {},
-    "Light: only the deny cues run. Anything not actively rejected is treated as live." : {},
+    "Light: only the deny cues run. Anything not actively rejected is treated as live." : {
+      "shouldTranslate" : false
+    },
     "Liveness" : {},
     "Liveness detection" : {},
     "Loading Face Lab…" : {},
-    "Log" : {},
+    "Log" : {
+      "shouldTranslate" : false
+    },
+    "Look straight at the camera" : {},
     "Looking for your face…" : {},
     "Main display" : {},
     "Manual." : {},
-    "Mark Genuine (this is me)" : {},
-    "Mark Impostor (not me)" : {},
-    "MATCH" : {},
+    "Mark Genuine (this is me)" : {
+      "shouldTranslate" : false
+    },
+    "Mark Impostor (not me)" : {
+      "shouldTranslate" : false
+    },
+    "MATCH" : {
+      "shouldTranslate" : false
+    },
     "Match confidence" : {},
-    "max %@" : {},
+    "max %@" : {
+      "shouldTranslate" : false
+    },
     "Measure again" : {},
     "Minimal" : {},
-    "Mode" : {},
+    "Mode" : {
+      "shouldTranslate" : false
+    },
     "More information" : {},
-    "Name" : {},
+    "More strict" : {},
+    "Name" : {
+      "shouldTranslate" : false
+    },
     "Name this face" : {},
     "Never" : {},
     "Next" : {},
     "No camera device found." : {},
-    "No face" : {},
+    "No camera is available for this profile." : {},
+    "No face" : {
+      "shouldTranslate" : false
+    },
     "No face detected in frame." : {},
     "No face detected — hover the notch to try again." : {},
     "No face detected." : {},
     "No identities are enabled — face unlock won't recognize anyone until you switch one back on." : {},
-    "No identities enrolled yet — run the guided nine-pose capture with Add Identity." : {},
-    "No identities enrolled yet." : {},
-    "No liveness frame yet." : {},
-    "NO MATCH" : {},
+    "No identities enrolled yet — run the guided nine-pose capture with Add Identity." : {
+      "shouldTranslate" : false
+    },
+    "No identities enrolled yet." : {
+      "shouldTranslate" : false
+    },
+    "No liveness frame yet." : {
+      "shouldTranslate" : false
+    },
+    "NO MATCH" : {
+      "shouldTranslate" : false
+    },
+    "No samples captured" : {},
     "No thanks" : {},
     "None" : {},
     "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again." : {},
@@ -186,32 +328,52 @@
     "On space" : {},
     "On wake" : {},
     "Only one person should be in view." : {},
+    "Only rejects obvious spoofs." : {},
     "Open Accessibility settings" : {},
     "Open Settings" : {},
     "Original" : {},
     "OSStatus %d" : {},
+    "Password" : {},
     "Password and face enrollment removed." : {},
     "Password cannot be empty." : {},
     "Password encrypted" : {},
     "Password saved and encrypted." : {},
     "Permissions" : {},
     "Preview" : {},
-    "Preview ✓" : {},
-    "Preview ✗" : {},
+    "Preview ✓" : {
+      "shouldTranslate" : false
+    },
+    "Preview ✗" : {
+      "shouldTranslate" : false
+    },
     "Quit" : {},
     "Quit Facekey" : {},
-    "Recognize" : {},
+    "Recognition" : {},
+    "Recognize" : {
+      "shouldTranslate" : false
+    },
     "Recognized — unlocking…" : {},
-    "Record at least one genuine and one impostor sample to get a suggestion." : {},
+    "Record at least one genuine and one impostor sample to get a suggestion." : {
+      "shouldTranslate" : false
+    },
     "Refresh camera list" : {},
     "Remove" : {},
     "Remove password" : {},
-    "Reset cues" : {},
+    "Reset cues" : {
+      "shouldTranslate" : false
+    },
     "Retry on notch hover" : {},
-    "Run Identify, then tag whether that was really you or someone else — do this across lighting, angle, and expression, and again with a different person, to see where the two score distributions actually fall." : {},
-    "Running" : {},
+    "Right" : {},
+    "Run Identify, then tag whether that was really you or someone else — do this across lighting, angle, and expression, and again with a different person, to see where the two score distributions actually fall." : {
+      "shouldTranslate" : false
+    },
+    "Running" : {
+      "shouldTranslate" : false
+    },
     "Running from Xcode — permission checks resolve against Xcode’s grants, not Facekey’s, so this reading is meaningless. Launch facekey.app on its own to see the real state." : {},
     "Same as built-in display" : {},
+    "Samples replaced" : {},
+    "Save" : {},
     "Save failed: %@" : {},
     "Saving…" : {},
     "Select camera" : {},
@@ -224,52 +386,112 @@
     "Session Locked" : {},
     "Session locked" : {},
     "Session locked — authenticate with Touch ID first." : {},
-    "Session locked — enrolled faces are encrypted and can't be read or saved yet." : {},
+    "Session locked — enrolled faces are encrypted and can't be read or saved yet." : {
+      "shouldTranslate" : false
+    },
     "Session Unlocked" : {},
+    "Session unlocked" : {},
     "Set password" : {},
     "Set up a password" : {},
     "Set up Face\nRecognition" : {},
     "Set up Face Unlock" : {},
+    "Set up Facekey" : {},
     "Settings" : {},
     "Show animation" : {},
     "Show in menu bar" : {},
     "Show preview" : {},
-    "Similarity" : {},
+    "Similarity" : {
+      "shouldTranslate" : false
+    },
     "Skipped: CGSession reports screen is not actually locked." : {},
-    "Specular: %@  Cluster: %@  Crop: %lldpx" : {},
-    "Specular: — (no native-resolution crop this frame)" : {},
-    "stale" : {},
-    "Start" : {},
-    "Start Onboarding" : {},
+    "Specular: %@  Cluster: %@  Crop: %lldpx" : {
+      "shouldTranslate" : false
+    },
+    "Specular: — (no native-resolution crop this frame)" : {
+      "shouldTranslate" : false
+    },
+    "stale" : {
+      "shouldTranslate" : false
+    },
+    "Start" : {
+      "shouldTranslate" : false
+    },
+    "Start Onboarding" : {
+      "shouldTranslate" : false
+    },
     "Starting camera…" : {},
-    "Stop" : {},
-    "Stopped" : {},
+    "Stop" : {
+      "shouldTranslate" : false
+    },
+    "Stopped" : {
+      "shouldTranslate" : false
+    },
     "Strength" : {},
     "Style" : {},
-    "Suggested threshold: %@" : {},
+    "Suggested threshold: %@" : {
+      "shouldTranslate" : false
+    },
     "System default" : {},
     "The animation that appears when unlocking your Mac" : {},
+    "The built-in camera is covered while the lid is closed." : {},
     "the profile camera" : {},
+    "the selected camera" : {},
     "The session key is missing, but encrypted data still exists that only it could read. Nothing has been deleted. Remove the stored password on the Password tab to clear both and start fresh." : {},
     "The stored data couldn't be decrypted with this session key." : {},
-    "Threshold" : {},
-    "Threshold Calibration" : {},
-    "Threshold: %@" : {},
+    "Threshold" : {
+      "shouldTranslate" : false
+    },
+    "Threshold Calibration" : {
+      "shouldTranslate" : false
+    },
+    "Threshold: %@" : {
+      "shouldTranslate" : false
+    },
+    "Too far down" : {},
+    "Too far left" : {},
+    "Too far right" : {},
+    "Too far toward the bottom left" : {},
+    "Too far toward the bottom right" : {},
+    "Too far toward the top left" : {},
+    "Too far toward the top right" : {},
+    "Too far up" : {},
+    "Top left" : {},
+    "Top right" : {},
     "Touch ID is required again to unlock the session." : {},
     "Triggers" : {},
-    "Type" : {},
-    "Unlock" : {},
+    "Turn your head slightly down" : {},
+    "Turn your head slightly left" : {},
+    "Turn your head slightly right" : {},
+    "Turn your head slightly up" : {},
+    "Turn your head to the bottom left" : {},
+    "Turn your head to the bottom right" : {},
+    "Turn your head to the top left" : {},
+    "Turn your head to the top right" : {},
+    "Type" : {
+      "shouldTranslate" : false
+    },
+    "Unlock" : {
+      "shouldTranslate" : false
+    },
     "Unlock automatically at launch" : {},
     "Unlock session" : {},
-    "Unlock the session to view enrolled identities." : {},
-    "Use it" : {},
+    "Unlock the session to view enrolled identities." : {
+      "shouldTranslate" : false
+    },
+    "Up" : {},
+    "Use it" : {
+      "shouldTranslate" : false
+    },
     "Used for Face enrollment and for unlocking your Mac" : {},
     "Used to tell enrolled faces apart when more than one person is set up on this Mac." : {},
     "Using %@ for the %@ profile." : {},
     "Verify my face after other unlock methods" : {},
+    "Version %@ (%@)" : {},
     "Vision did not produce a feature print for this image." : {},
     "Without it Facekey recognizes you but can't unlock. If it was granted before, remove and re-add Facekey in System Settings." : {},
-    "Yaw: %@  Pitch: %@" : {},
+    "Yaw: %@  Pitch: %@" : {
+      "shouldTranslate" : false
+    },
     "You're all set" : {},
     "Your enrolled faces couldn't be read, so nothing was saved — writing now would overwrite them." : {},
     "Your password is required to unlock your Mac. It is encrypted and securely stored on your device. Facekey works entirely offline, so your password never leaves your Mac." : {},
