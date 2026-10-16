@@ -74,6 +74,18 @@ final class FaceUnlockCoordinator {
     private var wakeScanCooldownUntil: ContinuousClock.Instant?
     /// When Facekey last typed the password itself, so a later unlock within seconds is known to be its own and is not verified again.
     private var lastOwnInjectionAt: ContinuousClock.Instant?
+    /// An unlock this soon after Facekey typed the password is Facekey's own.
+    private let ownUnlockWindow: Duration = .seconds(10)
+    /// The post-unlock verification, if one is running. Separate from `scanTask`/`scanGeneration` so a lock-screen scan and a verification never cancel each other.
+    private var verificationTask: Task<Void, Never>?
+    private var verificationGeneration = 0
+    /// Scan cycles currently inside `runScanCycle`, superseded ones included; they own the camera while running.
+    private var activeScanCycles = 0
+    /// After a verification locks the screen, further verifications pause so an owner who isn't recognised isn't locked out on every Watch unlock.
+    private var verificationSuppressedUntil: ContinuousClock.Instant?
+    private let verificationSuppression: Duration = .seconds(120)
+    /// `LockMonitor.eventCount` of the last unlock event a verification was considered for, so one unlock is evaluated once.
+    private var lastVerifiedEventCount = -1
     /// Held separately from `scanTask` since it's scheduled from inside the scan task it follows — reusing `scanTask` would self-cancel it.
     private var autoRetryTask: Task<Void, Never>?
     /// Gap between headless auto-retries, just to keep the camera from restarting in a tight loop.
@@ -132,8 +144,14 @@ final class FaceUnlockCoordinator {
             hasAutoRetriedForCurrentLock = false
             wakeScanCooldownUntil = nil
             disarmOverlay()
+            if lockMonitor.isSleeping {
+                cancelVerification(reason: "sleeping")
+            } else if source == .lockEvent {
+                startVerificationIfNeeded()
+            }
             return
         }
+        cancelVerification(reason: "screen locked")
         // A new lock is a new session; an earlier wake cooldown no longer applies. Screen-parameter re-evaluations reuse a stale lastEvent, so they must not clear it.
         if source == .lockEvent, lockMonitor.lastEvent == .screenLocked { wakeScanCooldownUntil = nil }
         guard !lockMonitor.isSleeping else { log.notice("trigger decision=skip reason=sleeping"); return }
@@ -210,7 +228,8 @@ final class FaceUnlockCoordinator {
         scanGeneration &+= 1
         autoRetryTask?.cancel()
         autoRetryTask = nil
-        camera.stop()
+        // A running verification owns the camera; it stops it itself.
+        if verificationTask == nil { camera.stop() }
         NotchOverlayController.shared.disarm()
         // Covers isEnabled being switched off directly, keeping "disarmed" and "not listening for space" in lockstep.
         spaceKeyMonitor.stop()
@@ -288,6 +307,8 @@ final class FaceUnlockCoordinator {
     /// of itself. This was a real bug — a superseded `camera.stop()` queued behind the newer cycle's `startRunning()` made the
     /// camera visibly switch on then die mid-warm-up, leaving the surviving cycle polling a dead session and never unlocking.
     private func runScanCycle(generation: Int, trigger: ScanTrigger) async {
+        activeScanCycles += 1
+        defer { activeScanCycles -= 1 }
         guard LockMonitor.isScreenActuallyLocked() else {
             log.notice("scan #\(generation) skipped: screen not locked")
             return
@@ -548,5 +569,173 @@ final class FaceUnlockCoordinator {
             try? await Task.sleep(nanoseconds: 20_000_000)
         }
         return .noResolution
+    }
+
+    // MARK: - Post-unlock verification
+
+    /// Called when the screen was found unlocked after a `.screenUnlocked` event. Facekey's own unlocks, a disabled setting, a pause after
+    /// a re-lock and having nobody enrolled all skip the check; the rest start a short face scan.
+    private func startVerificationIfNeeded() {
+        guard lockMonitor.lastEvent == .screenUnlocked, lockMonitor.eventCount != lastVerifiedEventCount else { return }
+        lastVerifiedEventCount = lockMonitor.eventCount
+        guard FacekeySettings.shared.verifyAfterExternalUnlock else {
+            log.notice("verify skip: setting off")
+            return
+        }
+        if let injected = lastOwnInjectionAt, ContinuousClock.now - injected < ownUnlockWindow {
+            log.notice("verify skip: own unlock")
+            return
+        }
+        if let until = verificationSuppressedUntil, ContinuousClock.now < until {
+            log.notice("verify skip: paused after a re-lock")
+            return
+        }
+        guard !FaceEnrollmentStore.shared.activeIdentities.isEmpty else {
+            log.notice("verify skip: no enabled identities")
+            return
+        }
+        cancelVerification(reason: "superseded")
+        verificationGeneration &+= 1
+        let generation = verificationGeneration
+        log.notice("verify #\(generation) armed after external unlock")
+        verificationTask = Task { [weak self] in
+            await self?.runVerification(generation: generation)
+        }
+    }
+
+    /// No-op when none is running. Bumping the generation makes a verification still suspended at `await camera.start()` inert.
+    private func cancelVerification(reason: String) {
+        guard let task = verificationTask else { return }
+        log.notice("verify #\(self.verificationGeneration) cancelled: \(reason, privacy: .public)")
+        task.cancel()
+        verificationTask = nil
+        verificationGeneration &+= 1
+        camera.stop()
+    }
+
+    /// Releases the camera once a verification is over, unless it was already superseded or cancelled.
+    private func finishVerification(generation: Int) {
+        guard generation == verificationGeneration else { return }
+        verificationTask = nil
+        camera.stop()
+    }
+
+    private func seconds(_ duration: Duration) -> TimeInterval {
+        let parts = duration.components
+        return TimeInterval(parts.seconds) + TimeInterval(parts.attoseconds) / 1e18
+    }
+
+    /// Runs `PostUnlockVerification` over live frames: a match anywhere ends it quietly, a sustained unrecognised face locks the
+    /// screen again, and an empty window changes nothing. No liveness and no password: a spoofed owner only avoids a re-lock.
+    private func runVerification(generation: Int) async {
+        FacekeySettings.shared.refreshPipelineMinimumFaceWidth()
+        await camera.start()
+        guard generation == verificationGeneration else {
+            // `start()` only suspends while the permission prompt is up. If this verification was cancelled meanwhile, its
+            // `camera.stop()` ran first and the start queued after it, so the camera is on with no owner: release it unless a
+            // newer verification or a running lock-screen scan has taken over.
+            if verificationTask == nil, activeScanCycles == 0 {
+                log.notice("verify #\(generation) superseded while starting: releasing the camera")
+                camera.stop()
+            }
+            return
+        }
+        if let error = camera.errorMessage {
+            log.error("verify #\(generation) camera error: \(error, privacy: .public)")
+            finishVerification(generation: generation)
+            return
+        }
+
+        let startedAt = ContinuousClock.now
+        var firstFrameAt: ContinuousClock.Instant?
+        var tracker = FaceMatchTracker()
+        var decision = PostUnlockVerification()
+        var lastFaceBoundingBox: CGRect?
+        var lastProcessedFrameID: UInt64?
+        var outcome: PostUnlockVerification.Outcome?
+        var abortReason: String?
+
+        while outcome == nil, abortReason == nil {
+            guard !Task.isCancelled, generation == verificationGeneration else { return }
+            guard FacekeySettings.shared.verifyAfterExternalUnlock else { abortReason = "setting turned off"; break }
+            guard !LockMonitor.isScreenActuallyLocked(), !lockMonitor.isSleeping else { abortReason = "locked or sleeping"; break }
+
+            let now = ContinuousClock.now
+            if let first = firstFrameAt {
+                if seconds(now - first) > PostUnlockVerification.window {
+                    outcome = decision.finish(at: seconds(now - first))
+                    break
+                }
+            } else if seconds(now - startedAt) > PostUnlockVerification.window + 2 {
+                abortReason = "no camera frames"
+                break
+            }
+
+            guard let frame = camera.currentFrame, frame.id != lastProcessedFrameID else {
+                try? await Task.sleep(nanoseconds: 20_000_000)
+                continue
+            }
+            lastProcessedFrameID = frame.id
+            let first = firstFrameAt ?? ContinuousClock.now
+            firstFrameAt = first
+
+            let pipeline = self.pipeline
+            let previousBoundingBox = lastFaceBoundingBox
+            let result = await Task.detached(priority: .userInitiated) {
+                try? pipeline.recognize(in: frame.image, preferNear: previousBoundingBox)
+            }.value
+            guard generation == verificationGeneration else { return }
+            // Recognition suspended this task; the setting or the lock state may have changed meanwhile and must veto a re-lock.
+            guard FacekeySettings.shared.verifyAfterExternalUnlock, !LockMonitor.isScreenActuallyLocked(), !lockMonitor.isSleeping else {
+                abortReason = "setting turned off, locked or sleeping"
+                break
+            }
+
+            let t = seconds(ContinuousClock.now - first)
+            let observation: PostUnlockVerification.Observation?
+            if let result {
+                lastFaceBoundingBox = result.face.normalizedBoundingBox
+                switch tracker.observe(
+                    result,
+                    previousBoundingBox: previousBoundingBox,
+                    pipeline: pipeline,
+                    activeIdentities: FaceEnrollmentStore.shared.activeIdentities,
+                    threshold: matchThreshold
+                ) {
+                case .matched: observation = .matched
+                case .notMatched: observation = .unrecognised
+                case .undecided: observation = nil
+                }
+            } else {
+                tracker.reset()
+                lastFaceBoundingBox = nil
+                observation = .noFace
+            }
+            if let observation { outcome = decision.observe(observation, at: t) }
+            if outcome == nil { try? await Task.sleep(nanoseconds: 20_000_000) }
+        }
+
+        guard generation == verificationGeneration else { return }
+        if let abortReason {
+            log.notice("verify #\(generation) aborted: \(abortReason, privacy: .public)")
+            finishVerification(generation: generation)
+            return
+        }
+        guard let outcome else { finishVerification(generation: generation); return }
+
+        switch outcome {
+        case .verified:
+            log.notice("verify #\(generation) outcome: verified, a recognised face is at the screen")
+            finishVerification(generation: generation)
+        case .nobody:
+            log.notice("verify #\(generation) outcome: nobody in view, leaving the Mac unlocked")
+            finishVerification(generation: generation)
+        case .stranger:
+            log.notice("verify #\(generation) outcome: unrecognised face for \(PostUnlockVerification.grace, privacy: .public)s, locking the screen")
+            verificationSuppressedUntil = .now + verificationSuppression
+            finishVerification(generation: generation)
+            let locked = await ScreenLocker.lock()
+            log.notice("verify #\(generation) re-lock locked=\(locked, privacy: .public)")
+        }
     }
 }
