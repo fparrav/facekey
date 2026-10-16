@@ -1,11 +1,29 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "\"%@\" will stop being recognized until you enroll them again." : {},
+    "\"%@\" will stop being recognized until you enroll them again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey dejará de reconocer a \"%@\" hasta que registres ese rostro de nuevo."
+          }
+        }
+      }
+    },
     "%@" : {
       "shouldTranslate" : false
     },
-    "%@ (disconnected)" : {},
+    "%@ (disconnected)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (desconectada)"
+          }
+        }
+      }
+    },
     "%lld enrolled" : {
       "shouldTranslate" : false
     },
@@ -27,29 +45,155 @@
     "(ArcFace unavailable — see log)" : {
       "shouldTranslate" : false
     },
-    "14 days" : {},
-    "30 days" : {},
-    "7 days" : {},
-    "A face named \"%@\" is already enrolled." : {},
-    "About" : {},
+    "14 days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "14 días"
+          }
+        }
+      }
+    },
+    "30 days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 días"
+          }
+        }
+      }
+    },
+    "7 days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7 días"
+          }
+        }
+      }
+    },
+    "A face named \"%@\" is already enrolled." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ya hay un rostro registrado con el nombre \"%@\"."
+          }
+        }
+      }
+    },
+    "About" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerca de"
+          }
+        }
+      }
+    },
     "Abstaining — not enough head rotation to tell a plane from a still 3D face." : {
       "shouldTranslate" : false
     },
-    "Accept" : {},
-    "Access was denied — enable it in System Settings." : {},
-    "Accessibility" : {},
-    "Accessibility not granted — open System Settings and enable Facekey." : {},
-    "Accessibility permission required. Open System Settings → Privacy & Security → Accessibility and enable Facekey." : {},
-    "Active when" : {},
+    "Accept" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceptar"
+          }
+        }
+      }
+    },
+    "Access was denied — enable it in System Settings." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se denegó el acceso: actívalo en Ajustes del Sistema."
+          }
+        }
+      }
+    },
+    "Accessibility" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesibilidad"
+          }
+        }
+      }
+    },
+    "Accessibility not granted — open System Settings and enable Facekey." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se concedió el acceso de Accesibilidad: abre Ajustes del Sistema y activa Facekey."
+          }
+        }
+      }
+    },
+    "Accessibility permission required. Open System Settings → Privacy & Security → Accessibility and enable Facekey." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se requiere el permiso de Accesibilidad. Abre Ajustes del Sistema → Privacidad y seguridad → Accesibilidad y activa Facekey."
+          }
+        }
+      }
+    },
+    "Active when" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activo cuando"
+          }
+        }
+      }
+    },
     "Add Captures" : {
       "shouldTranslate" : false
     },
     "Add Identity" : {
       "shouldTranslate" : false
     },
-    "Added %lld sample · %lld total" : {},
-    "Added %lld samples · %lld total" : {},
-    "After unlock" : {},
+    "Added %lld sample · %lld total" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se agregó %lld muestra · %lld en total"
+          }
+        }
+      }
+    },
+    "Added %lld samples · %lld total" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se agregaron %lld muestras · %lld en total"
+          }
+        }
+      }
+    },
+    "After unlock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Después del desbloqueo"
+          }
+        }
+      }
+    },
     "Aligned face" : {
       "shouldTranslate" : false
     },
@@ -59,52 +203,412 @@
     "Alignment: %@" : {
       "shouldTranslate" : false
     },
-    "Allow Facekey to recognize your face" : {},
-    "Allow Facekey to unlock your Mac" : {},
-    "Also requires proof of a real face." : {},
-    "Animation" : {},
-    "ArcFace model produced an unexpected output: %@" : {},
-    "ArcFace.mlpackage/mlmodelc not found in the app bundle. Run tools/convert_arcface.py, then add facekey/Models/ArcFace.mlpackage to the Xcode project." : {},
-    "ArcFaceEmbedder expects a %lldx%lld aligned image, got %lldx%lld. Run the face through FaceAligner first." : {},
-    "Authenticate to enroll another face" : {},
-    "Authenticate to re-enroll this face" : {},
-    "Authenticate to re-enroll your face" : {},
-    "Authenticate to set up or use Facekey" : {},
-    "Authenticate to view your enrolled face" : {},
-    "Authenticating…" : {},
-    "Authentication was cancelled or failed." : {},
-    "Auto lock session" : {},
-    "Auto retry once after failure" : {},
-    "Automatically check for updates" : {},
-    "Back" : {},
-    "Behaviour" : {},
+    "Allow Facekey to recognize your face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que Facekey reconozca tu rostro"
+          }
+        }
+      }
+    },
+    "Allow Facekey to unlock your Mac" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que Facekey desbloquee tu Mac"
+          }
+        }
+      }
+    },
+    "Also requires proof of a real face." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "También exige comprobar que es un rostro real."
+          }
+        }
+      }
+    },
+    "Animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animación"
+          }
+        }
+      }
+    },
+    "ArcFace model produced an unexpected output: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El modelo ArcFace produjo una salida inesperada: %@"
+          }
+        }
+      }
+    },
+    "ArcFace.mlpackage/mlmodelc not found in the app bundle. Run tools/convert_arcface.py, then add facekey/Models/ArcFace.mlpackage to the Xcode project." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró ArcFace.mlpackage/mlmodelc en el paquete de la app. Ejecuta tools/convert_arcface.py y luego agrega facekey/Models/ArcFace.mlpackage al proyecto de Xcode."
+          }
+        }
+      }
+    },
+    "ArcFaceEmbedder expects a %lldx%lld aligned image, got %lldx%lld. Run the face through FaceAligner first." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ArcFaceEmbedder espera una imagen alineada de %lldx%lld, pero recibió una de %lldx%lld. Pasa primero el rostro por FaceAligner."
+          }
+        }
+      }
+    },
+    "Authenticate to enroll another face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autentícate para registrar otro rostro"
+          }
+        }
+      }
+    },
+    "Authenticate to re-enroll this face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autentícate para volver a registrar este rostro"
+          }
+        }
+      }
+    },
+    "Authenticate to re-enroll your face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autentícate para volver a registrar tu rostro"
+          }
+        }
+      }
+    },
+    "Authenticate to set up or use Facekey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autentícate para configurar o usar Facekey"
+          }
+        }
+      }
+    },
+    "Authenticate to view your enrolled face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autentícate para ver tu rostro registrado"
+          }
+        }
+      }
+    },
+    "Authenticating…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autenticando…"
+          }
+        }
+      }
+    },
+    "Authentication was cancelled or failed." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La autenticación se canceló o falló."
+          }
+        }
+      }
+    },
+    "Auto lock session" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloquear la sesión automáticamente"
+          }
+        }
+      }
+    },
+    "Auto retry once after failure" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar una vez tras un fallo"
+          }
+        }
+      }
+    },
+    "Automatically check for updates" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar actualizaciones automáticamente"
+          }
+        }
+      }
+    },
+    "Back" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atrás"
+          }
+        }
+      }
+    },
+    "Behaviour" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comportamiento"
+          }
+        }
+      }
+    },
     "Best match: %@ — centroid %@, max %@" : {
       "shouldTranslate" : false
     },
-    "Bottom left" : {},
-    "Bottom right" : {},
-    "Bring your face closer" : {},
-    "Built-in + external" : {},
-    "Built-in + external display" : {},
-    "Built-in display" : {},
-    "Built-in only" : {},
-    "Calibrate" : {},
-    "Calibrate detection distance" : {},
-    "Calibrate distance" : {},
-    "Calibrated with %@." : {},
-    "Camera" : {},
-    "Camera access is off for Facekey in System Settings > Privacy & Security > Camera." : {},
-    "Camera access not granted (status: %@). Enable it in System Settings > Privacy & Security > Camera. If Facekey isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again." : {},
-    "Camera access not granted (status: %@). macOS reports this as *restricted* — not a simple user denial. This usually means Screen Time content restrictions or an MDM/profile policy is blocking camera access for this app; toggling it in System Settings > Privacy & Security > Camera won't help until that restriction is lifted." : {},
-    "Camera changed, recalibrate." : {},
+    "Bottom left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abajo a la izquierda"
+          }
+        }
+      }
+    },
+    "Bottom right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abajo a la derecha"
+          }
+        }
+      }
+    },
+    "Bring your face closer" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acerca más tu rostro"
+          }
+        }
+      }
+    },
+    "Built-in + external" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integrada + externa"
+          }
+        }
+      }
+    },
+    "Built-in + external display" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla integrada + externa"
+          }
+        }
+      }
+    },
+    "Built-in display" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla integrada"
+          }
+        }
+      }
+    },
+    "Built-in only" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo integrada"
+          }
+        }
+      }
+    },
+    "Calibrate" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibrar"
+          }
+        }
+      }
+    },
+    "Calibrate detection distance" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibrar la distancia de detección"
+          }
+        }
+      }
+    },
+    "Calibrate distance" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibrar distancia"
+          }
+        }
+      }
+    },
+    "Calibrated with %@." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calibrada con %@."
+          }
+        }
+      }
+    },
+    "Camera" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara"
+          }
+        }
+      }
+    },
+    "Camera access is off for Facekey in System Settings > Privacy & Security > Camera." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El acceso a la cámara está desactivado para Facekey en Ajustes del Sistema > Privacidad y seguridad > Cámara."
+          }
+        }
+      }
+    },
+    "Camera access not granted (status: %@). Enable it in System Settings > Privacy & Security > Camera. If Facekey isn't listed there, quit the app, run `tccutil reset Camera com.fparrav.facekey` in Terminal, then relaunch so macOS asks again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se concedió el acceso a la cámara (estado: %@). Actívalo en Ajustes del Sistema > Privacidad y seguridad > Cámara. Si Facekey no aparece en la lista, cierra la app, ejecuta `tccutil reset Camera com.fparrav.facekey` en Terminal y vuelve a abrirla para que macOS lo pregunte de nuevo."
+          }
+        }
+      }
+    },
+    "Camera access not granted (status: %@). macOS reports this as *restricted* — not a simple user denial. This usually means Screen Time content restrictions or an MDM/profile policy is blocking camera access for this app; toggling it in System Settings > Privacy & Security > Camera won't help until that restriction is lifted." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se concedió el acceso a la cámara (estado: %@). macOS lo informa como *restringido*, no como una simple denegación del usuario. Por lo general significa que las restricciones de contenido de Tiempo de uso o una política de MDM o de perfil bloquean el acceso de esta app a la cámara; activarlo en Ajustes del Sistema > Privacidad y seguridad > Cámara no servirá hasta que se quite esa restricción."
+          }
+        }
+      }
+    },
+    "Camera changed, recalibrate." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cámara cambió; vuelve a calibrar."
+          }
+        }
+      }
+    },
     "Camera Preview" : {
       "shouldTranslate" : false
     },
-    "Camera profile" : {},
-    "Cancel" : {},
-    "Capture quality for %lld samples" : {},
-    "Capture quality • %lld%%" : {},
-    "Capture quality • not recorded" : {},
+    "Camera profile" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perfil de cámara"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        }
+      }
+    },
+    "Capture quality for %lld samples" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calidad de captura de %lld muestras"
+          }
+        }
+      }
+    },
+    "Capture quality • %lld%%" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calidad de captura • %lld%%"
+          }
+        }
+      }
+    },
+    "Capture quality • not recorded" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calidad de captura • sin registrar"
+          }
+        }
+      }
+    },
     "Capture quality: %@" : {
       "shouldTranslate" : false
     },
@@ -114,107 +618,681 @@
     "Capture Sample" : {
       "shouldTranslate" : false
     },
-    "Captured with a different recognition model — use Add Captures before this face can unlock your Mac." : {},
-    "Carry your existing face unlock setup over to Facekey" : {},
+    "Captured with a different recognition model — use Add Captures before this face can unlock your Mac." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se capturó con otro modelo de reconocimiento: usa Agregar capturas antes de que este rostro pueda desbloquear tu Mac."
+          }
+        }
+      }
+    },
+    "Carry your existing face unlock setup over to Facekey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lleva a Facekey tu configuración actual de desbloqueo facial"
+          }
+        }
+      }
+    },
     "centroid %@" : {
       "shouldTranslate" : false
     },
-    "Change" : {},
-    "Change password" : {},
-    "Check" : {},
-    "Check for Updates" : {},
-    "Checks that you're a live person, not a photo. May increase unlock time." : {},
-    "Checks who is at the screen after the Mac was unlocked by something other than Facekey, such as an Apple Watch, and locks it again if an unknown face is seen. It runs after the unlock and cannot stop it." : {},
+    "Change" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar"
+          }
+        }
+      }
+    },
+    "Change password" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambiar contraseña"
+          }
+        }
+      }
+    },
+    "Check" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobar"
+          }
+        }
+      }
+    },
+    "Check for Updates" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar actualizaciones"
+          }
+        }
+      }
+    },
+    "Checks that you're a live person, not a photo. May increase unlock time." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprueba que eres una persona real y no una foto. Puede aumentar el tiempo de desbloqueo."
+          }
+        }
+      }
+    },
+    "Checks who is at the screen after the Mac was unlocked by something other than Facekey, such as an Apple Watch, and locks it again if an unknown face is seen. It runs after the unlock and cannot stop it." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprueba quién está frente a la pantalla después de que algo distinto de Facekey, como un Apple Watch, desbloquee la Mac, y la vuelve a bloquear si ve un rostro desconocido. Se ejecuta después del desbloqueo y no puede impedirlo."
+          }
+        }
+      }
+    },
     "Clear" : {
       "shouldTranslate" : false
     },
-    "Close" : {},
-    "Closest" : {},
+    "Close" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
+          }
+        }
+      }
+    },
+    "Close distance" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerca"
+          }
+        }
+      }
+    },
+    "Closest" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo más cerca"
+          }
+        }
+      }
+    },
     "Closest: %@ — centroid %@, max %@" : {
       "shouldTranslate" : false
     },
     "Coherence: %@  Motion: %@" : {
       "shouldTranslate" : false
     },
-    "Confirm" : {},
-    "Continue" : {},
-    "Could not align the detected face." : {},
-    "Couldn't change it: %@" : {},
-    "Couldn't confirm a live face — hover the notch to try again." : {},
-    "Couldn't confirm a live face." : {},
-    "Couldn't create CGEvent for keystroke." : {},
-    "Couldn't create Keychain access control: %@" : {},
-    "Couldn't prepare the aligned face image for Core ML." : {},
-    "Couldn't remove: %@" : {},
-    "Couldn't select the camera's highest-resolution format: %@" : {},
+    "Confirm" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmar"
+          }
+        }
+      }
+    },
+    "Continue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        }
+      }
+    },
+    "Could not align the detected face." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo alinear el rostro detectado."
+          }
+        }
+      }
+    },
+    "Couldn't change it: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cambiar: %@"
+          }
+        }
+      }
+    },
+    "Couldn't confirm a live face — hover the notch to try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar un rostro real: pasa el cursor sobre el notch para intentarlo de nuevo."
+          }
+        }
+      }
+    },
+    "Couldn't confirm a live face." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar un rostro real."
+          }
+        }
+      }
+    },
+    "Couldn't create CGEvent for keystroke." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo crear el CGEvent de la pulsación de tecla."
+          }
+        }
+      }
+    },
+    "Couldn't create Keychain access control: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo crear el control de acceso del Llavero: %@"
+          }
+        }
+      }
+    },
+    "Couldn't prepare the aligned face image for Core ML." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo preparar la imagen del rostro alineado para Core ML."
+          }
+        }
+      }
+    },
+    "Couldn't remove: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo quitar: %@"
+          }
+        }
+      }
+    },
+    "Couldn't select the camera's highest-resolution format: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo seleccionar el formato de mayor resolución de la cámara: %@"
+          }
+        }
+      }
+    },
     "Cue firing latches for the whole scan — reset to re-test." : {
       "shouldTranslate" : false
     },
-    "Decryption failed. The stored credential may be corrupted." : {},
-    "Default" : {},
-    "Delete" : {},
-    "Delete %@" : {},
-    "Delete this enrolled face?" : {},
+    "Decryption failed. The stored credential may be corrupted." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el descifrado. Es posible que la credencial guardada esté dañada."
+          }
+        }
+      }
+    },
+    "Default" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar"
+          }
+        }
+      }
+    },
+    "Delete %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminar %@"
+          }
+        }
+      }
+    },
+    "Delete this enrolled face?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar este rostro registrado?"
+          }
+        }
+      }
+    },
     "Detection" : {
       "shouldTranslate" : false
     },
-    "Detection distance" : {},
+    "Detection distance" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distancia de detección"
+          }
+        }
+      }
+    },
     "Device overlap: %@" : {
       "shouldTranslate" : false
     },
-    "Display on" : {},
+    "Display on" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en"
+          }
+        }
+      }
+    },
     "Distributions overlap — no single cutoff perfectly separates these samples yet." : {
       "shouldTranslate" : false
     },
-    "Down" : {},
+    "Down" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abajo"
+          }
+        }
+      }
+    },
     "Embedder: %@" : {
       "shouldTranslate" : false
     },
     "Embedding: %lld numbers" : {
       "shouldTranslate" : false
     },
-    "Enable Face Unlock" : {},
-    "Encryption failed." : {},
+    "Enable Face Unlock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar el desbloqueo facial"
+          }
+        }
+      }
+    },
+    "Encryption failed." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el cifrado."
+          }
+        }
+      }
+    },
     "Enroll" : {
       "shouldTranslate" : false
     },
-    "Enroll another face" : {},
-    "Enroll separate identities to use Facekey with multiple people, accessories (ex. glasses), facial expressions, or new lighting environments. This improves recognition quality." : {},
-    "Enrolled faces couldn't be read" : {},
-    "Enter a name." : {},
-    "Enter a name..." : {},
-    "Enter a password first." : {},
-    "Enter a password." : {},
-    "Enter password..." : {},
-    "Enter your password" : {},
-    "External display" : {},
-    "External only" : {},
-    "Face" : {},
-    "Face captured" : {},
-    "Face detection duration" : {},
-    "Face encrypted" : {},
-    "Face enrollment" : {},
-    "Face Lab" : {},
+    "Enroll another face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar otro rostro"
+          }
+        }
+      }
+    },
+    "Enroll separate identities to use Facekey with multiple people, accessories (ex. glasses), facial expressions, or new lighting environments. This improves recognition quality." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra identidades separadas para usar Facekey con varias personas, accesorios (por ejemplo, lentes), expresiones faciales o distintas condiciones de iluminación. Esto mejora la calidad del reconocimiento."
+          }
+        }
+      }
+    },
+    "Enrolled faces couldn't be read" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron leer los rostros registrados"
+          }
+        }
+      }
+    },
+    "Enter a name." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresa un nombre."
+          }
+        }
+      }
+    },
+    "Enter a name..." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresa un nombre..."
+          }
+        }
+      }
+    },
+    "Enter a password first." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primero ingresa una contraseña."
+          }
+        }
+      }
+    },
+    "Enter a password." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresa una contraseña."
+          }
+        }
+      }
+    },
+    "Enter password..." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresa la contraseña..."
+          }
+        }
+      }
+    },
+    "Enter your password" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresa tu contraseña"
+          }
+        }
+      }
+    },
+    "External display" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla externa"
+          }
+        }
+      }
+    },
+    "External only" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo externa"
+          }
+        }
+      }
+    },
+    "Face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rostro"
+          }
+        }
+      }
+    },
+    "Face captured" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rostro capturado"
+          }
+        }
+      }
+    },
+    "Face detection duration" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duración de la detección de rostro"
+          }
+        }
+      }
+    },
+    "Face encrypted" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rostro cifrado"
+          }
+        }
+      }
+    },
+    "Face enrollment" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registro del rostro"
+          }
+        }
+      }
+    },
+    "Face Lab" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face Lab"
+          }
+        }
+      }
+    },
     "Face Lab — On-Device Face Recognition (Debug)" : {
       "shouldTranslate" : false
     },
-    "Face not recognized — hover the notch to try again." : {},
-    "Face not recognized." : {},
-    "Face Unlock for Mac" : {},
-    "Face unlock is on, but no password is stored yet." : {},
-    "Face unlock is on, but the session is locked — authenticate once from Password settings first." : {},
-    "Facekey" : {},
-    "Facekey is not as secure as Apple's FaceID or TouchID." : {},
-    "Facekey Settings" : {},
-    "Facekey will unlock itself at launch. Touch ID is no longer required." : {},
+    "Face not recognized — hover the notch to try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se reconoció el rostro: pasa el cursor sobre el notch para intentarlo de nuevo."
+          }
+        }
+      }
+    },
+    "Face not recognized." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se reconoció el rostro."
+          }
+        }
+      }
+    },
+    "Face Unlock for Mac" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloqueo facial para Mac"
+          }
+        }
+      }
+    },
+    "Face unlock is on, but no password is stored yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El desbloqueo facial está activado, pero aún no hay una contraseña guardada."
+          }
+        }
+      }
+    },
+    "Face unlock is on, but the session is locked — authenticate once from Password settings first." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El desbloqueo facial está activado, pero la sesión está bloqueada: primero autentícate una vez desde los ajustes de Contraseña."
+          }
+        }
+      }
+    },
+    "Facekey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey"
+          }
+        }
+      }
+    },
+    "Facekey is not as secure as Apple's FaceID or TouchID." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey no es tan seguro como FaceID o Touch ID de Apple."
+          }
+        }
+      }
+    },
+    "Facekey Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes de Facekey"
+          }
+        }
+      }
+    },
+    "Facekey will unlock itself at launch. Touch ID is no longer required." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey se desbloqueará solo al iniciar. Ya no se requiere Touch ID."
+          }
+        }
+      }
+    },
     "Faces detected: %lld" : {
       "shouldTranslate" : false
     },
-    "Failed to load the ArcFace Core ML model: %@" : {},
-    "Far" : {},
-    "Farther" : {},
-    "Farthest" : {},
-    "Feature print used an unexpected element type." : {},
+    "Failed to load the ArcFace Core ML model: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo cargar el modelo ArcFace de Core ML: %@"
+          }
+        }
+      }
+    },
+    "Far" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lejos"
+          }
+        }
+      }
+    },
+    "Farther" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más lejos"
+          }
+        }
+      }
+    },
+    "Farthest" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lo más lejos"
+          }
+        }
+      }
+    },
+    "Feature print used an unexpected element type." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La huella de características usó un tipo de elemento inesperado."
+          }
+        }
+      }
+    },
     "FIRED" : {
       "shouldTranslate" : false
     },
@@ -224,55 +1302,334 @@
     "Flat vs 3D diagnostics" : {
       "shouldTranslate" : false
     },
-    "Follow the directions\nshown on the screen" : {},
-    "General" : {},
-    "Grant" : {},
-    "Granted" : {},
-    "Haptic feedback" : {},
-    "Heavy" : {},
+    "Follow the directions\nshown on the screen" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sigue las indicaciones\nque aparecen en la pantalla"
+          }
+        }
+      }
+    },
+    "General" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        }
+      }
+    },
+    "Grant" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conceder"
+          }
+        }
+      }
+    },
+    "Granted" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Concedido"
+          }
+        }
+      }
+    },
+    "Haptic feedback" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta háptica"
+          }
+        }
+      }
+    },
+    "Heavy" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estricto"
+          }
+        }
+      }
+    },
     "Heavy: a deny cue fails the scan; at least one confirm cue must fire before it can pass." : {
       "shouldTranslate" : false
     },
-    "Hold still…" : {},
-    "I understand" : {},
+    "Hold still…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No te muevas…"
+          }
+        }
+      }
+    },
+    "I understand" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entiendo"
+          }
+        }
+      }
+    },
     "Identify" : {
       "shouldTranslate" : false
     },
-    "Identities" : {},
-    "Idle" : {},
-    "Injected stored password + Return at %@" : {},
-    "Injecting…" : {},
-    "Injection failed: %@" : {},
-    "It uses your Mac's standard webcam and is designed for convenience, not high-security authentication." : {},
-    "Keychain error: %@" : {},
-    "Keychain item had an unexpected format." : {},
-    "Keychain item not found." : {},
+    "Identities" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identidades"
+          }
+        }
+      }
+    },
+    "Idle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inactivo"
+          }
+        }
+      }
+    },
+    "Injected stored password + Return at %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se ingresó la contraseña guardada + Intro a las %@"
+          }
+        }
+      }
+    },
+    "Injecting…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresando…"
+          }
+        }
+      }
+    },
+    "Injection failed: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el ingreso: %@"
+          }
+        }
+      }
+    },
+    "It uses your Mac's standard webcam and is designed for convenience, not high-security authentication." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa la cámara web estándar de tu Mac y está pensado para la comodidad, no para una autenticación de alta seguridad."
+          }
+        }
+      }
+    },
+    "Keychain error: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error del Llavero: %@"
+          }
+        }
+      }
+    },
+    "Keychain item had an unexpected format." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El elemento del Llavero tenía un formato inesperado."
+          }
+        }
+      }
+    },
+    "Keychain item not found." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró el elemento del Llavero."
+          }
+        }
+      }
+    },
     "Landmarks: %lld   Pairs: %lld   Rejected: %lld" : {
       "shouldTranslate" : false
     },
-    "Launch at login" : {},
-    "Left" : {},
+    "Launch at login" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir al iniciar sesión"
+          }
+        }
+      }
+    },
+    "Left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Izquierda"
+          }
+        }
+      }
+    },
     "Left EAR: %@  Right EAR: %@  Nose offset: %@" : {
       "shouldTranslate" : false
     },
-    "Less strict" : {},
-    "Lets Facekey see your face to recognize you." : {},
-    "Lets Facekey type your password on the lock screen." : {},
-    "Light" : {},
-    "Light includes basic protection. Heavy requires you to blink or slightly move your head." : {},
+    "Less strict" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menos estricto"
+          }
+        }
+      }
+    },
+    "Lets Facekey see your face to recognize you." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que Facekey vea tu rostro para reconocerte."
+          }
+        }
+      }
+    },
+    "Lets Facekey type your password on the lock screen." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permite que Facekey escriba tu contraseña en la pantalla de bloqueo."
+          }
+        }
+      }
+    },
+    "Light" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligero"
+          }
+        }
+      }
+    },
+    "Light includes basic protection. Heavy requires you to blink or slightly move your head." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ligero incluye una protección básica. Estricto requiere que parpadees o muevas ligeramente la cabeza."
+          }
+        }
+      }
+    },
     "Light: only the deny cues run. Anything not actively rejected is treated as live." : {
       "shouldTranslate" : false
     },
-    "Liveness" : {},
-    "Liveness detection" : {},
-    "Loading Face Lab…" : {},
+    "Liveness" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detección de vida"
+          }
+        }
+      }
+    },
+    "Liveness detection" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detección de vida"
+          }
+        }
+      }
+    },
+    "Loading Face Lab…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando Face Lab…"
+          }
+        }
+      }
+    },
     "Log" : {
       "shouldTranslate" : false
     },
-    "Look straight at the camera" : {},
-    "Looking for your face…" : {},
-    "Main display" : {},
-    "Manual." : {},
+    "Look straight at the camera" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira directamente a la cámara"
+          }
+        }
+      }
+    },
+    "Looking for your face…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscando tu rostro…"
+          }
+        }
+      }
+    },
+    "Main display" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla principal"
+          }
+        }
+      }
+    },
+    "Manual." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manual."
+          }
+        }
+      }
+    },
     "Mark Genuine (this is me)" : {
       "shouldTranslate" : false
     },
@@ -282,32 +1639,158 @@
     "MATCH" : {
       "shouldTranslate" : false
     },
-    "Match confidence" : {},
+    "Match confidence" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confianza de coincidencia"
+          }
+        }
+      }
+    },
     "max %@" : {
       "shouldTranslate" : false
     },
-    "Measure again" : {},
-    "Minimal" : {},
+    "Measure again" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medir de nuevo"
+          }
+        }
+      }
+    },
+    "Minimal" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mínima"
+          }
+        }
+      }
+    },
     "Mode" : {
       "shouldTranslate" : false
     },
-    "More information" : {},
-    "More strict" : {},
+    "More information" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más información"
+          }
+        }
+      }
+    },
+    "More strict" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más estricto"
+          }
+        }
+      }
+    },
     "Name" : {
       "shouldTranslate" : false
     },
-    "Name this face" : {},
-    "Never" : {},
-    "Next" : {},
-    "No camera device found." : {},
-    "No camera is available for this profile." : {},
+    "Name this face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ponle nombre a este rostro"
+          }
+        }
+      }
+    },
+    "Never" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nunca"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siguiente"
+          }
+        }
+      }
+    },
+    "No camera device found." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró ninguna cámara."
+          }
+        }
+      }
+    },
+    "No camera is available for this profile." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna cámara disponible para este perfil."
+          }
+        }
+      }
+    },
     "No face" : {
       "shouldTranslate" : false
     },
-    "No face detected in frame." : {},
-    "No face detected — hover the notch to try again." : {},
-    "No face detected." : {},
-    "No identities are enabled — face unlock won't recognize anyone until you switch one back on." : {},
+    "No face detected in frame." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se detectó ningún rostro en el cuadro."
+          }
+        }
+      }
+    },
+    "No face detected — hover the notch to try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se detectó ningún rostro: pasa el cursor sobre el notch para intentarlo de nuevo."
+          }
+        }
+      }
+    },
+    "No face detected." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se detectó ningún rostro."
+          }
+        }
+      }
+    },
+    "No identities are enabled — face unlock won't recognize anyone until you switch one back on." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay identidades activadas: el desbloqueo facial no reconocerá a nadie hasta que vuelvas a activar una."
+          }
+        }
+      }
+    },
     "No identities enrolled yet — run the guided nine-pose capture with Add Identity." : {
       "shouldTranslate" : false
     },
@@ -320,90 +1803,603 @@
     "NO MATCH" : {
       "shouldTranslate" : false
     },
-    "No samples captured" : {},
-    "No thanks" : {},
-    "None" : {},
-    "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again." : {},
-    "On lock" : {},
-    "On space" : {},
-    "On wake" : {},
-    "Only one person should be in view." : {},
-    "Only rejects obvious spoofs." : {},
-    "Open Accessibility settings" : {},
-    "Open Settings" : {},
-    "Original" : {},
-    "OSStatus %d" : {},
-    "Password" : {},
-    "Password and face enrollment removed." : {},
-    "Password cannot be empty." : {},
-    "Password encrypted" : {},
-    "Password saved and encrypted." : {},
-    "Permissions" : {},
-    "Preview" : {},
+    "No samples captured" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se capturó ninguna muestra"
+          }
+        }
+      }
+    },
+    "No thanks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No, gracias"
+          }
+        }
+      }
+    },
+    "None" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ninguna"
+          }
+        }
+      }
+    },
+    "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha eliminado nada y Facekey no lo sobrescribirá: el registro queda bloqueado hasta que se resuelva. Cierra y vuelve a abrir Facekey para reintentar. Si sigue fallando, la clave de la sesión ya no corresponde a estos datos: quita la contraseña guardada en la pestaña Contraseña para borrar ambos y vuelve a configurar todo."
+          }
+        }
+      }
+    },
+    "On lock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al bloquear"
+          }
+        }
+      }
+    },
+    "On space" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al presionar espacio"
+          }
+        }
+      }
+    },
+    "On wake" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al despertar"
+          }
+        }
+      }
+    },
+    "Only one person should be in view." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo debe haber una persona a la vista."
+          }
+        }
+      }
+    },
+    "Only rejects obvious spoofs." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo rechaza las suplantaciones evidentes."
+          }
+        }
+      }
+    },
+    "Open Accessibility settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir los ajustes de Accesibilidad"
+          }
+        }
+      }
+    },
+    "Open Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        }
+      }
+    },
+    "Original" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Original"
+          }
+        }
+      }
+    },
+    "OSStatus %d" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OSStatus %d"
+          }
+        }
+      }
+    },
+    "Password" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña"
+          }
+        }
+      }
+    },
+    "Password and face enrollment removed." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se quitaron la contraseña y el registro del rostro."
+          }
+        }
+      }
+    },
+    "Password cannot be empty." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La contraseña no puede estar vacía."
+          }
+        }
+      }
+    },
+    "Password encrypted" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña cifrada"
+          }
+        }
+      }
+    },
+    "Password saved and encrypted." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña guardada y cifrada."
+          }
+        }
+      }
+    },
+    "Permissions" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permisos"
+          }
+        }
+      }
+    },
+    "Preview" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vista previa"
+          }
+        }
+      }
+    },
     "Preview ✓" : {
       "shouldTranslate" : false
     },
     "Preview ✗" : {
       "shouldTranslate" : false
     },
-    "Quit" : {},
-    "Quit Facekey" : {},
-    "Recognition" : {},
+    "Quit" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salir"
+          }
+        }
+      }
+    },
+    "Quit Facekey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salir de Facekey"
+          }
+        }
+      }
+    },
+    "Recognition" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconocimiento"
+          }
+        }
+      }
+    },
     "Recognize" : {
       "shouldTranslate" : false
     },
-    "Recognized — unlocking…" : {},
+    "Recognized — unlocking…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconocido: desbloqueando…"
+          }
+        }
+      }
+    },
     "Record at least one genuine and one impostor sample to get a suggestion." : {
       "shouldTranslate" : false
     },
-    "Refresh camera list" : {},
-    "Remove" : {},
-    "Remove password" : {},
+    "Refresh camera list" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar la lista de cámaras"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar"
+          }
+        }
+      }
+    },
+    "Remove password" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar contraseña"
+          }
+        }
+      }
+    },
     "Reset cues" : {
       "shouldTranslate" : false
     },
-    "Retry on notch hover" : {},
-    "Right" : {},
+    "Retry on notch hover" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar al pasar el cursor sobre el notch"
+          }
+        }
+      }
+    },
+    "Right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derecha"
+          }
+        }
+      }
+    },
     "Run Identify, then tag whether that was really you or someone else — do this across lighting, angle, and expression, and again with a different person, to see where the two score distributions actually fall." : {
       "shouldTranslate" : false
     },
     "Running" : {
       "shouldTranslate" : false
     },
-    "Running from Xcode — permission checks resolve against Xcode’s grants, not Facekey’s, so this reading is meaningless. Launch facekey.app on its own to see the real state." : {},
-    "Same as built-in display" : {},
-    "Samples replaced" : {},
-    "Save" : {},
-    "Save failed: %@" : {},
-    "Saving…" : {},
-    "Select camera" : {},
-    "Select multiple" : {},
-    "Selected display (disconnected)" : {},
-    "Send" : {},
-    "Send Feedback" : {},
-    "Session is locked. Authenticate with Touch ID before storing or using the password." : {},
-    "Session is locked. Authenticate with Touch ID to access enrolled faces." : {},
-    "Session Locked" : {},
-    "Session locked" : {},
-    "Session locked — authenticate with Touch ID first." : {},
+    "Running from Xcode — permission checks resolve against Xcode’s grants, not Facekey’s, so this reading is meaningless. Launch facekey.app on its own to see the real state." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se está ejecutando desde Xcode: las comprobaciones de permisos se resuelven con los permisos de Xcode, no con los de Facekey, así que esta lectura no sirve. Abre facekey.app por separado para ver el estado real."
+          }
+        }
+      }
+    },
+    "Same as built-in display" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Igual que la pantalla integrada"
+          }
+        }
+      }
+    },
+    "Samples replaced" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestras reemplazadas"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar"
+          }
+        }
+      }
+    },
+    "Save failed: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar: %@"
+          }
+        }
+      }
+    },
+    "Saving…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardando…"
+          }
+        }
+      }
+    },
+    "Select camera" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleccionar cámara"
+          }
+        }
+      }
+    },
+    "Select multiple" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecciona varios"
+          }
+        }
+      }
+    },
+    "Selected display (disconnected)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla seleccionada (desconectada)"
+          }
+        }
+      }
+    },
+    "Send" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar"
+          }
+        }
+      }
+    },
+    "Send Feedback" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar comentarios"
+          }
+        }
+      }
+    },
+    "Session is locked. Authenticate with Touch ID before storing or using the password." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sesión está bloqueada. Autentícate con Touch ID antes de guardar o usar la contraseña."
+          }
+        }
+      }
+    },
+    "Session is locked. Authenticate with Touch ID to access enrolled faces." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La sesión está bloqueada. Autentícate con Touch ID para acceder a los rostros registrados."
+          }
+        }
+      }
+    },
+    "Session Locked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión bloqueada"
+          }
+        }
+      }
+    },
+    "Session locked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión bloqueada"
+          }
+        }
+      }
+    },
+    "Session locked — authenticate with Touch ID first." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión bloqueada: primero autentícate con Touch ID."
+          }
+        }
+      }
+    },
     "Session locked — enrolled faces are encrypted and can't be read or saved yet." : {
       "shouldTranslate" : false
     },
-    "Session Unlocked" : {},
-    "Session unlocked" : {},
-    "Set password" : {},
-    "Set up a password" : {},
-    "Set up Face\nRecognition" : {},
-    "Set up Face Unlock" : {},
-    "Set up Facekey" : {},
-    "Settings" : {},
-    "Show animation" : {},
-    "Show in menu bar" : {},
-    "Show preview" : {},
+    "Session Unlocked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión desbloqueada"
+          }
+        }
+      }
+    },
+    "Session unlocked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesión desbloqueada"
+          }
+        }
+      }
+    },
+    "Set password" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Establecer contraseña"
+          }
+        }
+      }
+    },
+    "Set up a password" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura una contraseña"
+          }
+        }
+      }
+    },
+    "Set up Face\nRecognition" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura el\nreconocimiento facial"
+          }
+        }
+      }
+    },
+    "Set up Face Unlock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurar el desbloqueo facial"
+          }
+        }
+      }
+    },
+    "Set up Facekey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurar Facekey"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
+          }
+        }
+      }
+    },
+    "Show animation" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar animación"
+          }
+        }
+      }
+    },
+    "Show in menu bar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar en la barra de menús"
+          }
+        }
+      }
+    },
+    "Show preview" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar vista previa"
+          }
+        }
+      }
+    },
     "Similarity" : {
       "shouldTranslate" : false
     },
-    "Skipped: CGSession reports screen is not actually locked." : {},
+    "Skipped: CGSession reports screen is not actually locked." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omitido: CGSession informa que la pantalla en realidad no está bloqueada."
+          }
+        }
+      }
+    },
     "Specular: %@  Cluster: %@  Crop: %lldpx" : {
       "shouldTranslate" : false
     },
@@ -419,25 +2415,115 @@
     "Start Onboarding" : {
       "shouldTranslate" : false
     },
-    "Starting camera…" : {},
+    "Starting camera…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciando la cámara…"
+          }
+        }
+      }
+    },
     "Stop" : {
       "shouldTranslate" : false
     },
     "Stopped" : {
       "shouldTranslate" : false
     },
-    "Strength" : {},
-    "Style" : {},
+    "Strength" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nivel"
+          }
+        }
+      }
+    },
+    "Style" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estilo"
+          }
+        }
+      }
+    },
     "Suggested threshold: %@" : {
       "shouldTranslate" : false
     },
-    "System default" : {},
-    "The animation that appears when unlocking your Mac" : {},
-    "The built-in camera is covered while the lid is closed." : {},
-    "the profile camera" : {},
-    "the selected camera" : {},
-    "The session key is missing, but encrypted data still exists that only it could read. Nothing has been deleted. Remove the stored password on the Password tab to clear both and start fresh." : {},
-    "The stored data couldn't be decrypted with this session key." : {},
+    "System default" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminada del sistema"
+          }
+        }
+      }
+    },
+    "The animation that appears when unlocking your Mac" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La animación que aparece al desbloquear tu Mac"
+          }
+        }
+      }
+    },
+    "The built-in camera is covered while the lid is closed." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cámara integrada queda tapada mientras la tapa está cerrada."
+          }
+        }
+      }
+    },
+    "the profile camera" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "la cámara del perfil"
+          }
+        }
+      }
+    },
+    "the selected camera" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "la cámara seleccionada"
+          }
+        }
+      }
+    },
+    "The session key is missing, but encrypted data still exists that only it could read. Nothing has been deleted. Remove the stored password on the Password tab to clear both and start fresh." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta la clave de la sesión, pero aún existen datos cifrados que solo ella podía leer. No se ha eliminado nada. Quita la contraseña guardada en la pestaña Contraseña para borrar ambos y empezar de nuevo."
+          }
+        }
+      }
+    },
+    "The stored data couldn't be decrypted with this session key." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron descifrar los datos guardados con esta clave de sesión."
+          }
+        }
+      }
+    },
     "Threshold" : {
       "shouldTranslate" : false
     },
@@ -447,55 +2533,361 @@
     "Threshold: %@" : {
       "shouldTranslate" : false
     },
-    "Too far down" : {},
-    "Too far left" : {},
-    "Too far right" : {},
-    "Too far toward the bottom left" : {},
-    "Too far toward the bottom right" : {},
-    "Too far toward the top left" : {},
-    "Too far toward the top right" : {},
-    "Too far up" : {},
-    "Top left" : {},
-    "Top right" : {},
-    "Touch ID is required again to unlock the session." : {},
-    "Triggers" : {},
-    "Turn your head slightly down" : {},
-    "Turn your head slightly left" : {},
-    "Turn your head slightly right" : {},
-    "Turn your head slightly up" : {},
-    "Turn your head to the bottom left" : {},
-    "Turn your head to the bottom right" : {},
-    "Turn your head to the top left" : {},
-    "Turn your head to the top right" : {},
+    "Too far down" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado abajo"
+          }
+        }
+      }
+    },
+    "Too far left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado a la izquierda"
+          }
+        }
+      }
+    },
+    "Too far right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado a la derecha"
+          }
+        }
+      }
+    },
+    "Too far toward the bottom left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado hacia abajo a la izquierda"
+          }
+        }
+      }
+    },
+    "Too far toward the bottom right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado hacia abajo a la derecha"
+          }
+        }
+      }
+    },
+    "Too far toward the top left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado hacia arriba a la izquierda"
+          }
+        }
+      }
+    },
+    "Too far toward the top right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado hacia arriba a la derecha"
+          }
+        }
+      }
+    },
+    "Too far up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demasiado arriba"
+          }
+        }
+      }
+    },
+    "Top left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arriba a la izquierda"
+          }
+        }
+      }
+    },
+    "Top right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arriba a la derecha"
+          }
+        }
+      }
+    },
+    "Touch ID is required again to unlock the session." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se requiere Touch ID de nuevo para desbloquear la sesión."
+          }
+        }
+      }
+    },
+    "Triggers" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activadores"
+          }
+        }
+      }
+    },
+    "Turn your head slightly down" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira un poco la cabeza hacia abajo"
+          }
+        }
+      }
+    },
+    "Turn your head slightly left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira un poco la cabeza hacia la izquierda"
+          }
+        }
+      }
+    },
+    "Turn your head slightly right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira un poco la cabeza hacia la derecha"
+          }
+        }
+      }
+    },
+    "Turn your head slightly up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira un poco la cabeza hacia arriba"
+          }
+        }
+      }
+    },
+    "Turn your head to the bottom left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira la cabeza hacia abajo a la izquierda"
+          }
+        }
+      }
+    },
+    "Turn your head to the bottom right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira la cabeza hacia abajo a la derecha"
+          }
+        }
+      }
+    },
+    "Turn your head to the top left" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira la cabeza hacia arriba a la izquierda"
+          }
+        }
+      }
+    },
+    "Turn your head to the top right" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gira la cabeza hacia arriba a la derecha"
+          }
+        }
+      }
+    },
     "Type" : {
       "shouldTranslate" : false
     },
     "Unlock" : {
       "shouldTranslate" : false
     },
-    "Unlock automatically at launch" : {},
-    "Unlock session" : {},
+    "Unlock automatically at launch" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear automáticamente al iniciar"
+          }
+        }
+      }
+    },
+    "Unlock session" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear sesión"
+          }
+        }
+      }
+    },
     "Unlock the session to view enrolled identities." : {
       "shouldTranslate" : false
     },
-    "Up" : {},
+    "Up" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arriba"
+          }
+        }
+      }
+    },
     "Use it" : {
       "shouldTranslate" : false
     },
-    "Used for Face enrollment and for unlocking your Mac" : {},
-    "Used to tell enrolled faces apart when more than one person is set up on this Mac." : {},
-    "Using %@ for the %@ profile." : {},
-    "Verify my face after other unlock methods" : {},
-    "Version %@ (%@)" : {},
-    "Vision did not produce a feature print for this image." : {},
-    "Without it Facekey recognizes you but can't unlock. If it was granted before, remove and re-add Facekey in System Settings." : {},
+    "Used for Face enrollment and for unlocking your Mac" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se usa para registrar tu rostro y para desbloquear tu Mac"
+          }
+        }
+      }
+    },
+    "Used to tell enrolled faces apart when more than one person is set up on this Mac." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sirve para distinguir los rostros registrados cuando hay más de una persona configurada en esta Mac."
+          }
+        }
+      }
+    },
+    "Using %@ for the %@ profile." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se usa %@ para el perfil %@."
+          }
+        }
+      }
+    },
+    "Verify my face after other unlock methods" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar mi rostro tras otros métodos de desbloqueo"
+          }
+        }
+      }
+    },
+    "Version %@ (%@)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión %@ (%@)"
+          }
+        }
+      }
+    },
+    "Vision did not produce a feature print for this image." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vision no generó una huella de características para esta imagen."
+          }
+        }
+      }
+    },
+    "Without it Facekey recognizes you but can't unlock. If it was granted before, remove and re-add Facekey in System Settings." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin él, Facekey te reconoce pero no puede desbloquear. Si se concedió antes, quita y vuelve a agregar Facekey en Ajustes del Sistema."
+          }
+        }
+      }
+    },
     "Yaw: %@  Pitch: %@" : {
       "shouldTranslate" : false
     },
-    "You're all set" : {},
-    "Your enrolled faces couldn't be read, so nothing was saved — writing now would overwrite them." : {},
-    "Your password is required to unlock your Mac. It is encrypted and securely stored on your device. Facekey works entirely offline, so your password never leaves your Mac." : {},
-    "“On space” reads the keyboard directly to see the space key on the lock screen, which needs Accessibility — the same permission Facekey uses to type your password. Switch Facekey on under Privacy & Security → Accessibility, then quit and reopen Facekey." : {}
+    "You're all set" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo listo"
+          }
+        }
+      }
+    },
+    "Your enrolled faces couldn't be read, so nothing was saved — writing now would overwrite them." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron leer tus rostros registrados, así que no se guardó nada: escribir ahora los sobrescribiría."
+          }
+        }
+      }
+    },
+    "Your password is required to unlock your Mac. It is encrypted and securely stored on your device. Facekey works entirely offline, so your password never leaves your Mac." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se necesita tu contraseña para desbloquear tu Mac. Se cifra y se guarda de forma segura en tu dispositivo. Facekey funciona totalmente sin conexión, así que tu contraseña nunca sale de tu Mac."
+          }
+        }
+      }
+    },
+    "“On space” reads the keyboard directly to see the space key on the lock screen, which needs Accessibility — the same permission Facekey uses to type your password. Switch Facekey on under Privacy & Security → Accessibility, then quit and reopen Facekey." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“Al presionar espacio” lee el teclado directamente para detectar la barra espaciadora en la pantalla de bloqueo, lo cual requiere Accesibilidad, el mismo permiso que Facekey usa para escribir tu contraseña. Activa Facekey en Privacidad y seguridad → Accesibilidad y luego cierra y vuelve a abrir Facekey."
+          }
+        }
+      }
+    }
   },
   "version" : "1.1"
 }
