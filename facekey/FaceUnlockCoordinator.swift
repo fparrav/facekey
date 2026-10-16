@@ -732,9 +732,10 @@ final class FaceUnlockCoordinator {
             finishVerification(generation: generation)
         case .stranger:
             log.notice("verify #\(generation) outcome: unrecognised face for \(PostUnlockVerification.grace, privacy: .public)s, locking the screen")
-            verificationSuppressedUntil = .now + verificationSuppression
             finishVerification(generation: generation)
             let locked = await ScreenLocker.lock()
+            // Pause only once the Mac really re-locked: if the lock failed the stranger is still in, so the next unlock must be checked again.
+            if locked { verificationSuppressedUntil = .now + verificationSuppression }
             log.notice("verify #\(generation) re-lock locked=\(locked, privacy: .public)")
         }
     }
