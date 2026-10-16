@@ -30,9 +30,9 @@ enum FaceEmbedderError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noObservation:
-            return "Vision did not produce a feature print for this image."
+            return String(localized: "Vision did not produce a feature print for this image.")
         case .unsupportedElementType:
-            return "Feature print used an unexpected element type."
+            return String(localized: "Feature print used an unexpected element type.")
         }
     }
 }

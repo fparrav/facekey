@@ -24,8 +24,8 @@ nonisolated enum FaceRecognitionPipelineError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noFaceDetected: return "No face detected in frame."
-        case .alignmentFailed: return "Could not align the detected face."
+        case .noFaceDetected: return String(localized: "No face detected in frame.")
+        case .alignmentFailed: return String(localized: "Could not align the detected face.")
         }
     }
 }
