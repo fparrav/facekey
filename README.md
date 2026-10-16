@@ -8,6 +8,8 @@
 
 <h3 align="center">Face unlock for your Mac</h3>
 
+<p align="center"><a href="README.md">English</a> | <a href="README.es.md">Español</a></p>
+
 <p align="center"><sub>A fork of <a href="https://github.com/jonnyoo/glance">jonnyoo/glance</a>, developed at its own pace.</sub></p>
 
 <p align="center">
@@ -218,6 +220,8 @@ debug section should appear in the sidebar.
 Not currently accepting PRs. This fork follows my own plans, so feel free to fork it and take it your own way. If you want what the original offers, or want to contribute to the app everything here grew from, go to [jonnyoo/glance](https://github.com/jonnyoo/glance).
 
 App feedback goes to [GitHub issues](https://github.com/fparrav/facekey/issues).
+
+The README exists in English and Spanish: a change to one of them must be mirrored in the other (`README.md` and `README.es.md`).
 
 ## Acknowledgements
 
