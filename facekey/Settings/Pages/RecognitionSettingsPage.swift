@@ -50,7 +50,7 @@ struct RecognitionSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError.map { LocalizedStringKey($0) },
+            caption: sessionError.map { LocalizedStringKey.verbatim($0) },
             action: unlock
         )
     }
@@ -70,7 +70,7 @@ struct RecognitionSettingsPage: View {
                 SettingsGroupDivider()
 
                 SettingsRowContent(title: "Camera profile") {
-                    SettingsMenuPickerPill(label: LocalizedStringKey(selectedProfile.title)) {
+                    SettingsMenuPickerPill(label: LocalizedStringKey.verbatim(selectedProfile.title)) {
                         ForEach(CameraProfile.allCases) { profile in
                             Button(profile.title) { selectedProfile = profile }
                         }
@@ -89,7 +89,7 @@ struct RecognitionSettingsPage: View {
 
                 SettingsActionRowContent(
                     title: "Calibrate distance",
-                    subtitle: LocalizedStringKey(calibrationSubtitle),
+                    subtitle: LocalizedStringKey.verbatim(calibrationSubtitle),
                     buttonTitle: "Calibrate",
                     isEnabled: CameraDeviceCatalog.unusableReason(for: selectedProfile) == nil,
                     action: startCalibration
@@ -220,9 +220,9 @@ private enum MatchConfidenceLevel: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .lessStrict: return "Less strict"
-        case .standard: return "Default"
-        case .moreStrict: return "More strict"
+        case .lessStrict: return String(localized: "Less strict")
+        case .standard: return String(localized: "Default")
+        case .moreStrict: return String(localized: "More strict")
         }
     }
 
@@ -258,12 +258,12 @@ private enum DetectionDistanceLevel: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .closest: return "Closest"
-        case .close: return "Close"
-        case .standard: return "Default"
-        case .far: return "Far"
-        case .farther: return "Farther"
-        case .farthest: return "Farthest"
+        case .closest: return String(localized: "Closest")
+        case .close: return String(localized: "Close")
+        case .standard: return String(localized: "Default")
+        case .far: return String(localized: "Far")
+        case .farther: return String(localized: "Farther")
+        case .farthest: return String(localized: "Farthest")
         }
     }
 

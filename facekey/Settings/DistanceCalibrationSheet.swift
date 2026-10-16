@@ -15,7 +15,8 @@ struct DistanceCalibrationSheet: View {
             Text("Calibrate detection distance")
                 .font(.headline)
 
-            Text("Using \(calibrator.cameraName ?? "the selected camera") for the \(calibrator.profile.title) profile.")
+            let cameraName = calibrator.cameraName ?? String(localized: "the selected camera")
+            Text("Using \(cameraName) for the \(calibrator.profile.title) profile.")
                 .foregroundStyle(.secondary)
 
             CameraPreviewView(session: calibrator.camera.session, faces: calibrator.faces)

@@ -80,7 +80,7 @@ struct PasswordSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError.map { LocalizedStringKey($0) },
+            caption: sessionError.map { LocalizedStringKey.verbatim($0) },
             action: unlock
         )
     }

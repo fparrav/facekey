@@ -81,7 +81,7 @@ struct GeneralSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError.map { LocalizedStringKey($0) },
+            caption: sessionError.map { LocalizedStringKey.verbatim($0) },
             action: unlock
         )
     }
@@ -139,7 +139,7 @@ struct GeneralSettingsPage: View {
                 }
             }
             if let launchAtLoginError {
-                SettingsCaption(text: LocalizedStringKey(launchAtLoginError))
+                SettingsCaption(text: LocalizedStringKey.verbatim(launchAtLoginError))
             }
             if hasInheritedXcodePermission {
                 SettingsCaption(text: "Running from Xcode — permission checks resolve against Xcode’s grants, not Facekey’s, so this reading is meaningless. Launch facekey.app on its own to see the real state.")
@@ -271,7 +271,7 @@ struct GeneralSettingsPage: View {
         buttonTitle: LocalizedStringKey,
         action: @escaping () -> Void
     ) -> some View {
-        SettingsRowContent(title: title, subtitle: LocalizedStringKey(isGranted ? reason : [reason, pendingNote].compactMap { $0 }.joined(separator: " ")), subtitleMaxWidth: 250) {
+        SettingsRowContent(title: title, subtitle: LocalizedStringKey.verbatim(isGranted ? reason : [reason, pendingNote].compactMap { $0 }.joined(separator: " ")), subtitleMaxWidth: 250) {
             Group {
                 if isGranted {
                     HStack(spacing: 5) {
@@ -323,7 +323,7 @@ struct GeneralSettingsPage: View {
 
     private func displayPicker() -> some View {
         SettingsRowContent(title: "Display on") {
-            SettingsMenuPickerPill(label: LocalizedStringKey(displayLabel)) {
+            SettingsMenuPickerPill(label: LocalizedStringKey.verbatim(displayLabel)) {
                 Button("Main display") {
                     settings.preferredDisplayID = nil
                     settings.preferredDisplayName = nil

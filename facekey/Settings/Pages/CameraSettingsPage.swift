@@ -58,7 +58,7 @@ struct CameraSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError.map { LocalizedStringKey($0) },
+            caption: sessionError.map { LocalizedStringKey.verbatim($0) },
             action: unlock
         )
     }
@@ -92,7 +92,7 @@ struct CameraSettingsPage: View {
                 )
 
             if isPreviewShown, let error = previewCamera.errorMessage {
-                SettingsCaption(text: LocalizedStringKey(error))
+                SettingsCaption(text: LocalizedStringKey.verbatim(error))
             }
         }
         .onChange(of: settings.defaultCameraID) { restartPreview() }
@@ -140,7 +140,7 @@ struct CameraSettingsPage: View {
         emptyTitle: String = String(localized: "System default")
     ) -> some View {
         SettingsRowContent(title: title) {
-            SettingsMenuPickerPill(label: LocalizedStringKey(cameraLabel(for: selection.wrappedValue, emptyTitle: emptyTitle))) {
+            SettingsMenuPickerPill(label: LocalizedStringKey.verbatim(cameraLabel(for: selection.wrappedValue, emptyTitle: emptyTitle))) {
                 Button(emptyTitle) { selection.wrappedValue = nil }
                 ForEach(devices) { device in
                     Button(device.name) { selection.wrappedValue = device.id }

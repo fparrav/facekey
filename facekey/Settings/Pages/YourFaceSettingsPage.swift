@@ -99,7 +99,7 @@ struct YourFaceSettingsPage: View {
             message: "Session locked",
             buttonTitle: isUnlocking ? "Authenticating…" : "Unlock session",
             isButtonEnabled: !isUnlocking,
-            caption: sessionError.map { LocalizedStringKey($0) },
+            caption: sessionError.map { LocalizedStringKey.verbatim($0) },
             action: unlock
         )
     }
@@ -119,7 +119,7 @@ struct YourFaceSettingsPage: View {
                 .font(SettingsMetrics.rowFont)
                 .foregroundStyle(SettingsMetrics.textSecondary)
 
-            SettingsCaption(text: store.loadFailure.map { LocalizedStringKey($0) } ?? "The stored data couldn't be decrypted with this session key.")
+            SettingsCaption(text: store.loadFailure.map { LocalizedStringKey.verbatim($0) } ?? "The stored data couldn't be decrypted with this session key.")
                 .multilineTextAlignment(.center)
 
             SettingsCaption(text: "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again.")
@@ -166,7 +166,7 @@ struct YourFaceSettingsPage: View {
             }
 
             if let writeError {
-                SettingsCaption(text: LocalizedStringKey(writeError))
+                SettingsCaption(text: LocalizedStringKey.verbatim(writeError))
             }
         }
     }
@@ -253,7 +253,7 @@ struct YourFaceSettingsPage: View {
         Task {
             do {
                 try await Task.detached(priority: .userInitiated) {
-                    try SecureCredentialManager.unlockSession(reason: "Authenticate to view your enrolled face")
+                    try SecureCredentialManager.unlockSession(reason: String(localized: "Authenticate to view your enrolled face"))
                 }.value
                 store.reloadIfUnlocked()
             } catch {
@@ -296,9 +296,9 @@ private struct IdentityCard: View {
     /// An enrollment saved before per-sample quality existed reports "not
     /// recorded" rather than a misleading 100%.
     private var qualityCaption: String {
-        if identity.samples.isEmpty { return "No samples captured" }
-        if ratedCount == 0 { return "Capture quality • not recorded" }
-        return "Capture quality • \(qualityPercentage)%"
+        if identity.samples.isEmpty { return String(localized: "No samples captured") }
+        if ratedCount == 0 { return String(localized: "Capture quality • not recorded") }
+        return String(localized: "Capture quality • \(qualityPercentage)%")
     }
 
     var body: some View {

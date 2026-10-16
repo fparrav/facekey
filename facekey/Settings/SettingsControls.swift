@@ -697,7 +697,7 @@ struct UnlockAnimationPicker: View {
         ) {
             ForEach(UnlockAnimationStyle.selectableCases) { style in
                 SettingsOptionTile(
-                    title: LocalizedStringKey(style.title),
+                    title: LocalizedStringKey.verbatim(style.title),
                     isSelected: selection == style,
                     action: { selectAndPreview(style) },
                     previewHeight: SettingsMetrics.unlockAnimationOptionPreviewSize.height,
@@ -784,7 +784,7 @@ struct LivenessModePicker: View {
         ) {
             ForEach(LivenessMode.allCases) { mode in
                 SettingsOptionTile(
-                    title: LocalizedStringKey(mode.title),
+                    title: LocalizedStringKey.verbatim(mode.title),
                     isSelected: selection == mode,
                     action: { selection = mode },
                     previewHeight: SettingsMetrics.triggerOptionPreviewSize.height,
@@ -823,7 +823,7 @@ struct UnlockTriggerPicker: View {
             ForEach(UnlockTrigger.allCases) { trigger in
                 let isSelected = selection.contains(trigger)
                 SettingsOptionTile(
-                    title: LocalizedStringKey(trigger.title),
+                    title: LocalizedStringKey.verbatim(trigger.title),
                     isSelected: isSelected,
                     action: { toggle(trigger, isSelected: isSelected) },
                     previewHeight: SettingsMetrics.triggerOptionPreviewSize.height,
@@ -1001,4 +1001,11 @@ final class WindowConfiguringView: NSView {
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
     }
+}
+
+extension LocalizedStringKey {
+    /// Wraps text that is already final (a runtime message, a device name, an enum title
+    /// localized at its source) so `Text` shows it as is. `LocalizedStringKey(_:)` would treat
+    /// the string as a lookup key and render Markdown in it; interpolating it as an argument does neither.
+    static func verbatim(_ text: String) -> LocalizedStringKey { "\(text)" }
 }
