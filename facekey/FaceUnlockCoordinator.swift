@@ -53,7 +53,7 @@ final class FaceUnlockCoordinator {
     /// the failure animation.
     private let wrongFaceGraceDuration: Duration = .seconds(4)
 
-    private(set) var statusMessage = "Idle"
+    private(set) var statusMessage = String(localized: "Idle")
     private(set) var lastOutcome: String?
 
     private var hasArmedForCurrentLock = false
@@ -176,12 +176,12 @@ final class FaceUnlockCoordinator {
             return
         }
         guard SecureCredentialManager.isSessionUnlocked else {
-            statusMessage = "Face unlock is on, but the session is locked — authenticate once from Password settings first."
+            statusMessage = String(localized: "Face unlock is on, but the session is locked — authenticate once from Password settings first.")
             log.notice("trigger decision=skip reason=session locked")
             return
         }
         guard SecureCredentialManager.hasStoredPassword() else {
-            statusMessage = "Face unlock is on, but no password is stored yet."
+            statusMessage = String(localized: "Face unlock is on, but no password is stored yet.")
             log.notice("trigger decision=skip reason=no stored password")
             return
         }
@@ -331,7 +331,7 @@ final class FaceUnlockCoordinator {
         if showsUI {
             NotchOverlayController.shared.beginScanning()
         }
-        statusMessage = "Looking for your face…"
+        statusMessage = String(localized: "Looking for your face…")
 
         let outcome = await observeScanWindow(
             deadline: Date().addingTimeInterval(scanWindowDuration),
@@ -359,28 +359,28 @@ final class FaceUnlockCoordinator {
                 NotchOverlayController.shared.finish(success: true)
             }
         case .consistentlyWrongFace:
-            statusMessage = "Face not recognized."
+            statusMessage = String(localized: "Face not recognized.")
             if showsUI {
                 NotchOverlayController.shared.finish(success: false)
-                statusMessage = "Face not recognized — hover the notch to try again."
+                statusMessage = String(localized: "Face not recognized — hover the notch to try again.")
                 scheduleAutoRetryIfEnabled(after: NotchOverlayController.shared.failureHoldDuration)
             } else {
                 scheduleAutoRetryIfEnabled(after: headlessRetryDelay)
             }
         case .spoofSuspected:
-            statusMessage = "Couldn't confirm a live face."
+            statusMessage = String(localized: "Couldn't confirm a live face.")
             if showsUI {
                 NotchOverlayController.shared.finish(success: false)
-                statusMessage = "Couldn't confirm a live face — hover the notch to try again."
+                statusMessage = String(localized: "Couldn't confirm a live face — hover the notch to try again.")
                 scheduleAutoRetryIfEnabled(after: NotchOverlayController.shared.failureHoldDuration)
             } else {
                 scheduleAutoRetryIfEnabled(after: headlessRetryDelay)
             }
         case .noResolution:
-            statusMessage = "No face detected."
+            statusMessage = String(localized: "No face detected.")
             if showsUI {
                 // No explicit collapse call: NotchOverlayController's own scanning timeout fires on the same mark and collapses itself.
-                statusMessage = "No face detected — hover the notch to try again."
+                statusMessage = String(localized: "No face detected — hover the notch to try again.")
                 scheduleAutoRetryIfEnabled(after: NotchOverlayController.shared.collapseAnimationDuration)
             } else {
                 scheduleAutoRetryIfEnabled(after: headlessRetryDelay)
@@ -554,7 +554,7 @@ final class FaceUnlockCoordinator {
             }
 
             if let readyMatch, livenessConfirmed {
-                statusMessage = "Recognized — unlocking…"
+                statusMessage = String(localized: "Recognized — unlocking…")
                 log.notice("matched, injecting password (similarity=\(readyMatch.centroidSimilarity, privacy: .public))")
                 let livenessNote = livenessEnabled
                     ? (confirmingCue.map { "live via \($0.title)" } ?? "liveness clear")
