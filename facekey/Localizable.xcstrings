@@ -735,7 +735,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo más cerca"
+            "value" : "Muy cerca"
           }
         }
       }
@@ -1278,7 +1278,7 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lo más lejos"
+            "value" : "Muy lejos"
           }
         }
       }
@@ -2884,6 +2884,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“Al presionar espacio” lee el teclado directamente para detectar la barra espaciadora en la pantalla de bloqueo, lo cual requiere Accesibilidad, el mismo permiso que Facekey usa para escribir tu contraseña. Activa Facekey en Privacidad y seguridad → Accesibilidad y luego cierra y vuelve a abrir Facekey."
+          }
+        }
+      }
+    },
+    "Default distance" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
           }
         }
       }
