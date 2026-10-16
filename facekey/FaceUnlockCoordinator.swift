@@ -72,6 +72,8 @@ final class FaceUnlockCoordinator {
     /// After an automatic scan finds nobody, further wake signals stay quiet this long — a shared monitor or KVM keeps waking the display with nobody at the Mac.
     private let wakeScanCooldown: Duration = .seconds(600)
     private var wakeScanCooldownUntil: ContinuousClock.Instant?
+    /// When Facekey last typed the password itself, so a later unlock within seconds is known to be its own and is not verified again.
+    private var lastOwnInjectionAt: ContinuousClock.Instant?
     /// Held separately from `scanTask` since it's scheduled from inside the scan task it follows — reusing `scanTask` would self-cancel it.
     private var autoRetryTask: Task<Void, Never>?
     /// Gap between headless auto-retries, just to keep the camera from restarting in a tight loop.
@@ -415,9 +417,8 @@ final class FaceUnlockCoordinator {
         scanSawFace = false
         let liveness = LivenessAnalyzer()
         liveness.modeProvider = { FacekeySettings.shared.livenessMode }
-        /// Early frames are dark while the camera auto-exposes, so skip them from the embedding buffer.
-        let scanStartedAt = ContinuousClock.now
-        let warmUpDuration: Duration = .milliseconds(300)
+        /// Starts its warm-up clock here, so the dark first frames while the camera auto-exposes are skipped.
+        var tracker = FaceMatchTracker()
         /// Set by the first consecutive non-match. A gap in face detection or
         /// a valid match clears it, so only a sustained wrong face resolves the scan.
         var wrongFaceStartedAt: ContinuousClock.Instant?
@@ -432,11 +433,6 @@ final class FaceUnlockCoordinator {
         var faceWidthSamples = 0
         /// Cheap way to detect "no new camera frame yet" vs. "fresh frame" — without it a repeat frame would corrupt the liveness motion signal.
         var lastProcessedFrameID: UInt64?
-        /// Recent face embeddings, averaged before scoring so per-frame noise doesn't flip the match decision.
-        var embeddingBuffer: [[Float]] = []
-        let maxBufferedEmbeddings = 5
-        let minBufferedEmbeddings = 3
-        let perFrameFloorMargin: Float = 0.08
 
         while Date() < deadline, !Task.isCancelled,
               !requireOverlayScanning || NotchOverlayController.shared.phase == .scanning {
@@ -459,7 +455,7 @@ final class FaceUnlockCoordinator {
 
             guard let (result, livenessFrame) = outcome else {
                 wrongFaceStartedAt = nil
-                embeddingBuffer.removeAll()
+                tracker.reset()
                 lastFaceBoundingBox = nil
                 try? await Task.sleep(nanoseconds: 20_000_000)
                 continue
@@ -472,30 +468,16 @@ final class FaceUnlockCoordinator {
                 log.notice("scan face width=\(result.face.normalizedBoundingBox.width, privacy: .public) (min=\(FaceRecognitionPipeline.minimumProminentFaceWidth, privacy: .public)) frameSimilarity=\(pipeline.score(result.embedding, against: FaceEnrollmentStore.shared.activeIdentities).first?.centroidSimilarity ?? 0, privacy: .public)")
             }
 
-            // Same tolerance as `FaceRecognitionPipeline.continuityDistanceTolerance`: center drift at or beyond this in
-            // normalized coordinates means the tracked face is a different person, so the running average must not blend them.
-            let continuityDistanceTolerance: CGFloat = 0.3
-            if let previous = previousBoundingBox {
-                let previousCenter = CGPoint(x: previous.midX, y: previous.midY)
-                let center = CGPoint(x: result.face.normalizedBoundingBox.midX, y: result.face.normalizedBoundingBox.midY)
-                if hypot(center.x - previousCenter.x, center.y - previousCenter.y) >= continuityDistanceTolerance {
-                    embeddingBuffer.removeAll()
-                }
-            }
-            // Each frame must clear a floor on its own: averaging alone would let a few frames of the owner lift a
-            // stranger who steps in front of the camera over the threshold. A frame below the floor drops the whole buffer.
-            // `activeIdentities`, not `identities`: someone switched off on the Your Face page stays enrolled but must not unlock.
-            let activeIdentities = FaceEnrollmentStore.shared.activeIdentities
-            let frameSimilarity = pipeline.score(result.embedding, against: activeIdentities).first?.centroidSimilarity ?? 0
-            let frameBelowFloor = frameSimilarity < matchThreshold - perFrameFloorMargin
-            if frameBelowFloor {
-                embeddingBuffer.removeAll()
-            } else if ContinuousClock.now - scanStartedAt >= warmUpDuration {
-                embeddingBuffer.append(result.embedding)
-                if embeddingBuffer.count > maxBufferedEmbeddings {
-                    embeddingBuffer.removeFirst()
-                }
-            }
+            // Continuity, per-frame floor, warm-up and averaging live in the tracker, which `activeIdentities` feeds:
+            // someone switched off on the Your Face page stays enrolled but must not unlock.
+            let verdict = tracker.observe(
+                result,
+                previousBoundingBox: previousBoundingBox,
+                pipeline: pipeline,
+                activeIdentities: FaceEnrollmentStore.shared.activeIdentities,
+                threshold: matchThreshold
+            )
+            let frameSimilarity = tracker.lastFrameSimilarity
 
             // Fed regardless of match, so liveness stays a genuinely independent gate rather than one starved by recognition confidence.
             var confirmingCue: LivenessCue?
@@ -525,18 +507,15 @@ final class FaceUnlockCoordinator {
 
             // Not enough samples yet — keep scanning (liveness above keeps running; wrongFaceStartedAt/readyMatch are deliberately untouched).
             // A frame below the per-frame floor is a confident non-match, so it falls through to the wrong-face handling.
-            if embeddingBuffer.count < minBufferedEmbeddings && !frameBelowFloor {
+            var matched: ScoredIdentity?
+            switch verdict {
+            case .undecided:
                 try? await Task.sleep(nanoseconds: 20_000_000)
                 continue
-            }
-            var matched: ScoredIdentity?
-            if !frameBelowFloor {
-                guard let smoothed = FaceRecognitionPipeline.averagedEmbedding(embeddingBuffer) else {
-                    try? await Task.sleep(nanoseconds: 20_000_000)
-                    continue
-                }
-                let scored = pipeline.score(smoothed, against: activeIdentities)
-                matched = pipeline.bestMatch(in: scored, threshold: matchThreshold)
+            case .matched(let identity):
+                matched = identity
+            case .notMatched:
+                break
             }
 
             if let matched {
@@ -548,7 +527,7 @@ final class FaceUnlockCoordinator {
                     wrongFaceStartedAt = .now
                 }
                 if ContinuousClock.now - wrongFaceStartedAt! >= wrongFaceGraceDuration {
-                    log.notice("wrong face for 4s (frameSimilarity=\(frameSimilarity, privacy: .public), threshold=\(self.matchThreshold, privacy: .public), buffer=\(embeddingBuffer.count))")
+                    log.notice("wrong face for 4s (frameSimilarity=\(frameSimilarity, privacy: .public), threshold=\(self.matchThreshold, privacy: .public), buffer=\(tracker.bufferedCount))")
                     return .consistentlyWrongFace
                 }
             }
@@ -560,6 +539,8 @@ final class FaceUnlockCoordinator {
                     ? (confirmingCue.map { "live via \($0.title)" } ?? "liveness clear")
                     : "liveness off"
                 lastOutcome = "Matched \(readyMatch.identity.name) at \(String(format: "%.3f", readyMatch.centroidSimilarity)), \(livenessNote)."
+                lastOwnInjectionAt = .now
+                log.notice("own unlock: recording injection time before typing the password")
                 await pocController.injectStoredPassword(requireAuthoritativeLock: true)
                 return .matched
             }
