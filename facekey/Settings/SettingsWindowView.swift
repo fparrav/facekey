@@ -65,7 +65,10 @@ struct SettingsWindowView: View {
         // WindowConfiguringView) — a fixed size here combined with
         // content-size resizability made SwiftUI keep re-adding a titlebar
         // band to the window height.
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        //
+        // The width floor lives here, not only on `NSWindow.minSize`: SwiftUI rewrites the window's minimum from the root
+        // view's own constraints, so a frame without `minWidth` let the window shrink until Spanish text wrapped mid-word.
+        .frame(minWidth: SettingsMetrics.windowSize.width, maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
         .background(WindowConfigurator())
         // Cascades to every native control so nothing falls back to the
