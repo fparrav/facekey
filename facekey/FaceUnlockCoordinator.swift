@@ -60,6 +60,8 @@ final class FaceUnlockCoordinator {
     /// One-shot per lock session — an auto-retry that could itself auto-retry would loop the camera for the whole lock session.
     private var hasAutoRetriedForCurrentLock = false
     private var lastDisplayIDs: Set<UInt32> = []
+    /// Whether the latest scan window ever selected a face; an empty wake scan starts the cooldown.
+    private var scanSawFace = false
     private var scanTask: Task<Void, Never>?
     /// Bumped by every `startScanCycle()`; a cycle bails once superseded (see `runScanCycle(generation:)`).
     private var scanGeneration = 0
@@ -67,6 +69,9 @@ final class FaceUnlockCoordinator {
     private var lastArmedAt: ContinuousClock.Instant?
     /// One lid-open fires several wake signals within a few hundred ms of each other; anything in this window counts as the same wake.
     private let rearmDebounce: Duration = .seconds(2)
+    /// After an automatic scan finds nobody, further wake signals stay quiet this long — a shared monitor or KVM keeps waking the display with nobody at the Mac.
+    private let wakeScanCooldown: Duration = .seconds(600)
+    private var wakeScanCooldownUntil: ContinuousClock.Instant?
     /// Held separately from `scanTask` since it's scheduled from inside the scan task it follows — reusing `scanTask` would self-cancel it.
     private var autoRetryTask: Task<Void, Never>?
     /// Gap between headless auto-retries, just to keep the camera from restarting in a tight loop.
@@ -123,10 +128,13 @@ final class FaceUnlockCoordinator {
         guard LockMonitor.isScreenActuallyLocked() else {
             hasArmedForCurrentLock = false
             hasAutoRetriedForCurrentLock = false
+            wakeScanCooldownUntil = nil
             disarmOverlay()
             return
         }
-        guard !lockMonitor.isSleeping else { return }
+        // A new lock is a new session; an earlier wake cooldown no longer applies. Screen-parameter re-evaluations reuse a stale lastEvent, so they must not clear it.
+        if source == .lockEvent, lockMonitor.lastEvent == .screenLocked { wakeScanCooldownUntil = nil }
+        guard !lockMonitor.isSleeping else { log.notice("trigger decision=skip reason=sleeping"); return }
 
         // `.wake` (sleep, display sleep, or screensaver stopping) is an explicit "let me back in," so clear the one-shot guard.
         // `isWithinRecentArmBurst` keeps the several wake signals from one lid-open from each re-arming and fighting over the camera.
@@ -137,30 +145,35 @@ final class FaceUnlockCoordinator {
         // Runs before the hasArmedForCurrentLock guard — the space monitor's lifetime is tied to "locked + opted in," not to whether a scan already ran.
         updateSpaceMonitor()
 
-        guard isEnabled, !hasArmedForCurrentLock else { return }
-        guard let signal = requiredTrigger(for: lockMonitor.lastEvent) else { return }
+        guard isEnabled, !hasArmedForCurrentLock else { log.notice("trigger decision=skip reason=disabled or already armed"); return }
+        guard let signal = requiredTrigger(for: lockMonitor.lastEvent) else { log.notice("trigger decision=skip reason=no trigger signal"); return }
         // A pinned display that isn't connected bails entirely rather than showing up elsewhere; "Main display" (nil) always resolves.
-        guard NotchGeometry.preferredScreen() != nil else { return }
+        guard NotchGeometry.preferredScreen() != nil else { log.notice("trigger decision=skip reason=no preferred screen"); return }
 
         guard FacekeySettings.shared.isFaceUnlockEnabled(for: DisplayContext.current()) else {
             disarmOverlay()
+            log.notice("trigger decision=skip reason=face unlock off for this display")
             return
         }
         guard SecureCredentialManager.isSessionUnlocked else {
             statusMessage = "Face unlock is on, but the session is locked — authenticate once from Password settings first."
+            log.notice("trigger decision=skip reason=session locked")
             return
         }
         guard SecureCredentialManager.hasStoredPassword() else {
             statusMessage = "Face unlock is on, but no password is stored yet."
+            log.notice("trigger decision=skip reason=no stored password")
             return
         }
 
         // A deselected trigger means "don't auto-scan for this signal," not "do nothing" — the user can still opt in by hand.
-        let shouldAutoScan = FacekeySettings.shared.unlockTriggers.contains(signal)
+        let cooldownActive = signal == .onWake && (wakeScanCooldownUntil.map { ContinuousClock.now < $0 } ?? false)
+        if cooldownActive { log.notice("trigger decision=skip reason=wake cooldown") }
+        let shouldAutoScan = FacekeySettings.shared.unlockTriggers.contains(signal) && !cooldownActive
 
         // Headless has nothing to arm/hover, so if this signal isn't selected there's nothing to do — and hasArmedForCurrentLock
         // must stay false, or a later selected signal could never fire (nothing else calls arm() to reset it).
-        guard showsUI || shouldAutoScan else { return }
+        guard showsUI || shouldAutoScan else { log.notice("trigger decision=skip reason=trigger not selected"); return }
 
         log.notice("trigger decision=arm autoScan=\(shouldAutoScan)")
         hasArmedForCurrentLock = true
@@ -258,6 +271,8 @@ final class FaceUnlockCoordinator {
 
     /// Called on arm, and again whenever the overlay hover-activates.
     private func startScanCycle(trigger: ScanTrigger) {
+        // A manual trigger always wins over the wake cooldown.
+        if trigger == .hover || trigger == .space { wakeScanCooldownUntil = nil }
         scanTask?.cancel()
         scanGeneration &+= 1
         let generation = scanGeneration
@@ -308,6 +323,11 @@ final class FaceUnlockCoordinator {
         log.notice("scan #\(generation) outcome: \(String(describing: outcome), privacy: .public) \(self.lastOutcome ?? "", privacy: .public)")
 
         camera.stop()
+
+        if outcome == .noResolution, !scanSawFace, trigger == .wake || trigger == .autoRetry, LockMonitor.isScreenActuallyLocked() {
+            wakeScanCooldownUntil = .now + wakeScanCooldown
+            log.notice("wake cooldown started (\(trigger.rawValue, privacy: .public)): no face seen")
+        }
 
         switch outcome {
         case .matched:
@@ -391,6 +411,8 @@ final class FaceUnlockCoordinator {
     /// overlay, since headlessly `phase` never becomes `.scanning` at all.
     private func observeScanWindow(deadline: Date, requireOverlayScanning: Bool) async -> ScanOutcome {
         let livenessEnabled = FacekeySettings.shared.livenessChecksEnabled
+        let observedGeneration = scanGeneration
+        scanSawFace = false
         let liveness = LivenessAnalyzer()
         liveness.modeProvider = { FacekeySettings.shared.livenessMode }
         /// Early frames are dark while the camera auto-exposes, so skip them from the embedding buffer.
@@ -444,6 +466,8 @@ final class FaceUnlockCoordinator {
             }
             lastFaceBoundingBox = result.face.normalizedBoundingBox
             faceWidthSamples += 1
+            // A superseded scan must not mark the newer scan as having seen a face.
+            if observedGeneration == scanGeneration { scanSawFace = true }
             if faceWidthSamples == 5 {
                 log.notice("scan face width=\(result.face.normalizedBoundingBox.width, privacy: .public) (min=\(FaceRecognitionPipeline.minimumProminentFaceWidth, privacy: .public)) frameSimilarity=\(pipeline.score(result.embedding, against: FaceEnrollmentStore.shared.activeIdentities).first?.centroidSimilarity ?? 0, privacy: .public)")
             }
