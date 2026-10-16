@@ -8,7 +8,7 @@
 
 <h3 align="center">Face unlock for your Mac</h3>
 
-<p align="center"><sub>A fork of <a href="https://github.com/jonnyoo/glance">jonnyoo/glance</a>.</sub></p>
+<p align="center"><sub>A fork of <a href="https://github.com/jonnyoo/glance">jonnyoo/glance</a>, developed at its own pace.</sub></p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-black.svg" alt="MIT License"></a>
@@ -18,6 +18,9 @@
 
 Facekey brings the FaceID-like experience of your iPhone to a Mac near you. Unlock your Mac with a glance — no typing, no reaching for the TouchID key. Everything runs on-device using Apple's Vision
 and Core ML frameworks, so your face data and your Mac password never touch the internet. The UI is built into your Macbook's notch with fluid dynamic island like animations.
+
+> [!NOTE]
+> **This is a personal fork.** Facekey exists so I can follow my own development pace and add the features I wish glance had. It is not a replacement for the original, it does not track upstream on a schedule, and I merge upstream changes only when I want them. Everything that works here started as [Jonathan Zhou's](https://github.com/jonnyoo) work. See [How this fork differs from glance](#how-this-fork-differs-from-glance) for what I added or changed.
 
 
 https://github.com/user-attachments/assets/77438826-80a9-4ab2-9fc3-42407a2d0adb
@@ -82,6 +85,44 @@ Open the `.dmg` file and drag Facekey to `/Applications`, then open it.
 | **Trackpad haptics** | Hovering over the notch will trigger haptics |
 | **Notchless Mac support** | Macs without a notch will be replaced with a pill-shape, dynamic island style design. |
 | **Your data, your call** | Edit or delete your enrolment or stored password at any time. The encrypted files are removed immediately. |
+
+## How this fork differs from glance
+
+Glance is a polished, focused app. This fork keeps its idea, architecture and most of its code, and adds the things I wanted for my own daily use. Anything not listed here behaves as in the original.
+
+### Added
+
+| Addition | What it does |
+|---|---|
+| **Verify after other unlocks** | Optional, off by default. After an unlock by an Apple Watch, Touch ID or a typed password, a short scan looks at who is at the screen and locks the Mac again if an unrecognised face stays in view for 2 seconds. See [Unlocks by other methods](#unlocks-by-other-methods). |
+| **Calibrated detection distance** | The detection distance is a six-stop slider kept separately for each display setup (built-in, built-in + external, external), and a guided **Calibrate** sheet measures your face width through that setup's own camera. |
+| **Behaviour per display setup** | Face unlock can be switched on or off for *Built-in only*, *Built-in + external* and *External only*, each with its own camera. The unlock re-checks when displays change while locked, and falls back to the notch screen if a pinned external display's ID goes stale after sleep. |
+| **Unlock the session at launch** | Optional. Facekey unlocks its own session when it starts, with no Touch ID prompt. This trades the Touch ID gate on the stored password for convenience. Leave it off if you do not want that. |
+| **Permissions page** | Settings shows whether Accessibility and Camera are still granted, says what stops working without each one, and opens the right System Settings pane. Re-signing the app can silently drop Accessibility, and this makes that visible. |
+| **Wake-scan pause** | After a scan started by a wake signal finds nobody, further wake signals do not turn the camera on again for 10 minutes. Locking again, unlocking, hovering the notch or pressing space ends the pause. |
+| **Quit control in onboarding** | The first-run flow shows a close button on every step except enrollment and completion, so you can leave it without a hidden shortcut. |
+| **Scan diagnostics** | Each scan logs what triggered it, the face width, the similarity and the liveness readings, and the logs persist, which is how most of the fixes below were found. |
+| **Offline self-tests** | `tools/` gains standalone self-tests for the verification logic and the distance calibration, plus a probe that checks the re-lock shortcut works on your macOS version. |
+
+### Changed
+
+| Change | What it does |
+|---|---|
+| **Steadier recognition** | A scan compares a rolling average of recent frames instead of a single frame, skips the first dark frames of the camera, and needs a few consistent frames before it decides. Each frame must also clear a floor on its own, so a stranger stepping in cannot ride on the average of the owner's earlier frames. The default scan window is longer, and a sustained non-match takes longer to give up. |
+| **Add Captures, not Recapture** | Adding captures to an identity appends them instead of discarding the earlier ones. The per-identity sample cap is 72, and the lowest-quality samples are dropped first. The completion step reports how many were kept. |
+| **Easier enrollment poses** | The upper diagonal head poses were hard to hit, so the yaw and pitch thresholds are more forgiving, and stalled poses widen their tolerance sooner. |
+| **Liveness false denials** | The glare cue no longer fires on an overexposed live face, and a background edge that clips the face box no longer triggers the device cue. Photo and screen detection otherwise work as before. |
+
+### Renamed and re-pointed
+
+- The app, project, bundle identifiers and Keychain service are `Facekey` and `com.fparrav.facekey`.
+- On first launch Facekey copies your glance Keychain items, face store and preferences over, so nothing has to be enrolled again.
+- The upstream Sparkle update feed and signing key are removed, and the update controls stay hidden until this fork has a feed of its own. Download and feedback links point to this repository.
+- The signing team lives in an untracked `Local.xcconfig`, so it never lands in a commit.
+
+### Not changed
+
+The recognition model (ArcFace through Core ML), the liveness cues, the encrypted storage of face data and password, the way the password is typed on the lock screen, and the notch UI all come from glance.
 
 ---
 
@@ -174,7 +215,7 @@ debug section should appear in the sidebar.
 
 ## Contributing
 
-Not currently accepting PRs. Feel free to fork this project.
+Not currently accepting PRs. This fork follows my own plans, so feel free to fork it and take it your own way. If you want what the original offers, or want to contribute to the app everything here grew from, go to [jonnyoo/glance](https://github.com/jonnyoo/glance).
 
 App feedback goes to [GitHub issues](https://github.com/fparrav/facekey/issues).
 
