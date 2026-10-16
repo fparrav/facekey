@@ -21,7 +21,7 @@ final class POCController {
     /// Bound to the setup SecureField. Cleared immediately after a successful save.
     var passwordInput: String = ""
 
-    var statusMessage: String = "Idle"
+    var statusMessage: String = String(localized: "Idle")
 
     func refreshAccessibilityStatus() {
         accessibilityGranted = KeystrokeInjector.isAccessibilityTrusted()
@@ -63,7 +63,7 @@ final class POCController {
     /// be unlocked (Touch ID happens in `unlockSession()`, not here).
     func savePassword() async {
         guard !passwordInput.isEmpty else {
-            statusMessage = "Enter a password first."
+            statusMessage = String(localized: "Enter a password first.")
             return
         }
         let plaintext = passwordInput
@@ -77,10 +77,10 @@ final class POCController {
                 defer { bytes.resetBytes(in: 0..<bytes.count) }
                 try SecureCredentialManager.savePassword(bytes)
             }.value
-            statusMessage = "Password saved and encrypted."
+            statusMessage = String(localized: "Password saved and encrypted.")
             hasStoredPassword = true
         } catch {
-            statusMessage = "Save failed: \(error.localizedDescription)"
+            statusMessage = String(localized: "Save failed: \(error.localizedDescription)")
         }
     }
 
@@ -92,31 +92,31 @@ final class POCController {
     /// confirms the screen is actually locked.
     func injectStoredPassword(requireAuthoritativeLock: Bool = false) async {
         guard KeystrokeInjector.isAccessibilityTrusted() else {
-            statusMessage = "Accessibility not granted — open System Settings and enable Facekey."
+            statusMessage = String(localized: "Accessibility not granted — open System Settings and enable Facekey.")
             return
         }
         guard SecureCredentialManager.isSessionUnlocked else {
-            statusMessage = "Session locked — authenticate with Touch ID first."
+            statusMessage = String(localized: "Session locked — authenticate with Touch ID first.")
             return
         }
 
         if requireAuthoritativeLock {
             guard LockMonitor.isScreenActuallyLocked() else {
-                statusMessage = "Skipped: CGSession reports screen is not actually locked."
+                statusMessage = String(localized: "Skipped: CGSession reports screen is not actually locked.")
                 return
             }
         }
 
-        statusMessage = "Injecting…"
+        statusMessage = String(localized: "Injecting…")
         do {
             try await Task.detached(priority: .userInitiated) {
                 var bytes = try SecureCredentialManager.readPassword()
                 defer { bytes.resetBytes(in: 0..<bytes.count) }
                 try KeystrokeInjector.typeAndReturn(bytes)
             }.value
-            statusMessage = "Injected stored password + Return at \(Date().formatted(date: .omitted, time: .standard))"
+            statusMessage = String(localized: "Injected stored password + Return at \(Date().formatted(date: .omitted, time: .standard))")
         } catch {
-            statusMessage = "Injection failed: \(error.localizedDescription)"
+            statusMessage = String(localized: "Injection failed: \(error.localizedDescription)")
         }
     }
 }
