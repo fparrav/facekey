@@ -40,15 +40,15 @@ enum PostUnlockVerificationSelfTest {
         v = PostUnlockVerification()
         check(v.observe(.unrecognised, at: 0) == nil, "unrecognised at 0 returns nil (grace not elapsed)")
         check(v.observe(.unrecognised, at: 1) == nil, "unrecognised at 1 returns nil (grace not elapsed)")
-        check(v.observe(.unrecognised, at: 2) == nil, "unrecognised at 2 returns nil (grace not elapsed)")
-        check(v.observe(.unrecognised, at: 3) == .stranger, "unrecognised at 3 returns .stranger (grace elapsed)")
+        check(v.observe(.unrecognised, at: 1.9) == nil, "unrecognised at 1.9 returns nil (grace not elapsed)")
+        check(v.observe(.unrecognised, at: 2) == .stranger, "unrecognised at 2 returns .stranger (grace elapsed)")
 
         // MARK: - Match after some unrecognised frames
 
         v = PostUnlockVerification()
         check(v.observe(.unrecognised, at: 0) == nil, "unrecognised at 0 returns nil")
-        check(v.observe(.unrecognised, at: 2) == nil, "unrecognised at 2 returns nil (grace not elapsed)")
-        check(v.observe(.matched, at: 2.1) == .verified, "a match at 2.1 verifies despite earlier unrecognised frames")
+        check(v.observe(.unrecognised, at: 1.5) == nil, "unrecognised at 1.5 returns nil (grace not elapsed)")
+        check(v.observe(.matched, at: 1.6) == .verified, "a match at 1.6 verifies despite earlier unrecognised frames")
 
         // MARK: - noFace resets the unrecognised timer
 
@@ -56,14 +56,14 @@ enum PostUnlockVerificationSelfTest {
         check(v.observe(.unrecognised, at: 0) == nil, "unrecognised at 0 returns nil")
         check(v.observe(.noFace, at: 1.5) == nil, "noFace at 1.5 returns nil and resets the timer")
         check(v.observe(.unrecognised, at: 2) == nil, "unrecognised at 2 returns nil (timer restarted, since 2)")
-        check(v.observe(.unrecognised, at: 4.9) == nil, "unrecognised at 4.9 returns nil (2.9s since reset, grace not elapsed)")
-        check(v.observe(.unrecognised, at: 5.0) == .stranger, "unrecognised at 5.0 returns .stranger (3s since the 2s reset)")
+        check(v.observe(.unrecognised, at: 3.9) == nil, "unrecognised at 3.9 returns nil (1.9s since reset, grace not elapsed)")
+        check(v.observe(.unrecognised, at: 4.0) == .stranger, "unrecognised at 4.0 returns .stranger (2s since the 2s reset)")
 
         // MARK: - Finish when grace never elapses
 
         v = PostUnlockVerification()
         check(v.observe(.unrecognised, at: 0) == nil, "unrecognised at 0 returns nil")
-        check(v.observe(.unrecognised, at: 2.9) == nil, "unrecognised at 2.9 returns nil (grace not elapsed)")
+        check(v.observe(.unrecognised, at: 1.9) == nil, "unrecognised at 1.9 returns nil (grace not elapsed)")
         check(v.finish(at: 6) == .nobody, "finish at 6 without an outcome is .nobody")
 
         // MARK: - Finish after only noFace frames
@@ -84,7 +84,7 @@ enum PostUnlockVerificationSelfTest {
         // MARK: - Constants
 
         check(PostUnlockVerification.window == 6, "window is 6 seconds")
-        check(PostUnlockVerification.grace == 3, "grace is 3 seconds")
+        check(PostUnlockVerification.grace == 2, "grace is 2 seconds")
 
         // MARK: - Out-of-window unrecognised does not alter state
 

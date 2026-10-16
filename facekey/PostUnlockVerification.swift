@@ -14,7 +14,7 @@ struct PostUnlockVerification {
     /// Longest a verification runs, in seconds from the first usable frame.
     static let window: TimeInterval = 6
     /// How long an unrecognised face must persist, with no match and no gap in detection, before it counts as a stranger.
-    static let grace: TimeInterval = 3
+    static let grace: TimeInterval = 2
 
     private var unrecognisedSince: TimeInterval?
 
