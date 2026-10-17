@@ -83,6 +83,7 @@ Abre el archivo `.dmg` y arrastra Facekey a `/Applications`; luego ábrelo.
 | **Cámara y pantalla** | Elige qué cámara usar, incluidas cámaras distintas para la pantalla integrada y para un monitor externo. |
 | **Sesiones con bloqueo automático** | La sesión de Touch ID se vuelve a bloquear sola tras el periodo de inactividad que elijas, para que una Mac sin atender no quede autorizada para siempre. |
 | **Verificar tras otros desbloqueos** | Opcional, desactivada por defecto. Después de que algo distinto de Facekey desbloquee la Mac, como un Apple Watch, un escaneo breve comprueba quién está frente a la pantalla y la vuelve a bloquear si ve un rostro que no está registrado. Se ejecuta después del desbloqueo, así que no puede impedir el desbloqueo con el Apple Watch, y una habitación vacía deja la Mac desbloqueada. |
+| **Aprobación de sudo** | Opcional, desactivada por defecto. Cuando `sudo` pide una contraseña en una terminal, Facekey muestra en el notch una superposición con Aceptar / Cancelar, verifica tu rostro y lo aprueba, según la configuración de pantallas y según la app. Es más débil que Touch ID, así que lee antes [Aprobación de sudo](#aprobación-de-sudo). |
 | **Respuesta háptica del trackpad** | Pasar el cursor sobre el notch activa la respuesta háptica |
 | **Compatibilidad con Mac sin notch** | En las Mac sin notch se reemplaza por un diseño en forma de píldora, al estilo de la Dynamic Island. |
 | **Tus datos, tu decisión** | Edita o elimina tu registro o tu contraseña guardada en cualquier momento. Los archivos cifrados se eliminan de inmediato. |
@@ -96,6 +97,7 @@ Glance es una app pulida y enfocada. Este fork conserva su idea, su arquitectura
 | Adición | Qué hace |
 |---|---|
 | **Verificar tras otros desbloqueos** | Opcional, desactivada por defecto. Después de un desbloqueo con Apple Watch, Touch ID o una contraseña escrita, un escaneo breve comprueba quién está frente a la pantalla y vuelve a bloquear la Mac si un rostro no reconocido permanece a la vista durante 2 segundos. Consulta [Desbloqueos por otros métodos](#desbloqueos-por-otros-métodos). |
+| **Aprobación de sudo** | Opcional, desactivada por defecto. Un módulo PAM colocado antes de Touch ID en `sudo_local` le pide a Facekey que apruebe `sudo` con una superposición en el notch y un escaneo del rostro, con una lista de apps permitidas y bloqueadas y un historial de auditoría. Consulta [Aprobación de sudo](#aprobación-de-sudo). |
 | **Distancia de detección calibrada** | La distancia de detección es un control deslizante de seis posiciones que se guarda por separado para cada configuración de pantallas (integrada, integrada + externa, externa), y una hoja guiada de **Calibrar** mide el ancho de tu rostro con la cámara de esa configuración. |
 | **Comportamiento por configuración de pantallas** | El desbloqueo facial se puede activar o desactivar para *Solo integrada*, *Integrada + externa* y *Solo externa*, cada una con su propia cámara. El desbloqueo se vuelve a comprobar cuando cambian las pantallas con la Mac bloqueada, y recurre a la pantalla del notch si el ID de una pantalla externa fijada queda obsoleto tras el reposo. |
 | **Desbloquear la sesión al iniciar** | Opcional. Facekey desbloquea su propia sesión al arrancar, sin pedir Touch ID. Esto cambia la protección de Touch ID sobre la contraseña guardada por comodidad. Déjala desactivada si no quieres eso. |
@@ -158,6 +160,35 @@ El reconocimiento facial y la detección de vida se ejecutan de forma independie
 ### Desbloqueos por otros métodos
 
 macOS no permite que una app apruebe o bloquee un desbloqueo hecho con un Apple Watch, Touch ID o una contraseña escrita, así que Facekey no puede controlarlos. Con *Verificar mi rostro tras otros métodos de desbloqueo* activado (Ajustes → Reconocimiento), Facekey mira la pantalla hasta 6 segundos después de un desbloqueo así. Una coincidencia con cualquier identidad habilitada termina la comprobación sin avisar. Un rostro no reconocido que permanece a la vista durante 2 segundos vuelve a bloquear la pantalla. Si no hay nadie a la vista, no ocurre nada. Tras un re-bloqueo, la comprobación se pausa durante 2 minutos para que no pueda dejarte fuera en un ciclo. Es una red de seguridad posterior, no una barrera.
+
+### Aprobación de sudo
+
+Opcional, desactivada por defecto, y se instala desde **Ajustes → Sudo**, que pide tu contraseña de administrador. Un módulo PAM pequeño, `pam_facekey.so`, se coloca antes de `pam_tid.so` en `/etc/pam.d/sudo_local`. Cuando `sudo` pide una contraseña en una terminal, el módulo le pregunta a Facekey. Facekey muestra en el notch una superposición con **Aceptar** y **Cancelar**, y aprueba solo después de que aceptes y de que tu rostro coincida. Cualquier otro resultado (Cancelar, un tiempo agotado, una app bloqueada, una sesión bloqueada, Facekey sin ejecutarse, ninguna terminal) pasa al aviso normal de `sudo`, así que esto solo agrega una vía de acceso en los casos que actives y nunca quita una.
+
+**Requisitos**
+
+- macOS 15 o posterior, con Facekey en ejecución, al menos un rostro registrado y el permiso de Cámara.
+- Una sesión de Facekey desbloqueada. Con la sesión bloqueada, las solicitudes pasan al aviso normal.
+- Una compilación de Facekey firmada con un equipo de desarrollador. El módulo se compila con el ID de ese equipo y ignora toda solicitud si no lo tiene, así que una compilación con firma ad hoc no puede usar esta función.
+- Tu contraseña de administrador, una sola vez, para instalarla o quitarla. No necesita ningún permiso adicional, como Acceso total al disco o Accesibilidad.
+- `sudo` ejecutado por ti en una terminal. Nunca actúa para root, por SSH, ni cuando un programa entrega la contraseña con `sudo -S` o `-A`.
+- La función activada para tu configuración de pantallas actual en Ajustes → Sudo.
+
+**Riesgos**
+
+- **Es más débil que Touch ID.** Una coincidencia de rostro es una prueba más blanda que una huella, y la cámara de un MacBook ve una imagen plana (consulta la advertencia al inicio). Quien logre pasar la verificación del rostro y pulsar Aceptar obtiene root mediante `sudo`.
+- **Es una puerta a root.** La superposición solo responde a un clic de hardware, así que un script que envíe un clic cuenta como Cancelar, pero alguien frente a tu Mac desbloqueada aún puede usarla.
+- **Cambia un archivo del sistema y carga código en `sudo`.** `pam_facekey.so` se ejecuta como root dentro de cada `sudo`, y el instalador edita `/etc/pam.d/sudo_local`. El módulo solo confía en un Facekey firmado por el mismo equipo y falla en abierto: ante cualquier error no hace nada y `sudo` pide su contraseña. El instalador copia sus archivos a una carpeta privada y verifica la firma antes de ejecutarlos como root, pero un proceso de tu propio usuario aún podría intentar reemplazarlos en esa breve ventana.
+- **Una actualización de macOS puede eliminar la entrada.** Entonces `sudo` vuelve a Touch ID o a la contraseña, y Ajustes → Sudo ofrece repararla.
+- **El historial puede contener secretos.** Los comandos se guardan con sus argumentos, salvo que actives *Guardar solo el nombre del programa*. El archivo está cifrado con una clave de tu Llavero.
+
+**Lo que debes saber antes de activarla**
+
+- **Las apps están en una lista.** La primera vez que una app lo solicita, Facekey pregunta si debe permitirla, y la reconoce por su firma de código (o, si no está firmada, por su código). Una app bloqueada se rechaza de inmediato. La lista está en Ajustes → Sudo.
+- **La superposición siempre es visible.** No hay aprobación silenciosa, y el módulo solo habla con un Facekey firmado por el mismo equipo.
+- **Hay un historial de auditoría.** Ajustes → Sudo muestra cuándo ocurrió cada solicitud, qué app la hizo, el comando y cómo terminó. Está cifrado y se puede borrar, y *Guardar solo el nombre del programa* deja fuera los argumentos.
+- **Según la configuración de pantallas.** Se puede activar o desactivar para pantalla *Integrada*, *Integrada + externa* y *Externa*.
+- **Se puede quitar.** Quitar deja `sudo_local` exactamente como estaba. Una actualización de macOS puede eliminar la entrada, y entonces Ajustes ofrece repararla.
 
 ### Local por diseño
 
