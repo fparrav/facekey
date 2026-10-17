@@ -203,6 +203,26 @@
     "Alignment: %@" : {
       "shouldTranslate" : false
     },
+    "Allow" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir"
+          }
+        }
+      }
+    },
+    "Allow %@ to use Facekey for sudo?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Permitir que %@ use Facekey para sudo?"
+          }
+        }
+      }
+    },
     "Allow Facekey to recognize your face" : {
       "localizations" : {
         "es" : {
@@ -223,6 +243,16 @@
         }
       }
     },
+    "Allowed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitida"
+          }
+        }
+      }
+    },
     "Also requires proof of a real face." : {
       "localizations" : {
         "es" : {
@@ -239,6 +269,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Animación"
+          }
+        }
+      }
+    },
+    "App blocked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App bloqueada"
+          }
+        }
+      }
+    },
+    "Approve sudo from %@?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Aprobar sudo desde %@?"
+          }
+        }
+      }
+    },
+    "Approved" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aprobada"
+          }
+        }
+      }
+    },
+    "Apps" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apps"
           }
         }
       }
@@ -269,6 +339,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ArcFaceEmbedder espera una imagen alineada de %lldx%lld, pero recibió una de %lldx%lld. Pasa primero el rostro por FaceAligner."
+          }
+        }
+      }
+    },
+    "Ask for approval on" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pedir aprobación en"
           }
         }
       }
@@ -395,6 +475,16 @@
     },
     "Best match: %@ — centroid %@, max %@" : {
       "shouldTranslate" : false
+    },
+    "Blocked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloqueada"
+          }
+        }
+      }
     },
     "Bottom left" : {
       "localizations" : {
@@ -579,6 +669,16 @@
         }
       }
     },
+    "Cancelled" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelada"
+          }
+        }
+      }
+    },
     "Capture quality for %lld samples" : {
       "localizations" : {
         "es" : {
@@ -703,6 +803,16 @@
     },
     "Clear" : {
       "shouldTranslate" : false
+    },
+    "Clear history" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar historial"
+          }
+        }
+      }
     },
     "Close" : {
       "localizations" : {
@@ -1067,6 +1177,16 @@
         }
       }
     },
+    "Enter your password to allow this." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escribe tu contraseña para permitirlo."
+          }
+        }
+      }
+    },
     "External display" : {
       "localizations" : {
         "es" : {
@@ -1150,6 +1270,16 @@
     "Face Lab — On-Device Face Recognition (Debug)" : {
       "shouldTranslate" : false
     },
+    "Face not matched" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rostro no coincide"
+          }
+        }
+      }
+    },
     "Face not recognized — hover the notch to try again." : {
       "localizations" : {
         "es" : {
@@ -1226,6 +1356,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ajustes de Facekey"
+          }
+        }
+      }
+    },
+    "Facekey wants to make changes." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey quiere hacer cambios."
           }
         }
       }
@@ -1365,6 +1505,16 @@
     "Heavy: a deny cue fails the scan; at least one confirm cue must fire before it can pass." : {
       "shouldTranslate" : false
     },
+    "History" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historial"
+          }
+        }
+      }
+    },
     "Hold still…" : {
       "localizations" : {
         "es" : {
@@ -1438,12 +1588,42 @@
         }
       }
     },
+    "Install" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar"
+          }
+        }
+      }
+    },
+    "Installed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalada"
+          }
+        }
+      }
+    },
     "It uses your Mac's standard webcam and is designed for convenience, not high-security authentication." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Usa la cámara web estándar de tu Mac y está pensado para la comodidad, no para una autenticación de alta seguridad."
+          }
+        }
+      }
+    },
+    "Keep only the program name" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guardar solo el nombre del programa"
           }
         }
       }
@@ -1487,6 +1667,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abrir al iniciar sesión"
+          }
+        }
+      }
+    },
+    "Leaves the arguments of each command out of the history." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deja fuera del historial los argumentos de cada comando."
           }
         }
       }
@@ -1728,6 +1918,16 @@
         }
       }
     },
+    "No apps yet. Facekey asks the first time an app uses sudo." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay apps. Facekey pregunta la primera vez que una app usa sudo."
+          }
+        }
+      }
+    },
     "No camera device found." : {
       "localizations" : {
         "es" : {
@@ -1833,12 +2033,52 @@
         }
       }
     },
+    "Not installed. Installing asks for your administrator password." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No instalada. Para instalarla se pedirá tu contraseña de administrador."
+          }
+        }
+      }
+    },
+    "Not now" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora no"
+          }
+        }
+      }
+    },
     "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se ha eliminado nada y Facekey no lo sobrescribirá: el registro queda bloqueado hasta que se resuelva. Cierra y vuelve a abrir Facekey para reintentar. Si sigue fallando, la clave de la sesión ya no corresponde a estos datos: quita la contraseña guardada en la pestaña Contraseña para borrar ambos y vuelve a configurar todo."
+          }
+        }
+      }
+    },
+    "Nothing here yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay nada."
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
           }
         }
       }
@@ -2075,12 +2315,42 @@
         }
       }
     },
+    "Remove from list" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar de la lista"
+          }
+        }
+      }
+    },
+    "Remove integration" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar integración"
+          }
+        }
+      }
+    },
     "Remove password" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quitar contraseña"
+          }
+        }
+      }
+    },
+    "Repair" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reparar"
           }
         }
       }
@@ -2377,6 +2647,26 @@
         }
       }
     },
+    "Show less" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar menos"
+          }
+        }
+      }
+    },
+    "Show more" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostrar más"
+          }
+        }
+      }
+    },
     "Show preview" : {
       "localizations" : {
         "es" : {
@@ -2396,6 +2686,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Omitido: CGSession informa que la pantalla en realidad no está bloqueada."
+          }
+        }
+      }
+    },
+    "Something went wrong." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Algo salió mal."
           }
         }
       }
@@ -2451,6 +2751,26 @@
         }
       }
     },
+    "Sudo" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sudo"
+          }
+        }
+      }
+    },
+    "Sudo integration" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integración con sudo"
+          }
+        }
+      }
+    },
     "Suggested threshold: %@" : {
       "shouldTranslate" : false
     },
@@ -2460,6 +2780,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Predeterminada del sistema"
+          }
+        }
+      }
+    },
+    "That password is incorrect. Try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esa contraseña es incorrecta. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "The administrator prompt was cancelled." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se canceló la solicitud de administrador."
           }
         }
       }
@@ -2480,6 +2820,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La cámara integrada queda tapada mientras la tapa está cerrada."
+          }
+        }
+      }
+    },
+    "The history key is not available. Unlock your Mac and try again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La clave del historial no está disponible. Desbloquea tu Mac e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "The installed module is out of date." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El módulo instalado está desactualizado."
+          }
+        }
+      }
+    },
+    "The installer failed." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el instalador."
           }
         }
       }
@@ -2524,6 +2894,46 @@
         }
       }
     },
+    "The sudo entry is missing, probably after a macOS update." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta la entrada de sudo, probablemente tras una actualización de macOS."
+          }
+        }
+      }
+    },
+    "The sudo integration files are missing from this copy of Facekey." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faltan los archivos de la integración con sudo en esta copia de Facekey."
+          }
+        }
+      }
+    },
+    "This app is not signed, so Facekey recognizes it by its code." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta app no está firmada, por lo que Facekey la reconoce por su código."
+          }
+        }
+      }
+    },
+    "This copy of Facekey does not pass its signature check, so it will not change the system." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta copia de Facekey no supera la verificación de su firma, por lo que no modificará el sistema."
+          }
+        }
+      }
+    },
     "Threshold" : {
       "shouldTranslate" : false
     },
@@ -2532,6 +2942,16 @@
     },
     "Threshold: %@" : {
       "shouldTranslate" : false
+    },
+    "Timed out" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiempo agotado"
+          }
+        }
+      }
     },
     "Too far down" : {
       "localizations" : {
@@ -2736,6 +3156,16 @@
     "Type" : {
       "shouldTranslate" : false
     },
+    "Unknown app" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App desconocida"
+          }
+        }
+      }
+    },
     "Unlock" : {
       "shouldTranslate" : false
     },
@@ -2759,6 +3189,16 @@
         }
       }
     },
+    "Unlock the session to see the app list and the history." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquea la sesión para ver la lista de apps y el historial."
+          }
+        }
+      }
+    },
     "Unlock the session to view enrolled identities." : {
       "shouldTranslate" : false
     },
@@ -2768,6 +3208,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Arriba"
+          }
+        }
+      }
+    },
+    "Update" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizar"
           }
         }
       }
@@ -2831,6 +3281,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vision no generó una huella de características para esta imagen."
+          }
+        }
+      }
+    },
+    "When sudo needs a password, Facekey asks you to accept and checks your face. With this off for the current display setup, sudo asks for your password as usual." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando sudo pide una contraseña, Facekey te pide aceptar y verifica tu rostro. Si está desactivado para la configuración de pantallas actual, sudo pide tu contraseña como siempre."
           }
         }
       }
