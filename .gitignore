@@ -20,3 +20,7 @@ RELEASING.md
 
 # Per-developer signing settings
 Local.xcconfig
+
+# PAM module and spike build outputs
+sudo-pam/spike/out/
+sudo-pam/out/
