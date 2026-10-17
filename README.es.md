@@ -8,7 +8,7 @@
 
 <h3 align="center">Desbloqueo facial para tu Mac</h3>
 
-<p align="center"><a href="README.md">English</a> | <a href="README.es.md">Español</a></p>
+<p align="center"><a href="README.md">🇺🇸 English</a> | <b>🇪🇸 Español</b></p>
 
 <p align="center"><sub>Un fork de <a href="https://github.com/jonnyoo/glance">jonnyoo/glance</a>, desarrollado a su propio ritmo.</sub></p>
 

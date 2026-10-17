@@ -8,7 +8,7 @@
 
 <h3 align="center">Face unlock for your Mac</h3>
 
-<p align="center"><a href="README.md">English</a> | <a href="README.es.md">Español</a></p>
+<p align="center"><b>🇺🇸 English</b> | <a href="README.es.md">🇪🇸 Español</a></p>
 
 <p align="center"><sub>A fork of <a href="https://github.com/jonnyoo/glance">jonnyoo/glance</a>, developed at its own pace.</sub></p>
 
