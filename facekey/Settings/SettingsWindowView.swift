@@ -172,6 +172,8 @@ struct SettingsWindowView: View {
                     coordinator: environment.faceUnlockCoordinator,
                     pocController: environment.pocController
                 )
+            case .sudo:
+                SudoSettingsPage(environment: environment)
             case .about:
                 AboutSettingsPage(updater: environment.updater, environment: environment)
             case .debugFaceLab:

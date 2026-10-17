@@ -75,6 +75,7 @@
 				601C4938300FFC8400D3DE9D /* Sources */,
 				601C4939300FFC8400D3DE9D /* Frameworks */,
 				601C493A300FFC8400D3DE9D /* Resources */,
+				7A1C0DE5300FFC8400D3DE9D /* Build sudo PAM module */,
 			);
 			buildRules = (
 			);
@@ -138,6 +139,38 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7A1C0DE5300FFC8400D3DE9D /* Build sudo PAM module */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/sudo-pam/build.sh",
+				"$(SRCROOT)/sudo-pam/pam_facekey.c",
+				"$(SRCROOT)/sudo-pam/facekey_wire.h",
+				"$(SRCROOT)/sudo-pam/install.sh",
+				"$(SRCROOT)/sudo-pam/uninstall.sh",
+			);
+			name = "Build sudo PAM module";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/sudo-pam/pam_facekey_arm64e.so",
+				"$(DERIVED_FILE_DIR)/sudo-pam/pam_facekey_arm64.so",
+				"$(DERIVED_FILE_DIR)/sudo-pam/pam_facekey.so",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/sudo/pam_facekey.so",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/sudo/install.sh",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/sudo/uninstall.sh",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -euo pipefail\nmodule_dir=\"$DERIVED_FILE_DIR/sudo-pam\"\nFACEKEY_TEAM_ID=\"${DEVELOPMENT_TEAM:-}\" FACEKEY_BUNDLE_ID=\"$PRODUCT_BUNDLE_IDENTIFIER\" FACEKEY_PAM_OUT=\"$module_dir\" \"$SRCROOT/sudo-pam/build.sh\"\nmkdir -p \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/sudo\"\ncp \"$module_dir/pam_facekey.so\" \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/sudo/pam_facekey.so\"\ncp \"$SRCROOT/sudo-pam/install.sh\" \"$SRCROOT/sudo-pam/uninstall.sh\" \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/sudo/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		601C4938300FFC8400D3DE9D /* Sources */ = {
