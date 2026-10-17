@@ -37,17 +37,22 @@ final class NotchOverlayController {
         /// Hosting the multi-step onboarding flow, driven by the hosted
         /// OnboardingController rather than this controller's own machinery.
         case onboarding
+        /// Asking the user to approve a `sudo` request (or whether an app may use Facekey for it).
+        /// Interactive but never key, so it can't take focus from the terminal.
+        case sudoRequest
     }
 
     /// Kept as one enum (rather than two independent optionals) so exactly one is ever active.
     enum Content: Equatable {
         case scan(ScanMedia)
         case onboarding(OnboardingController)
+        case sudo(SudoOverlayPrompt)
 
         static func == (lhs: Content, rhs: Content) -> Bool {
             switch (lhs, rhs) {
             case (.scan(let a), .scan(let b)): return a == b
             case (.onboarding(let a), .onboarding(let b)): return a === b
+            case (.sudo(let a), .sudo(let b)): return a == b
             default: return false
             }
         }
@@ -79,6 +84,10 @@ final class NotchOverlayController {
     /// across scan cycles) or by one-shot `present(onRetry:)` (single use).
     private var onActivate: (() -> Void)?
 
+    /// Answer for the sudo prompt on screen; taken (set to nil) by the first click so a
+    /// prompt resolves at most once.
+    private var onSudoChoice: ((SudoOverlayChoice, String) -> Void)?
+
     private let windowController = NotchWindowController()
     private var resolveTask: Task<Void, Never>?
     private var scanTimeoutTask: Task<Void, Never>?
@@ -106,6 +115,9 @@ final class NotchOverlayController {
             guard let self else { return }
             self.geometry = self.windowController.currentGeometry
         }
+        windowController.onLeftMouseDown = { [weak self] point, panel, source in
+            self?.handleSudoMouseDown(at: point, panel: panel, clickSource: source)
+        }
     }
 
     // MARK: - Armed mode (FaceUnlockCoordinator)
@@ -113,6 +125,7 @@ final class NotchOverlayController {
     /// Arms the overlay for the lock-screen flow: shows the window and keeps it
     /// up until `disarm()`. `onActivate` restarts scanning on hover.
     func arm(onActivate: @escaping () -> Void) {
+        cancelPendingSudoPrompt()
         isArmed = true
         self.onActivate = onActivate
         geometry = windowController.currentGeometry
@@ -144,6 +157,7 @@ final class NotchOverlayController {
     /// naturally: setting `isArmed = false` is enough, since the already-scheduled
     /// `collapse()` checks `isArmed` once its hold expires and hides for real then.
     func disarm() {
+        cancelPendingSudoPrompt()
         isArmed = false
         onActivate = nil
         // Undocked before the guard: if a success collapse is already in flight, this
@@ -179,6 +193,7 @@ final class NotchOverlayController {
     /// Shows the idle still; auto-collapses silently (no failure animation) after
     /// `scanTimeoutDuration` if nothing resolves it.
     func beginScanning() {
+        cancelPendingSudoPrompt()
         resolveTask?.cancel(); resolveTask = nil
         scanTimeoutTask?.cancel()
         geometry = windowController.currentGeometry
@@ -220,6 +235,7 @@ final class NotchOverlayController {
     /// - Parameter styleOverride: forces `.minimal`/`.original` regardless of the saved
     ///   preference, for the Animation section's live preview.
     func present(styleOverride: UnlockAnimationStyle? = nil, onRetry: (() -> Void)? = nil) {
+        cancelPendingSudoPrompt()
         isArmed = false
         onActivate = onRetry
         resolveTask?.cancel(); resolveTask = nil
@@ -240,6 +256,7 @@ final class NotchOverlayController {
     /// Hands the panel to the onboarding flow — this object only owns visibility and
     /// interactivity while `.onboarding` is active; sizing/content is driven by `controller`.
     func presentOnboarding(_ controller: OnboardingController) {
+        cancelPendingSudoPrompt()
         isArmed = false
         onActivate = nil
         resolveTask?.cancel(); resolveTask = nil
@@ -270,6 +287,55 @@ final class NotchOverlayController {
             self.phase = .closed
             self.windowController.hide()
         }
+    }
+
+    // MARK: - Sudo approval mode (SudoOverlayPresenter)
+
+    /// Shows the sudo prompt, or swaps the content when one is already up (the first-use
+    /// question is followed by the confirmation without closing in between). `onChoice`
+    /// fires once, from a mouse-down on one of the two buttons, with who produced the click.
+    /// Returns false, showing nothing, when onboarding owns the panel.
+    @discardableResult
+    func presentSudo(_ prompt: SudoOverlayPrompt, onChoice: @escaping (SudoOverlayChoice, String) -> Void) -> Bool {
+        guard phase != .onboarding else { return false }
+        isArmed = false
+        onActivate = nil
+        onSudoChoice = onChoice
+        resolveTask?.cancel(); resolveTask = nil
+        scanTimeoutTask?.cancel(); scanTimeoutTask = nil
+        geometry = windowController.currentGeometry
+        primeWindowIfNeeded { [weak self] in
+            guard let self, self.onSudoChoice != nil else { return } // closed while priming
+            content = .sudo(prompt)
+            phase = .sudoRequest
+            windowController.show()
+            updateInteractivity()
+        }
+        return true
+    }
+
+    /// Drops the pending answer and shrinks the prompt away; a no-op when no sudo prompt is up.
+    func dismissSudo() {
+        onSudoChoice = nil
+        guard phase == .sudoRequest else { return }
+        Task { [weak self] in await self?.collapse() }
+    }
+
+    /// Another flow is taking the panel: answer the waiting prompt as cancelled so its
+    /// caller never hangs on a prompt that is no longer on screen.
+    private func cancelPendingSudoPrompt() {
+        guard let onSudoChoice else { return }
+        self.onSudoChoice = nil
+        onSudoChoice(.cancel, "none")
+    }
+
+    private func handleSudoMouseDown(at point: CGPoint, panel: CGRect?, clickSource: String) {
+        guard phase == .sudoRequest, case .sudo(let prompt) = content,
+              let onSudoChoice, let panel,
+              let choice = SudoOverlayMetrics.choice(at: point, panel: panel, kind: prompt.kind)
+        else { return }
+        self.onSudoChoice = nil
+        onSudoChoice(choice, clickSource)
     }
 
     // MARK: - Resolving (shared by both modes)
@@ -320,7 +386,7 @@ final class NotchOverlayController {
                 updateInteractivity()
             }
             onActivate()
-        case .scanning, .success, .collapsing, .onboarding:
+        case .scanning, .success, .collapsing, .onboarding, .sudoRequest:
             break
         }
     }
@@ -353,6 +419,7 @@ final class NotchOverlayController {
     /// Tears the overlay down without any resolve animation. Deliberately a no-op while
     /// success/collapsing is in flight — interrupting that made the window vanish abruptly.
     func dismissImmediately() {
+        cancelPendingSudoPrompt()
         guard phase != .success, phase != .collapsing else { return }
         resolveTask?.cancel(); resolveTask = nil
         scanTimeoutTask?.cancel(); scanTimeoutTask = nil
@@ -366,7 +433,12 @@ final class NotchOverlayController {
     private func updateInteractivity() {
         // Click-through otherwise, so the overlay never intercepts anything it doesn't
         // need to. Onboarding additionally needs key so its text field can receive keystrokes.
-        windowController.setInteractive(isArmed || phase == .failure || phase == .onboarding, key: phase == .onboarding)
+        // The sudo prompt takes clicks but never focus (`canBecomeKey: false`).
+        windowController.setInteractive(
+            isArmed || phase == .failure || phase == .onboarding || phase == .sudoRequest,
+            key: phase == .onboarding,
+            canBecomeKey: phase != .sudoRequest
+        )
     }
 
     /// Called by `NotchOverlayView` whenever the visible panel's own frame

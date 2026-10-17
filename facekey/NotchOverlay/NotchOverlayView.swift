@@ -57,8 +57,18 @@ struct NotchOverlayView: View {
     private var targetIsExpanded: Bool {
         switch controller.phase {
         case .closed, .collapsing: return false
-        case .scanning, .success, .failure, .onboarding: return true
+        case .scanning, .success, .failure, .onboarding, .sudoRequest: return true
         }
+    }
+
+    private var sudoPrompt: SudoOverlayPrompt? {
+        if case .sudo(let prompt) = controller.content { return prompt }
+        return nil
+    }
+
+    /// Keeps the prompt's text clear of the physical cutout in notch style.
+    private var sudoContentTopInset: CGFloat {
+        style == .notch ? closedBodySize.height + 6 : 18
     }
 
     /// Notch style is always positioned (the physical notch never travels). Expanded
@@ -106,6 +116,7 @@ struct NotchOverlayView: View {
 
     private var openBodySize: CGSize {
         if let onboardingController { return onboardingController.panelSize }
+        if sudoPrompt != nil { return SudoOverlayMetrics.panelSize }
         return isMinimalScan ? minimalOpenBodySize : scanOpenSize
     }
 
@@ -115,6 +126,8 @@ struct NotchOverlayView: View {
 
     private var topRadius: CGFloat {
         if visualIsExpanded {
+            // Smaller than the scan panel's pill corners, so the top of the prompt isn't clipped.
+            if sudoPrompt != nil { return style == .notch ? NotchGeometry.openTopRadius : SudoOverlayMetrics.cornerRadius }
             if isMinimalScan {
                 // Pill stays a true capsule as it stretches — radius tracks the animating height.
                 return style == .notch
@@ -129,6 +142,8 @@ struct NotchOverlayView: View {
 
     private var bottomRadius: CGFloat {
         if visualIsExpanded {
+            // The buttons sit near the bottom edge, so the corners stay small in both styles.
+            if sudoPrompt != nil { return SudoOverlayMetrics.cornerRadius }
             if isMinimalScan {
                 return style == .notch
                     ? NotchGeometry.minimalNotchBottomRadius
@@ -255,6 +270,8 @@ struct NotchOverlayView: View {
                 if let onboardingController {
                     // Onboarding's step views fill `panelSize` themselves — no shared padding here.
                     OnboardingNotchView(controller: onboardingController)
+                } else if let sudoPrompt {
+                    SudoPromptView(prompt: sudoPrompt, topInset: sudoContentTopInset)
                 } else {
                     scanContent
                 }
@@ -415,7 +432,7 @@ struct NotchOverlayView: View {
         case .collapsing:
             // Hold whatever it currently is — re-locking now would read as undoing the unlock.
             return
-        case .closed, .scanning, .failure, .onboarding:
+        case .closed, .scanning, .failure, .onboarding, .sudoRequest:
             shouldOpen = false
         }
 

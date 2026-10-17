@@ -35,6 +35,11 @@ final class NotchWindowController {
     /// plugging in a notched display can change the panel's shape, not just its width.
     var onScreenParametersChanged: (@MainActor () -> Void)?
 
+    /// Fired for every left mouse-down on the window: the click in the hosting view's
+    /// top-down coordinates, the visible panel's frame in the same space, and who
+    /// produced the click (see `SudoClickSource`).
+    var onLeftMouseDown: (@MainActor (_ point: CGPoint, _ panel: CGRect?, _ clickSource: String) -> Void)?
+
     init() {
         NotificationCenter.default.addObserver(
             self,
@@ -81,10 +86,11 @@ final class NotchWindowController {
     }
 
     /// `key: true` additionally makes the panel key — needed only for onboarding's
-    /// password field to receive keystrokes.
-    func setInteractive(_ interactive: Bool, key: Bool = false) {
+    /// password field to receive keystrokes. `canBecomeKey: false` keeps an interactive
+    /// panel from ever taking focus, as the sudo prompt must not steal it from the terminal.
+    func setInteractive(_ interactive: Bool, key: Bool = false, canBecomeKey: Bool = true) {
         wantsInteractive = interactive
-        window?.acceptsKey = interactive
+        window?.acceptsKey = interactive && canBecomeKey
         updateCursorPolling()
         guard interactive, key, let window else { return }
         NSApp.activate(ignoringOtherApps: true)
@@ -163,9 +169,25 @@ final class NotchWindowController {
         // blur/fade transition at that point — revealing the hardware notch must
         // be instantaneous.
         newWindow.animationBehavior = .none
+        newWindow.onLeftMouseDown = { [weak self] event in
+            MainActor.assumeIsolated { self?.handleLeftMouseDown(event) }
+        }
         newWindow.contentView = contentView
         window = newWindow
         return newWindow
+    }
+
+    private func handleLeftMouseDown(_ event: NSEvent) {
+        guard let hostView = window?.contentView else { return }
+        let local = hostView.convert(event.locationInWindow, from: nil)
+        let topDown = CGPoint(x: local.x, y: hostView.isFlipped ? local.y : hostView.bounds.height - local.y)
+        // A hardware click carries pid 0 and state id 1; a posted CGEvent carries the poster's pid.
+        // No CGEvent behind the click is not hardware either, so it reads as synthetic.
+        let source = SudoClickSource.describe(
+            pid: event.cgEvent?.getIntegerValueField(.eventSourceUnixProcessID) ?? -1,
+            stateID: event.cgEvent?.getIntegerValueField(.eventSourceStateID) ?? -1
+        )
+        onLeftMouseDown?(topDown, interactiveContentRect, source)
     }
 
     private func reposition(_ window: NotchWindow) {

@@ -22,6 +22,11 @@ final class NotchWindow: NSPanel {
     /// the cursor moves over/away from the visible panel
     var acceptsKey = false
 
+    /// Sees every left mouse-down before AppKit routes it. The sudo prompt resolves its
+    /// buttons here instead of through a control action, so an accessibility press or an
+    /// AppleScript click, which send no mouse event, can never accept it.
+    var onLeftMouseDown: ((NSEvent) -> Void)?
+
     init(contentRect: NSRect) {
         super.init(
             contentRect: contentRect,
@@ -46,4 +51,9 @@ final class NotchWindow: NSPanel {
     /// the click; never becomes main, so it doesn't take over as the app's primary window.
     override var canBecomeKey: Bool { acceptsKey }
     override var canBecomeMain: Bool { false }
+
+    override func sendEvent(_ event: NSEvent) {
+        if event.type == .leftMouseDown { onLeftMouseDown?(event) }
+        super.sendEvent(event)
+    }
 }
