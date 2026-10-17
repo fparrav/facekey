@@ -21,6 +21,8 @@ final class FaceUnlockCoordinator {
     private enum TriggerSource: String {
         case lockEvent
         case screenParameters
+        /// A sudo request just ended; re-evaluates whatever it held back. Sudo requests themselves never come through here.
+        case sudo
     }
 
     private enum ScanTrigger: String {
@@ -79,6 +81,8 @@ final class FaceUnlockCoordinator {
     /// The post-unlock verification, if one is running. Separate from `scanTask`/`scanGeneration` so a lock-screen scan and a verification never cancel each other.
     private var verificationTask: Task<Void, Never>?
     private var verificationGeneration = 0
+    /// Set by `SudoRequestCoordinator` while a sudo request owns the camera; the lock-screen and verification paths hold back until it clears.
+    private(set) var isSudoRequestActive = false
     /// Scan cycles currently inside `runScanCycle`, superseded ones included; they own the camera while running.
     private var activeScanCycles = 0
     /// After a verification locks the screen, further verifications pause so an owner who isn't recognised isn't locked out on every Watch unlock.
@@ -146,7 +150,7 @@ final class FaceUnlockCoordinator {
             disarmOverlay()
             if lockMonitor.isSleeping {
                 cancelVerification(reason: "sleeping")
-            } else if source == .lockEvent {
+            } else if source == .lockEvent || source == .sudo {
                 startVerificationIfNeeded()
             }
             return
@@ -194,6 +198,8 @@ final class FaceUnlockCoordinator {
         // Headless has nothing to arm/hover, so if this signal isn't selected there's nothing to do — and hasArmedForCurrentLock
         // must stay false, or a later selected signal could never fire (nothing else calls arm() to reset it).
         guard showsUI || shouldAutoScan else { log.notice("trigger decision=skip reason=trigger not selected"); return }
+        // Left unarmed so the re-evaluation after the sudo request can still arm.
+        guard !isSudoRequestActive else { log.notice("trigger decision=skip reason=sudo request active"); return }
 
         log.notice("trigger decision=arm autoScan=\(shouldAutoScan)")
         hasArmedForCurrentLock = true
@@ -219,6 +225,18 @@ final class FaceUnlockCoordinator {
         case .screenLocked: return .onLock
         case .screenUnlocked, .willSleep, nil: return nil
         }
+    }
+
+    /// True while a lock-screen scan cycle or a post-unlock verification is running, so the camera is not free for a sudo request.
+    var isUnlockPathBusy: Bool {
+        activeScanCycles > 0 || verificationTask != nil
+    }
+
+    /// Called by the sudo coordinator around a request. Clearing it re-evaluates what was held back meanwhile.
+    func setSudoRequestActive(_ active: Bool) {
+        guard active != isSudoRequestActive else { return }
+        isSudoRequestActive = active
+        if !active { evaluateTrigger(source: .sudo) }
     }
 
     private func disarmOverlay() {
@@ -276,7 +294,7 @@ final class FaceUnlockCoordinator {
 
     /// Either way the overlay still arms — a deselected trigger only skips the automatic scan, leaving hover-to-start available.
     private func arm(autoScan: Bool, trigger: ScanTrigger) async {
-        guard LockMonitor.isScreenActuallyLocked() else { return }
+        guard !isSudoRequestActive, LockMonitor.isScreenActuallyLocked() else { return }
         guard showsUI else {
             // Headless: evaluateTrigger() already guaranteed autoScan is true here, so this is just "start scanning."
             startScanCycle(trigger: trigger)
@@ -292,6 +310,7 @@ final class FaceUnlockCoordinator {
 
     /// Called on arm, and again whenever the overlay hover-activates.
     private func startScanCycle(trigger: ScanTrigger) {
+        guard !isSudoRequestActive else { return }
         // A manual trigger always wins over the wake cooldown.
         if trigger == .hover || trigger == .space { wakeScanCooldownUntil = nil }
         scanTask?.cancel()
@@ -576,6 +595,8 @@ final class FaceUnlockCoordinator {
     /// Called when the screen was found unlocked after a `.screenUnlocked` event. Facekey's own unlocks, a disabled setting, a pause after
     /// a re-lock and having nobody enrolled all skip the check; the rest start a short face scan.
     private func startVerificationIfNeeded() {
+        // Not consumed, so the re-evaluation after the sudo request still runs the check.
+        guard !isSudoRequestActive else { log.notice("verify skip: sudo request active"); return }
         guard lockMonitor.lastEvent == .screenUnlocked, lockMonitor.eventCount != lastVerifiedEventCount else { return }
         lastVerifiedEventCount = lockMonitor.eventCount
         guard FacekeySettings.shared.verifyAfterExternalUnlock else {
