@@ -55,9 +55,7 @@ final class ScanAnimationHostView: NSView {
         layer = CALayer()
 
         stillImageLayer.contentsGravity = .resizeAspect
-        if let still = Self.loadStillFromBundle() {
-            stillImageLayer.contents = still
-        }
+        refreshStill()
         layer?.addSublayer(stillImageLayer)
 
         playerLayer.videoGravity = .resizeAspect
@@ -86,6 +84,7 @@ final class ScanAnimationHostView: NSView {
 
         guard let resource = media.videoResourceName else {
             teardownPlayer()
+            refreshStill()
             playerLayer.isHidden = true
             stillImageLayer.isHidden = false
             return
@@ -97,7 +96,11 @@ final class ScanAnimationHostView: NSView {
         }
 
         teardownPlayer()
-        let newPlayer = AVPlayer(url: url)
+        // The video is blue on black; the composition recolours it with the accent.
+        let asset = AVURLAsset(url: url)
+        let item = AVPlayerItem(asset: asset)
+        item.videoComposition = AccentTint.composition(for: asset)
+        let newPlayer = AVPlayer(playerItem: item)
         // This can play at the lock screen — never make noise.
         newPlayer.isMuted = true
         // Leaves the player paused on its final frame rather than rewinding.
@@ -142,6 +145,12 @@ final class ScanAnimationHostView: NSView {
         player?.pause()
         player = nil
         playerLayer.player = nil
+    }
+
+    /// Re-tints the still so it matches the accent chosen at the time it is shown.
+    private func refreshStill() {
+        guard let still = Self.loadStillFromBundle() else { return }
+        stillImageLayer.contents = AccentTint.tinted(still)
     }
 
     /// The asset lives in Resources/ rather than an asset catalog, so

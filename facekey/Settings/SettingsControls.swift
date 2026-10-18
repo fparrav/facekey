@@ -766,7 +766,8 @@ private struct UnlockStillThumbnail: View {
     var body: some View {
         if let url = Bundle.main.url(forResource: "unlockstatic", withExtension: "png"),
            let nsImage = NSImage(contentsOf: url) {
-            Image(nsImage: nsImage)
+            // Read inside `body` so the thumbnail follows an accent change.
+            Image(nsImage: AccentTint.tinted(nsImage))
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         } else {

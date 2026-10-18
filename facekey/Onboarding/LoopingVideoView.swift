@@ -64,7 +64,10 @@ final class LoopingVideoHostView: NSView {
             return
         }
 
-        let item = AVPlayerItem(url: url)
+        // The video is blue on black; the composition recolours it with the accent.
+        let asset = AVURLAsset(url: url)
+        let item = AVPlayerItem(asset: asset)
+        item.videoComposition = AccentTint.composition(for: asset)
         let newPlayer = AVPlayer(playerItem: item)
         newPlayer.isMuted = true
         newPlayer.actionAtItemEnd = .pause
