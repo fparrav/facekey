@@ -2,9 +2,10 @@
 //  SettingsWindowView.swift
 //  facekey
 //
-//  Root layout: one `.sidebar` material behind the whole window, the
-//  selected page scrolling beneath a transparent header (traffic lights and
-//  the session lock button) and a floating tab bar pinned to the bottom.
+//  Root layout: one `.sidebar` material behind the whole window, a floating
+//  sidebar on the leading side and the selected page scrolling beneath a
+//  transparent header (traffic lights and, on the Camera and displays page,
+//  the refresh action).
 //
 
 import AppKit
@@ -21,9 +22,10 @@ struct HeaderAction: Equatable {
     static func == (lhs: HeaderAction, rhs: HeaderAction) -> Bool { lhs.id == rhs.id }
 }
 
-/// Lets one page (today, only Camera's "Refresh camera list") publish a
-/// trailing action into the shared header without the header needing
-/// to know that page's state. Switching away resolves back to `defaultValue`.
+/// Lets one page (today, only Camera and displays' "Refresh camera list")
+/// publish a trailing action into the shared header without the header
+/// needing to know that page's state. Switching away resolves back to
+/// `defaultValue`.
 struct HeaderTrailingActionKey: PreferenceKey {
     static var defaultValue: HeaderAction? { nil }
     static func reduce(value: inout HeaderAction?, nextValue: () -> HeaderAction?) {
@@ -33,7 +35,7 @@ struct HeaderTrailingActionKey: PreferenceKey {
 
 struct SettingsWindowView: View {
     let environment: AppEnvironment
-    @State private var selection: SettingsTab = .general
+    @State private var selection: SettingsPage = SettingsPage.defaultPage
     @State private var headerTrailingAction: HeaderAction?
     @Environment(\.dismissWindow) private var dismissWindow
 
@@ -54,7 +56,18 @@ struct SettingsWindowView: View {
         ZStack {
             VisualEffectView()
             SettingsMetrics.windowTintColor
-            contentPage
+            HStack(spacing: 0) {
+                SettingsSidebar(
+                    selection: $selection,
+                    pages: SettingsPage.visiblePages(includingLab: environment.isDebugSectionRevealed),
+                    pocController: environment.pocController
+                )
+                .padding(.leading, SettingsMetrics.sidebarInset)
+                .padding(.top, SettingsMetrics.headerHeight)
+                .padding(.bottom, SettingsMetrics.sidebarInset)
+
+                contentPage
+            }
         }
         // No `.clipShape`, manual stroke, or `.shadow` on the outer window —
         // deliberately: the window keeps its native background (see
@@ -77,20 +90,19 @@ struct SettingsWindowView: View {
         .tint(FacekeyTheme.accent)
         // `Window` is a singleton scene — closing it only orders the
         // NSWindow out, keeping `@State` alive, so without this `selection`
-        // would remember the last tab instead of resetting to General.
-        .onDisappear { selection = .general }
-        // A native swipe-event monitor observes the hosting window so it
-        // recognizes two-finger trackpad swipes across the full Settings UI,
-        // including the header, page content, and tab bar.
-        .background(
-            SettingsTabSwipeRecognizer { direction in
-                selectAdjacentTab(for: direction)
+        // would remember the last page instead of resetting to Summary.
+        .onDisappear { selection = SettingsPage.defaultPage }
+        // The Face Lab entry is hidden again on relaunch only, so if the
+        // selected page ever stops being visible, fall back to Summary.
+        .onChange(of: environment.isDebugSectionRevealed) { _, isRevealed in
+            if !isRevealed, selection == .faceLab {
+                selection = SettingsPage.defaultPage
             }
-        )
+        }
     }
 
-    /// The header and tab bar float over the scroll content as overlays so
-    /// scrolled rows pass underneath them rather than being pushed aside.
+    /// The header floats over the scroll content as an overlay so scrolled
+    /// rows pass underneath it rather than being pushed aside.
     private var contentPage: some View {
         ScrollView(.vertical, showsIndicators: false) {
             pageBody
@@ -110,13 +122,6 @@ struct SettingsWindowView: View {
                 ProgressiveHeaderBlur(height: SettingsMetrics.headerBlurHeight)
                 header
             }
-        }
-        .overlay(alignment: .bottom) {
-            SettingsTabBar(
-                selection: $selection,
-                isDebugSectionRevealed: environment.isDebugSectionRevealed
-            )
-            .padding(.bottom, SettingsMetrics.tabBarBottomInset)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onPreferenceChange(HeaderTrailingActionKey.self) { headerTrailingAction = $0 }
@@ -145,8 +150,6 @@ struct SettingsWindowView: View {
                 .buttonStyle(.plain)
                 .help("Refresh camera list")
             }
-
-            SessionLockButton(pocController: environment.pocController)
         }
         .padding(.horizontal, SettingsMetrics.contentHorizontalPadding)
         .frame(height: SettingsMetrics.headerHeight)
@@ -156,55 +159,31 @@ struct SettingsWindowView: View {
     private var pageBody: some View {
         VStack(alignment: .leading, spacing: SettingsMetrics.rowSpacing) {
             switch selection {
-            case .general:
-                GeneralSettingsPage(
-                    coordinator: environment.faceUnlockCoordinator,
-                    pocController: environment.pocController
-                )
-            case .yourFace:
-                YourFaceSettingsPage(environment: environment)
-            case .password:
-                PasswordSettingsPage(pocController: environment.pocController)
-            case .camera:
-                CameraSettingsPage(pocController: environment.pocController)
-            case .recognition:
-                RecognitionSettingsPage(
-                    coordinator: environment.faceUnlockCoordinator,
-                    pocController: environment.pocController
-                )
-            case .sudo:
-                SudoSettingsPage(environment: environment)
-            case .about:
-                AboutSettingsPage(updater: environment.updater, environment: environment)
-            case .debugFaceLab:
+            case .summary:
+                SummarySettingsPage(environment: environment) { page in
+                    withAnimation(SettingsMetrics.tabSelectionAnimation) {
+                        selection = page
+                    }
+                }
+            case .access:
+                AccessSettingsPage(environment: environment)
+            case .security:
+                SecuritySettingsPage(environment: environment)
+            case .devices:
+                DevicesSettingsPage(environment: environment)
+            case .app:
+                AppSettingsPage(environment: environment)
+            case .faceLab:
                 LazyFaceLabPage()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-
-    private func selectAdjacentTab(for direction: SettingsTabSwipeDirection) {
-        let tabs = SettingsTab.visibleTabs(includingDebug: environment.isDebugSectionRevealed)
-        guard let currentIndex = tabs.firstIndex(of: selection) else { return }
-
-        let adjacentIndex: Int
-        switch direction {
-        case .left:
-            adjacentIndex = currentIndex + 1
-        case .right:
-            adjacentIndex = currentIndex - 1
-        }
-
-        guard tabs.indices.contains(adjacentIndex) else { return }
-        withAnimation(SettingsMetrics.tabSelectionAnimation) {
-            selection = tabs[adjacentIndex]
-        }
-    }
 }
 
 /// Face Lab is deliberately hidden behind a debug gesture, so keeping its
 /// Core ML pipeline alive for the app's entire background lifetime wastes a
-/// substantial amount of memory. Create it only when that tab is selected and
+/// substantial amount of memory. Create it only when that page is selected and
 /// release it again as soon as the user leaves.
 private struct LazyFaceLabPage: View {
     @State private var controller: FaceLabController?
@@ -228,100 +207,6 @@ private struct LazyFaceLabPage: View {
         .onDisappear {
             controller?.stop()
             controller = nil
-        }
-    }
-}
-
-private enum SettingsTabSwipeDirection {
-    case left
-    case right
-}
-
-/// Observes horizontal trackpad scroll gestures for this Settings window. Unlike
-/// a transparent SwiftUI `DragGesture`, this does not compete with buttons or
-/// vertical scrolling.
-private struct SettingsTabSwipeRecognizer: NSViewRepresentable {
-    let onSwipe: (SettingsTabSwipeDirection) -> Void
-
-    func makeNSView(context: Context) -> SwipeHostingView {
-        SwipeHostingView(onSwipe: onSwipe)
-    }
-
-    func updateNSView(_ view: SwipeHostingView, context: Context) {
-        view.onSwipe = onSwipe
-        view.installEventMonitorIfNeeded()
-    }
-}
-
-private final class SwipeHostingView: NSView {
-    var onSwipe: (SettingsTabSwipeDirection) -> Void
-    private var eventMonitor: Any?
-    private var accumulatedHorizontalScroll: CGFloat = 0
-    private var accumulatedVerticalScroll: CGFloat = 0
-    private var didNavigateThisGesture = false
-
-    /// Prevents a small diagonal scroll from switching pages, while remaining
-    /// comfortably below the distance of an intentional two-finger swipe.
-    private let swipeDistanceThreshold: CGFloat = 36
-
-    init(onSwipe: @escaping (SettingsTabSwipeDirection) -> Void) {
-        self.onSwipe = onSwipe
-        super.init(frame: .zero)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        installEventMonitorIfNeeded()
-    }
-
-    func installEventMonitorIfNeeded() {
-        guard eventMonitor == nil else { return }
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { [weak self] event in
-            guard let self, event.window === self.window, event.hasPreciseScrollingDeltas else {
-                return event
-            }
-            self.handleTrackpadScroll(event)
-            return event
-        }
-    }
-
-    private func handleTrackpadScroll(_ event: NSEvent) {
-        if event.phase == .began || event.phase == .mayBegin {
-            resetSwipeTracking()
-        }
-
-        guard !didNavigateThisGesture else {
-            // Do not reset at `.ended`: the same physical swipe can still emit
-            // momentum events, which must not advance a second page.
-            return
-        }
-
-        accumulatedHorizontalScroll += event.scrollingDeltaX
-        accumulatedVerticalScroll += event.scrollingDeltaY
-
-        let horizontalDistance = abs(accumulatedHorizontalScroll)
-        let verticalDistance = abs(accumulatedVerticalScroll)
-        guard horizontalDistance >= swipeDistanceThreshold,
-              horizontalDistance > verticalDistance * 1.5
-        else { return }
-
-        didNavigateThisGesture = true
-        onSwipe(accumulatedHorizontalScroll < 0 ? .left : .right)
-    }
-
-    private func resetSwipeTracking() {
-        accumulatedHorizontalScroll = 0
-        accumulatedVerticalScroll = 0
-        didNavigateThisGesture = false
-    }
-
-    deinit {
-        if let eventMonitor {
-            NSEvent.removeMonitor(eventMonitor)
         }
     }
 }

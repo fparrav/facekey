@@ -360,7 +360,7 @@ final class FacekeySettings {
         isFaceUnlockEnabledBuiltInOnly = defaults.object(forKey: Key.isFaceUnlockEnabledBuiltInOnly) as? Bool ?? true
         isFaceUnlockEnabledBuiltInAndExternal = defaults.object(forKey: Key.isFaceUnlockEnabledBuiltInAndExternal) as? Bool ?? true
         isFaceUnlockEnabledExternalOnly = defaults.object(forKey: Key.isFaceUnlockEnabledExternalOnly) as? Bool ?? true
-        // Matches the "Default" level (`MatchConfidenceLevel.standard`) — see RecognitionSettingsPage.swift.
+        // Matches the "Default" level (`MatchConfidenceLevel.standard`) — see MatchConfidenceSection.swift.
         matchThreshold = defaults.object(forKey: Key.matchThreshold) as? Float ?? 0.63
         livenessChecksEnabled = defaults.object(forKey: Key.livenessChecksEnabled) as? Bool ?? true
         // Light by default — Heavy requires a blink/pose/depth signal a
@@ -368,7 +368,7 @@ final class FacekeySettings {
         // catches the main attack (a photo on a phone screen).
         livenessMode = defaults.string(forKey: Key.livenessMode)
             .flatMap(LivenessMode.init(rawValue:)) ?? .light
-        // Matches the "Default" level (`DetectionDistanceLevel.standard`) — see RecognitionSettingsPage.swift.
+        // Matches the "Default" level (`DetectionDistanceLevel.standard`) — see DetectionDistanceSection.swift.
         // Migrates the legacy global width to both profiles until a per-profile value is saved.
         let legacyMinimumFaceWidth = defaults.object(forKey: Key.minimumFaceWidth) as? Float ?? 0.19
         // The built-in values load into locals first: `self` is not fully

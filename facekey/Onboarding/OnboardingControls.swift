@@ -97,8 +97,8 @@ struct PermissionRow: View {
 
 /// The camera picker on the "Select camera" step: a full-width capsule row (same chrome
 /// as `PermissionRow`) holding a compact native pull-down, left-aligned — the same
-/// `Menu`/`.menuStyle(.borderlessButton)` construction as `CameraSettingsPage.cameraPicker`
-/// and `GeneralSettingsPage.displayPicker`. Stretching that construction to fill the whole
+/// `Menu`/`.menuStyle(.borderlessButton)` construction as `CameraProfileSection`
+/// and `DisplayOnSection`. Stretching that construction to fill the whole
 /// row breaks its internal label layout; left hugging its own content, at the width those
 /// two already prove out, it behaves correctly.
 struct CameraSelectionPill: View {

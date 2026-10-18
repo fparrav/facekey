@@ -63,7 +63,7 @@ struct FaceLabView: View {
             controller.stop()
         }
         // Guided enrollment runs in the notch, outside this view hierarchy, so nothing else prompts a re-read once
-        // it closes. Same trick YourFaceSettingsPage uses.
+        // it closes. Same trick FaceSection uses.
         .onChange(of: NotchOverlayController.shared.phase) { _, newPhase in
             guard newPhase == .closed else { return }
             controller.store.reloadIfUnlocked()

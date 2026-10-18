@@ -9,7 +9,7 @@
 import SwiftUI
 
 enum SettingsMetrics {
-    static let windowSize = CGSize(width: 540, height: 620)
+    static let windowSize = CGSize(width: 880, height: 620)
     /// No `outerCornerRadius` token — the window's outer corner is AppKit's
     /// own native mask (see WindowConfiguringView), not a hardcoded clip.
     ///
@@ -33,48 +33,16 @@ enum SettingsMetrics {
         light: NSColor(red: 0xFF / 255, green: 0xFF / 255, blue: 0xFF / 255, alpha: 0)
     )
 
-    // MARK: - Tab bar
+    // MARK: - Sidebar
     //
-    // Floating pill pinned to the bottom edge, above the scrolling page. Same
-    // `.sidebar` material as the window, blended within-window so it blurs
-    // the rows passing beneath it, plus `tabBarTint` to lift it a touch.
+    // Floating glass panel on the leading side (`SettingsSidebar`), inset from
+    // the window edge so the material reads as a card rather than a column.
 
-    static let tabBarHeight: CGFloat = 54
-    static let tabBarBottomInset: CGFloat = 14
-    /// Gap between the bar's edge and the first/last item's own padding.
-    static let tabBarHorizontalPadding: CGFloat = 6
-    static let tabBarTint = adaptiveColor(
-        dark: NSColor(white: 1, alpha: 0.15),
-        light: NSColor(white: 1, alpha: 0.5)
-    )
-    static let tabBarBorder = adaptiveColor(
-        dark: NSColor(white: 1, alpha: 0.16),
-        light: NSColor(white: 0, alpha: 0.08)
-    )
-    static let tabItemHeight: CGFloat = 42
-    static let tabItemHorizontalPadding: CGFloat = 11
-    static let selectedTabItemHorizontalPadding: CGFloat = 14
-    static let tabGlyphSize: CGFloat = 15
-    static let tabTitleFont = Font.system(size: 13, weight: .medium)
-    static let selectedPillColor = adaptiveColor(
-        dark: NSColor(white: 1, alpha: 0.1),
-        light: NSColor(white: 1, alpha: 0.7)
-    )
-    /// Same treatment as `tabBarBorder`, one step subtler — the inner pill
-    /// reads as sitting on the outer one rather than a separate outline.
-    static let selectedPillBorder = adaptiveColor(
-        dark: NSColor(white: 1, alpha: 0.12),
-        light: NSColor(white: 0, alpha: 0.06)
-    )
+    static let sidebarInset: CGFloat = 12
     static let tabSelectionAnimation = Animation.spring(response: 0.35, dampingFraction: 0.82)
-    /// How far a tab's label slides toward its icon as it collapses away
-    /// (or unfurls back out), in points.
-    static let tabLabelRevealOffset: CGFloat = 10
-    /// Max blur radius at the fully-collapsed end of the label reveal.
-    static let tabLabelRevealBlur: CGFloat = 4
 
-    /// Extra scroll room below a page's last row so it can clear the tab bar.
-    static let pageBottomInset: CGFloat = tabBarHeight + tabBarBottomInset + 16
+    /// Extra scroll room below a page's last row.
+    static let pageBottomInset: CGFloat = 24
 
     /// Light-mode values match the exact resolved alpha AppKit's own
     /// `NSColor.labelColor`/`.secondaryLabelColor` use (`black @ 0.85`/`0.50`),

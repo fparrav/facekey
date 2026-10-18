@@ -682,7 +682,7 @@ struct SettingsOptionTile<Preview: View>: View {
 }
 
 /// Unlock animation picker — connects, inside one `SettingsGroup`, to the
-/// "Show animation" toggle above it (see `GeneralSettingsPage`).
+/// "Show animation" toggle above it (see `AnimationSection`).
 struct UnlockAnimationPicker: View {
     @Binding var selection: UnlockAnimationStyle
     var isEnabled: Bool = true
@@ -771,7 +771,7 @@ private struct UnlockStillThumbnail: View {
 }
 
 /// Liveness depth picker — connects, inside one `SettingsGroup`, to the
-/// "Liveness checks" toggle above it (see `RecognitionSettingsPage`). Same
+/// "Liveness checks" toggle above it (see `LivenessSection`). Same
 /// title-left/tiles-right shape as `UnlockTriggerPicker`.
 struct LivenessModePicker: View {
     @Binding var selection: LivenessMode

@@ -1,13 +1,11 @@
 //
-//  AboutSettingsPage.swift
+//  AboutIconSection.swift
 //  facekey
 //
 
 import SwiftUI
-import AppKit
 
-struct AboutSettingsPage: View {
-    @Bindable var updater: UpdaterController
+struct AboutIconSection: View {
     let environment: AppEnvironment
 
     /// Secret-tap state for revealing the Debug/Face Lab sidebar section —
@@ -27,9 +25,7 @@ struct AboutSettingsPage: View {
 
     var body: some View {
         VStack(spacing: 2) {
-            Image("appicon")
-                .resizable()
-                .frame(width: 80, height: 80)
+            FacekeyLogoTile(size: 80)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
                 .contentShape(Rectangle())
@@ -45,35 +41,6 @@ struct AboutSettingsPage: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.bottom, 16)
-
-        SettingsGroup {
-            if updater.isConfigured {
-                SettingsActionRowContent(
-                    title: "Check for Updates",
-                    buttonTitle: "Check",
-                    isEnabled: updater.canCheckForUpdates
-                ) {
-                    updater.checkForUpdates()
-                }
-
-                SettingsGroupDivider()
-
-                SettingsRowContent(title: "Automatically check for updates") {
-                    FacekeyToggle(isOn: $updater.automaticallyChecksForUpdates)
-                }
-
-                SettingsGroupDivider()
-            }
-
-            SettingsActionRowContent(
-                title: "Send Feedback",
-                buttonTitle: "Send"
-            ) {
-                if let url = URL(string: "https://github.com/fparrav/facekey/issues") {
-                    NSWorkspace.shared.open(url)
-                }
-            }
-        }
     }
 
     private func handleIconTap() {
