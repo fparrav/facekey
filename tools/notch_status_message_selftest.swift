@@ -3,7 +3,7 @@
 //  facekey (tools)
 //
 //  Offline self-test for the notch status text in facekey/NotchOverlay/NotchStatusMessage.swift:
-//  the key and tone of each of the five states, and the hover hint on the failure text.
+//  the key, tone and glyph of each of the five states, and the hover hint on the failure text.
 //  This project has no test target, so this compiles as a standalone script against the real file:
 //
 //      /usr/bin/swiftc -O -parse-as-library -o /private/tmp/notch_status_message_selftest facekey/NotchOverlay/NotchStatusMessage.swift tools/notch_status_message_selftest.swift && /private/tmp/notch_status_message_selftest
@@ -39,6 +39,13 @@ enum NotchStatusMessageSelfTest {
         check(message(.cameraUnavailable).tone == .warning, "camera unavailable is warning")
         check(message(.sudoApproval).key == "Approve sudo with your face", "sudo approval text")
         check(message(.sudoApproval).tone == .accent, "sudo approval is accent")
+
+        check(message(.scanning).glyph == .spinner, "scanning turns a spinner")
+        check(message(.sudoApproval).glyph == .spinner, "sudo approval turns a spinner")
+        check(message(.success).glyph == .check, "success draws a check")
+        check(message(.failure, hover: true).glyph == .cross, "failure draws a cross")
+        check(message(.failure, hover: false).glyph == .cross, "failure without hover retry draws a cross")
+        check(message(.cameraUnavailable).glyph == .alert, "camera unavailable breathes an alert")
 
         check(message(.failure, hover: true).key == "Face not recognized. Hover to retry.", "failure with hover retry carries the hint")
         check(message(.failure, hover: false).key == "Face not recognized.", "failure without hover retry has no hint")

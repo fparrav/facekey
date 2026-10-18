@@ -16,10 +16,9 @@ struct NotchStatusLine: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Circle()
-                .stroke(toneColor, lineWidth: 2)
-                .frame(width: 14, height: 14)
-                .fixedSize()
+            NotchStatusGlyphView(glyph: message.glyph, color: toneColor)
+                // A new glyph (scanning → unlocked) starts its own animation.
+                .id(message.glyph)
 
             Text(LocalizedStringKey(message.key))
                 .font(.system(size: 12, weight: .medium))
