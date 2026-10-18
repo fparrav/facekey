@@ -25,9 +25,7 @@ and Core ML frameworks, so your face data and your Mac password never touch the 
 > **This is a personal fork.** Facekey exists so I can follow my own development pace and add the features I wish glance had. It is not a replacement for the original, it does not track upstream on a schedule, and I merge upstream changes only when I want them. Everything that works here started as [Jonathan Zhou's](https://github.com/jonnyoo) work. See [How this fork differs from glance](#how-this-fork-differs-from-glance) for what I added or changed.
 
 
-<p align="center">
-  <video src="https://github.com/fparrav/facekey/raw/main/docs/facekey-demo.mp4" controls muted loop playsinline width="720"></video>
-</p>
+https://github.com/user-attachments/assets/1e0c1c91-3991-4224-8fd7-318a6127ef7e
 
 
 ---
