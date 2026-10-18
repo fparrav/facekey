@@ -169,18 +169,21 @@ struct NotchGeometry {
     static let notchShadowPadding: CGFloat = 24
     static let pillShadowPadding: CGFloat = 24
 
+    /// Height of the status line under the scan video (one 14 pt ring row, two text lines at most).
+    static let statusRowHeight: CGFloat = 40
+
     static func windowSize(for style: NotchPanelStyle) -> CGSize {
         switch style {
         case .notch:
             let contentWidth = max(notchOpenSize.width, OnboardingMetrics.maxPanelWidth)
-            let contentHeight = max(notchOpenSize.height, OnboardingMetrics.maxPanelHeight(for: .notch))
+            let contentHeight = max(notchOpenSize.height + statusRowHeight, OnboardingMetrics.maxPanelHeight(for: .notch))
             return CGSize(
                 width: contentWidth + notchShadowPadding * 2 + hoverBump,
                 height: contentHeight + notchShadowPadding + hoverBump
             )
         case .pill:
             let contentWidth = max(pillOpenSize.width, OnboardingMetrics.maxPanelWidth)
-            let contentHeight = max(pillOpenSize.height, OnboardingMetrics.maxPanelHeight(for: .pill))
+            let contentHeight = max(pillOpenSize.height + statusRowHeight, OnboardingMetrics.maxPanelHeight(for: .pill))
             return CGSize(
                 width: contentWidth + pillShadowPadding * 2 + hoverBump,
                 // `pillTopGap` since the detached pill's panel is pushed down by that much.

@@ -60,6 +60,8 @@ final class NotchOverlayController {
 
     private(set) var phase: Phase = .closed
     private(set) var content: Content = .scan(.idle)
+    /// The state whose one-line message the scan panel shows under the video; nil shows no text.
+    private(set) var statusState: NotchStatusState?
     /// Read-only convenience for the scan-mode view/callers — `.idle` while
     /// onboarding owns the panel.
     var media: ScanMedia {
@@ -131,6 +133,7 @@ final class NotchOverlayController {
         geometry = windowController.currentGeometry
         phase = .closed
         content = .scan(.idle)
+        statusState = nil
         isPillDocked = false
         windowController.show()
         hasPrimedWindow = true // already shown+rendered while closed, same effect as primeWindowIfNeeded
@@ -199,6 +202,7 @@ final class NotchOverlayController {
         geometry = windowController.currentGeometry
         activeUnlockStyle = FacekeySettings.shared.effectiveUnlockAnimationStyle
         content = .scan(.idle)
+        statusState = .scanning
         phase = .scanning
         updateInteractivity()
 
@@ -245,6 +249,8 @@ final class NotchOverlayController {
         primeWindowIfNeeded { [weak self] in
             guard let self else { return }
             content = .scan(.idle)
+            // The Animation section's preview forces a style and has nothing to announce.
+            statusState = styleOverride == nil ? .scanning : nil
             phase = .scanning
             windowController.show()
             updateInteractivity()
@@ -265,6 +271,7 @@ final class NotchOverlayController {
         primeWindowIfNeeded { [weak self] in
             guard let self else { return }
             content = .onboarding(controller)
+            statusState = nil
             phase = .onboarding
             windowController.show()
             updateInteractivity()
@@ -307,11 +314,20 @@ final class NotchOverlayController {
         primeWindowIfNeeded { [weak self] in
             guard let self, self.onSudoChoice != nil else { return } // closed while priming
             content = .sudo(prompt)
+            statusState = nil
             phase = .sudoRequest
             windowController.show()
             updateInteractivity()
         }
         return true
+    }
+
+    /// After Accept: the prompt gives way to the scan panel with the approval line while the face
+    /// scan runs. The phase stays `.sudoRequest`, so `dismissSudo()` still closes it.
+    func showSudoScanning() {
+        guard phase == .sudoRequest else { return }
+        content = .scan(.idle)
+        statusState = .sudoApproval
     }
 
     /// Drops the pending answer and shrinks the prompt away; a no-op when no sudo prompt is up.
@@ -351,6 +367,7 @@ final class NotchOverlayController {
         // retry behavior are unaffected. Reads the cycle's captured style, not live settings.
         let shouldAnimate = activeUnlockStyle != .none
         content = shouldAnimate ? .scan(success ? .success : .failure) : .scan(.idle)
+        statusState = success ? .success : .failure
         phase = success ? .success : .failure
         updateInteractivity()
 
@@ -358,6 +375,26 @@ final class NotchOverlayController {
         resolveTask = Task { [weak self] in
             guard let self else { return }
             try? await Task.sleep(for: hold)
+            guard !Task.isCancelled else { return }
+            await self.collapse()
+        }
+    }
+
+    /// The camera could not be opened: resolves like a failed scan (same hold, hover retry still
+    /// available, no password typed) with the amber "Camera unavailable" line instead of the
+    /// failure animation.
+    func showCameraUnavailable() {
+        resolveTask?.cancel()
+        scanTimeoutTask?.cancel()
+        geometry = windowController.currentGeometry
+        content = .scan(.idle)
+        statusState = .cameraUnavailable
+        phase = .failure
+        updateInteractivity()
+
+        resolveTask = Task { [weak self] in
+            guard let self else { return }
+            try? await Task.sleep(for: self.failureHoldDuration)
             guard !Task.isCancelled else { return }
             await self.collapse()
         }
@@ -382,6 +419,7 @@ final class NotchOverlayController {
                 // `onActivate()` routes through `beginScanning()`, which captures.
                 activeUnlockStyle = FacekeySettings.shared.effectiveUnlockAnimationStyle
                 content = .scan(.idle)
+                statusState = .scanning
                 phase = .scanning
                 updateInteractivity()
             }
@@ -407,6 +445,7 @@ final class NotchOverlayController {
         guard phase == .collapsing else { return }
 
         content = .scan(.idle)
+        statusState = nil
         if isArmed {
             phase = .closed
             updateInteractivity()
@@ -425,6 +464,7 @@ final class NotchOverlayController {
         scanTimeoutTask?.cancel(); scanTimeoutTask = nil
         phase = .closed
         content = .scan(.idle)
+        statusState = nil
         isPillDocked = false
         windowController.setInteractive(false)
         windowController.hide()

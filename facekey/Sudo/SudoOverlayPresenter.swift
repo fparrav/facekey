@@ -43,6 +43,7 @@ final class SudoOverlayPresenter: SudoOverlayPresenting {
             let shown = overlay.presentSudo(prompt) { [weak self] choice, clickSource in
                 // Only a hardware click accepts: a click posted by a script counts as Cancel.
                 let accepted = choice == .accept && SudoClickSource.isHardware(clickSource)
+                if accepted { self?.overlay.showSudoScanning() }
                 self?.resolveConfirm(accepted ? .accepted(clickSource: clickSource) : .cancelled)
             }
             if !shown { resolveConfirm(.cancelled) }

@@ -114,10 +114,20 @@ struct NotchOverlayView: View {
         }
     }
 
+    /// The line under the scan video for the current state; nil while onboarding or the sudo
+    /// prompt owns the panel, and while the state has no text.
+    private var statusMessage: NotchStatusMessage? {
+        guard onboardingController == nil, sudoPrompt == nil, let state = controller.statusState else { return nil }
+        return .for(state: state, hoverRetryEnabled: FacekeySettings.shared.retryOnHover)
+    }
+
     private var openBodySize: CGSize {
         if let onboardingController { return onboardingController.panelSize }
         if sudoPrompt != nil { return SudoOverlayMetrics.panelSize }
-        return isMinimalScan ? minimalOpenBodySize : scanOpenSize
+        let scanSize = isMinimalScan ? minimalOpenBodySize : scanOpenSize
+        // Grows downward only, so nothing is ever drawn over the physical cutout.
+        guard statusMessage != nil else { return scanSize }
+        return CGSize(width: scanSize.width, height: scanSize.height + NotchGeometry.statusRowHeight)
     }
 
     private var closedBodySize: CGSize {
@@ -273,7 +283,15 @@ struct NotchOverlayView: View {
                 } else if let sudoPrompt {
                     SudoPromptView(prompt: sudoPrompt, topInset: sudoContentTopInset)
                 } else {
-                    scanContent
+                    VStack(spacing: 0) {
+                        scanContent
+                        if let statusMessage {
+                            NotchStatusLine(message: statusMessage)
+                                .frame(height: NotchGeometry.statusRowHeight)
+                                .padding(.horizontal, 16)
+                                .transition(.opacity)
+                        }
+                    }
                 }
             }
             // Content dissolves (blur + fade) as the panel shrinks, rather than being
@@ -307,6 +325,7 @@ struct NotchOverlayView: View {
         // Drives the per-step resize while onboarding is active — `visualIsExpanded`
         // alone only fires on entering/leaving the expanded state.
         .animation(expansionAnimation(entering: true), value: onboardingController?.panelSize)
+        .animation(expansionAnimation(entering: true), value: statusMessage != nil)
         .blur(radius: panelBlur)
         // Applied after the shadow so both travel together, before `.onHover`.
         .offset(y: verticalOffset)

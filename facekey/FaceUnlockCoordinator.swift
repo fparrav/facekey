@@ -343,6 +343,9 @@ final class FaceUnlockCoordinator {
             log.error("scan #\(generation) camera error: \(error, privacy: .public)")
             statusMessage = error
             camera.stop()
+            // Ends like a failed scan: the amber line shows, nothing is typed and the lock screen
+            // stays as it was, so the password is still there.
+            if showsUI { NotchOverlayController.shared.showCameraUnavailable() }
             return
         }
 
