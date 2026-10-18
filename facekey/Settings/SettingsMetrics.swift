@@ -107,6 +107,8 @@ enum SettingsMetrics {
     /// Fixed-size tiles for pickers that share their row with a leading
     /// title (`SettingsLabeledOptionRow`) instead of spanning the card.
     static let triggerOptionPreviewSize = CGSize(width: 70, height: 44)
+    /// Wide enough for the longest trigger label ("Al presionar espacio") so the three tiles share one pitch.
+    static let triggerOptionItemWidth: CGFloat = 124
     static let unlockAnimationOptionPreviewSize = CGSize(width: 112, height: 76)
     static let optionPreviewCornerRadius: CGFloat = 13
     static let optionPreviewFill = adaptiveColor(

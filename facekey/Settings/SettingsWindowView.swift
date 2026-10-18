@@ -114,6 +114,9 @@ struct SettingsWindowView: View {
                 // between the header and the first row.
                 .frame(maxWidth: .infinity, alignment: .topLeading)
         }
+        // A new scroll view per page, so each page opens at its top instead of
+        // inheriting the offset the previous page was scrolled to.
+        .id(selection)
         .overlay(alignment: .top) {
             // Blur first, header content on top — so it fades whatever
             // scrolls beneath both without ever softening the buttons

@@ -598,6 +598,10 @@ struct SettingsOptionTile<Preview: View>: View {
     /// `nil` shares the row's width equally with sibling tiles; a value
     /// pins it, for tiles in a `SettingsLabeledOptionRow`.
     var previewWidth: CGFloat? = nil
+    /// Pins the whole tile (artwork and label) to one width, so a label wider
+    /// than the artwork cannot make its tile sit off-centre from the others
+    /// in the row. `nil` lets the label set the tile's width.
+    var itemWidth: CGFloat? = nil
     @ViewBuilder var preview: () -> Preview
 
     /// Tint for artwork drawn as plain shapes, so tiles that don't supply
@@ -675,6 +679,7 @@ struct SettingsOptionTile<Preview: View>: View {
                     .foregroundStyle(isSelected ? SettingsMetrics.textPrimary : SettingsMetrics.textSecondary)
             }
             .frame(maxWidth: previewWidth == nil ? .infinity : nil)
+            .frame(width: itemWidth)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -827,7 +832,8 @@ struct UnlockTriggerPicker: View {
                     isSelected: isSelected,
                     action: { toggle(trigger, isSelected: isSelected) },
                     previewHeight: SettingsMetrics.triggerOptionPreviewSize.height,
-                    previewWidth: SettingsMetrics.triggerOptionPreviewSize.width
+                    previewWidth: SettingsMetrics.triggerOptionPreviewSize.width,
+                    itemWidth: SettingsMetrics.triggerOptionItemWidth
                 ) {
                     Image(systemName: trigger.iconName)
                         .font(.system(size: 16, weight: .regular))
