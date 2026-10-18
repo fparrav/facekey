@@ -127,7 +127,12 @@ struct NotchOverlayView: View {
         let scanSize = isMinimalScan ? minimalOpenBodySize : scanOpenSize
         // Grows downward only, so nothing is ever drawn over the physical cutout.
         guard statusMessage != nil else { return scanSize }
-        return CGSize(width: scanSize.width, height: scanSize.height + NotchGeometry.statusRowHeight)
+        // The pill and the minimal scan are narrower than the longest Spanish message needs for
+        // two lines, so they widen while a message shows.
+        return CGSize(
+            width: max(scanSize.width, NotchGeometry.statusMinWidth),
+            height: scanSize.height + NotchGeometry.statusRowHeight
+        )
     }
 
     private var closedBodySize: CGSize {

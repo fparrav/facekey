@@ -169,6 +169,10 @@ struct NotchGeometry {
     static let notchShadowPadding: CGFloat = 24
     static let pillShadowPadding: CGFloat = 24
 
+    /// Narrowest the panel gets while a status message shows: with the row's padding and ring this leaves
+    /// about 166 pt of text, enough for the longest Spanish message in two lines.
+    static let statusMinWidth: CGFloat = notchOpenSize.width
+
     /// Height of the status line under the scan video (one 14 pt ring row, two text lines at most).
     static let statusRowHeight: CGFloat = 40
 
