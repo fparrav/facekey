@@ -81,6 +81,8 @@ Open the `.dmg` file and drag Facekey to `/Applications`, then open it.
 | **Multiple identities** | Enroll several people, or several versions of yourself — with glasses, a beard, different lighting. Toggle any of them off without deleting. |
 | **Liveness checks** | Watches for the motion and reflections that separate a real face from a photo. *Light* or *Heavy* strictness, or off. |
 | **Notch UI** | A closed pill that expands into a scan animation with success and failure states. Hover to retry — or turn animations off entirely and Facekey stays invisible. |
+| **Accent colour** | Pick green, lime, mint, blue or amber in Settings → App. The notch, the pill, the sidebar and the buttons follow it, and the green app icon is the default. |
+| **Status text in the notch** | A short line under the scan says what is happening: looking for your face, unlocked, face not recognised, camera unavailable, or approving `sudo`. It never shows when animations are off. |
 | **Camera & display** | Choose which camera to use, including different cameras for the built-in display vs. an external monitor. |
 | **Auto-locking sessions** | The Touch ID session re-locks itself after an idle period you choose, so an unattended Mac doesn't stay authorized forever. |
 | **Verify after other unlocks** | Optional, off by default. After something other than Facekey unlocks the Mac, such as an Apple Watch, a short scan checks who is at the screen and locks it again if it sees a face that isn't enrolled. It runs after the unlock, so it cannot stop the Apple Watch unlock, and an empty room leaves the Mac unlocked. |
@@ -99,6 +101,8 @@ Glance is a polished, focused app. This fork keeps its idea, architecture and mo
 |---|---|
 | **Verify after other unlocks** | Optional, off by default. After an unlock by an Apple Watch, Touch ID or a typed password, a short scan looks at who is at the screen and locks the Mac again if an unrecognised face stays in view for 2 seconds. See [Unlocks by other methods](#unlocks-by-other-methods). |
 | **Sudo approval** | Optional, off by default. A PAM module ahead of Touch ID in `sudo_local` asks Facekey to approve `sudo` with an overlay in the notch and a face scan, with an allow / block list of apps and an audit log. See [Sudo approval](#sudo-approval). |
+| **Facekey identity** | A new app icon and menu bar mark, an accent colour you can change, and a vector mark used in About and onboarding. |
+| **Status text in the notch** | One line under the scan for each state, including an amber *Camera unavailable* when the camera cannot be opened on the lock screen. The failure line mentions hovering to retry only when that setting is on. |
 | **Calibrated detection distance** | The detection distance is a six-stop slider kept separately for each display setup (built-in, built-in + external, external), and a guided **Calibrate** sheet measures your face width through that setup's own camera. |
 | **Behaviour per display setup** | Face unlock can be switched on or off for *Built-in only*, *Built-in + external* and *External only*, each with its own camera. The unlock re-checks when displays change while locked, and falls back to the notch screen if a pinned external display's ID goes stale after sleep. |
 | **Unlock the session at launch** | Optional. Facekey unlocks its own session when it starts, with no Touch ID prompt. This trades the Touch ID gate on the stored password for convenience. Leave it off if you do not want that. |
@@ -116,6 +120,7 @@ Glance is a polished, focused app. This fork keeps its idea, architecture and mo
 | **Add Captures, not Recapture** | Adding captures to an identity appends them instead of discarding the earlier ones. The per-identity sample cap is 72, and the lowest-quality samples are dropped first. The completion step reports how many were kept. |
 | **Easier enrollment poses** | The upper diagonal head poses were hard to hit, so the yaw and pitch thresholds are more forgiving, and stalled poses widen their tolerance sooner. |
 | **Liveness false denials** | The glare cue no longer fires on an overexposed live face, and a background edge that clips the face box no longer triggers the device cue. Photo and screen detection otherwise work as before. |
+| **Settings in five pages** | The tab bar is now a sidebar with Summary, Access, Security, Camera and displays, and App. Summary shows a *ready to unlock* checklist and links each missing step to its page. The old rows are all still there, regrouped. |
 
 ### Renamed and re-pointed
 
@@ -164,7 +169,7 @@ macOS does not let an app approve or block an unlock by an Apple Watch, Touch ID
 
 ### Sudo approval
 
-Optional, off by default, and installed from **Settings → Sudo**, which asks for your administrator password. A small PAM module, `pam_facekey.so`, goes ahead of `pam_tid.so` in `/etc/pam.d/sudo_local`. When `sudo` asks for a password in a terminal, the module asks the running Facekey. Facekey shows an overlay in the notch with **Accept** and **Cancel**, and approves only after you accept and your face matches. Every other outcome (Cancel, a timeout, a blocked app, a locked session, Facekey not running, no terminal) falls through to the normal `sudo` prompt, so this only adds a way in for the cases you switch on and never removes one.
+Optional, off by default, and installed from **Settings → Security**, which asks for your administrator password. A small PAM module, `pam_facekey.so`, goes ahead of `pam_tid.so` in `/etc/pam.d/sudo_local`. When `sudo` asks for a password in a terminal, the module asks the running Facekey. Facekey shows an overlay in the notch with **Accept** and **Cancel**, and approves only after you accept and your face matches. Every other outcome (Cancel, a timeout, a blocked app, a locked session, Facekey not running, no terminal) falls through to the normal `sudo` prompt, so this only adds a way in for the cases you switch on and never removes one.
 
 **Requirements**
 
@@ -173,21 +178,21 @@ Optional, off by default, and installed from **Settings → Sudo**, which asks f
 - A Facekey build signed with a developer team. The module is compiled with that team ID and ignores every request without one, so an ad-hoc signed build cannot use this feature.
 - Your administrator password, once, to install or remove it. It needs no extra permission such as Full Disk Access or Accessibility.
 - `sudo` run by you in a terminal. It never acts for root, over SSH, or when a program feeds the password with `sudo -S` or `-A`.
-- The feature switched on for your current display setup in Settings → Sudo.
+- The feature switched on for your current display setup in Settings → Security.
 
 **Risks**
 
 - **It is weaker than Touch ID.** A face match is a softer proof than a fingerprint, and a MacBook camera sees a flat image (see the warning at the top). Anyone who can get past the face check and click Accept gets root through `sudo`.
 - **It is a gate to root.** The overlay only answers a hardware click, so a script that posts a click counts as Cancel, but someone sitting at your unlocked Mac can still use it.
 - **It changes a system file and loads code into `sudo`.** `pam_facekey.so` runs as root inside every `sudo`, and the installer edits `/etc/pam.d/sudo_local`. The module trusts only a Facekey signed by the same team, and it fails open: on any error it does nothing and `sudo` asks for its password. The installer copies its files to a private folder and checks the signature before running them as root, but a process of your own user could still try to swap them in that short window.
-- **A macOS update can remove the entry.** `sudo` then goes back to Touch ID or the password, and Settings → Sudo offers a repair.
+- **A macOS update can remove the entry.** `sudo` then goes back to Touch ID or the password, and Settings → Security offers a repair.
 - **The history can hold secrets.** Commands are stored with their arguments unless you turn on *Keep only the program name*. The file is encrypted with a key in your Keychain.
 
 **What to know before turning it on**
 
-- **Apps are listed.** The first time an app asks, Facekey asks whether to allow it, and recognises it by its code signature (or, for an unsigned app, by its code). A blocked app is refused outright. The list lives in Settings → Sudo.
+- **Apps are listed.** The first time an app asks, Facekey asks whether to allow it, and recognises it by its code signature (or, for an unsigned app, by its code). A blocked app is refused outright. The list lives in Settings → Security.
 - **The overlay is always visible.** There is no silent approval, and the module only talks to a Facekey signed by the same team.
-- **There is an audit log.** Settings → Sudo shows when each request happened, which app asked, the command and how it ended. It is encrypted and can be cleared, and *Keep only the program name* leaves arguments out.
+- **There is an audit log.** Settings → Security shows when each request happened, which app asked, the command and how it ended. It is encrypted and can be cleared, and *Keep only the program name* leaves arguments out.
 - **Per display setup.** It can be switched on or off for *Built-in*, *Built-in + external* and *External* displays.
 - **It can be removed.** Remove puts `sudo_local` back exactly as it was. A macOS update can drop the entry, and Settings then offers a repair.
 
@@ -212,7 +217,7 @@ Light detection only include deny cues. Heavy detection includes both deny and c
 
 Face Lab is a hidden debug console to test face recognition and liveness detection with real values.
 
-**To open it:** Settings → About, then click the app icon 5 times. A
+**To open it:** Settings → App, then click the app icon 5 times. A
 debug section should appear in the sidebar.
 
 ---
