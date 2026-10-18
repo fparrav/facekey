@@ -47,8 +47,7 @@ struct IntroStepView: View {
 
 private struct FacekeyLogoView: View {
     var body: some View {
-        // Video already bakes in its own white rounded-card background — no extra chrome needed.
-        LoopingVideoView(resourceName: "logoanimation")
+        FacekeyLogoTile(size: 106)
     }
 }
 
