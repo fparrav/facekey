@@ -30,6 +30,26 @@
     "%lld frames" : {
       "shouldTranslate" : false
     },
+    "%lld of %lld" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld"
+          }
+        }
+      }
+    },
+    "%lld of %lld checks passed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld comprobaciones superadas"
+          }
+        }
+      }
+    },
     "%lld of %lld samples are low quality" : {
       "shouldTranslate" : false
     },
@@ -71,6 +91,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "7 días"
+          }
+        }
+      }
+    },
+    "A camera is set for this display setup." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hay una cámara asignada a esta configuración de pantallas."
           }
         }
       }
@@ -118,6 +148,16 @@
         }
       }
     },
+    "Access" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceso"
+          }
+        }
+      }
+    },
     "Access was denied — enable it in System Settings." : {
       "localizations" : {
         "es" : {
@@ -138,12 +178,32 @@
         }
       }
     },
+    "Accessibility and Camera are granted." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesibilidad y Cámara están concedidos."
+          }
+        }
+      }
+    },
     "Accessibility not granted — open System Settings and enable Facekey." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se concedió el acceso de Accesibilidad: abre Ajustes del Sistema y activa Facekey."
+          }
+        }
+      }
+    },
+    "Accessibility or Camera access is missing." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta el acceso de Accesibilidad o de Cámara."
           }
         }
       }
@@ -263,6 +323,16 @@
         }
       }
     },
+    "Almost ready" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casi listo"
+          }
+        }
+      }
+    },
     "Also requires proof of a real face." : {
       "localizations" : {
         "es" : {
@@ -293,6 +363,16 @@
         }
       }
     },
+    "App" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App"
+          }
+        }
+      }
+    },
     "App blocked" : {
       "localizations" : {
         "es" : {
@@ -309,6 +389,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "¿Aprobar sudo desde %@?"
+          }
+        }
+      }
+    },
+    "Approve sudo with your face" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aprobar sudo con tu rostro"
           }
         }
       }
@@ -666,12 +756,32 @@
         }
       }
     },
+    "Camera and displays" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara y pantallas"
+          }
+        }
+      }
+    },
     "Camera changed, recalibrate." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "La cámara cambió; vuelve a calibrar."
+          }
+        }
+      }
+    },
+    "Camera for this display setup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara para esta configuración de pantallas"
           }
         }
       }
@@ -685,6 +795,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Perfil de cámara"
+          }
+        }
+      }
+    },
+    "Camera unavailable" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cámara no disponible"
           }
         }
       }
@@ -1019,6 +1139,22 @@
         }
       }
     },
+    "Default distance" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "es" : {
@@ -1277,6 +1413,16 @@
         }
       }
     },
+    "Face enrolled" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rostro registrado"
+          }
+        }
+      }
+    },
     "Face enrollment" : {
       "localizations" : {
         "es" : {
@@ -1325,7 +1471,17 @@
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se reconoció el rostro."
+            "value" : "Rostro no reconocido."
+          }
+        }
+      }
+    },
+    "Face not recognized. Hover to retry." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rostro no reconocido. Pasa el cursor para reintentar."
           }
         }
       }
@@ -1366,6 +1522,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Facekey"
+          }
+        }
+      }
+    },
+    "Facekey can type your password." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey puede escribir tu contraseña."
           }
         }
       }
@@ -1468,6 +1634,16 @@
     },
     "Fit residual: %@  Probe residual: %@  Excess: %@" : {
       "shouldTranslate" : false
+    },
+    "Fix" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corregir"
+          }
+        }
+      }
     },
     "Flat vs 3D diagnostics" : {
       "shouldTranslate" : false
@@ -1817,6 +1993,36 @@
         }
       }
     },
+    "Liveness checks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detección de vida"
+          }
+        }
+      }
+    },
+    "Liveness checks are off." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La detección de vida está desactivada."
+          }
+        }
+      }
+    },
+    "Liveness checks are on." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La detección de vida está activada."
+          }
+        }
+      }
+    },
     "Liveness detection" : {
       "localizations" : {
         "es" : {
@@ -1856,6 +2062,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Buscando tu rostro…"
+          }
+        }
+      }
+    },
+    "Mac unlocked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac desbloqueada"
           }
         }
       }
@@ -2018,6 +2234,16 @@
         }
       }
     },
+    "No camera is set for this display setup." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay una cámara asignada a esta configuración de pantallas."
+          }
+        }
+      }
+    },
     "No face" : {
       "shouldTranslate" : false
     },
@@ -2051,6 +2277,16 @@
         }
       }
     },
+    "No face enrolled yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay un rostro registrado."
+          }
+        }
+      }
+    },
     "No identities are enabled — face unlock won't recognize anyone until you switch one back on." : {
       "localizations" : {
         "es" : {
@@ -2072,6 +2308,16 @@
     },
     "NO MATCH" : {
       "shouldTranslate" : false
+    },
+    "No password stored yet." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay una contraseña guardada."
+          }
+        }
+      }
     },
     "No samples captured" : {
       "localizations" : {
@@ -2123,12 +2369,12 @@
         }
       }
     },
-    "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Password tab to clear both, then set up again." : {
+    "Nothing has been deleted, and Facekey will not overwrite it — enrolling is blocked until this resolves. Quit and reopen Facekey to retry. If it keeps failing, the session key no longer matches this data: remove the stored password on the Access page to clear both, then set up again." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha eliminado nada y Facekey no lo sobrescribirá: el registro queda bloqueado hasta que se resuelva. Cierra y vuelve a abrir Facekey para reintentar. Si sigue fallando, la clave de la sesión ya no corresponde a estos datos: quita la contraseña guardada en la pestaña Contraseña para borrar ambos y vuelve a configurar todo."
+            "value" : "No se ha eliminado nada y Facekey no lo sobrescribirá: el registro queda bloqueado hasta que se resuelva. Cierra y vuelve a abrir Facekey para reintentar. Si sigue fallando, la clave de la sesión ya no corresponde a estos datos: quita la contraseña guardada en la página Acceso para borrar ambos y vuelve a configurar todo."
           }
         }
       }
@@ -2293,6 +2539,16 @@
         }
       }
     },
+    "Password stored" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contraseña guardada"
+          }
+        }
+      }
+    },
     "Permissions" : {
       "localizations" : {
         "es" : {
@@ -2335,6 +2591,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Salir de Facekey"
+          }
+        }
+      }
+    },
+    "Ready to unlock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo para desbloquear"
           }
         }
       }
@@ -2510,6 +2776,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guardando…"
+          }
+        }
+      }
+    },
+    "Security" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguridad"
           }
         }
       }
@@ -2844,6 +3120,16 @@
     "Suggested threshold: %@" : {
       "shouldTranslate" : false
     },
+    "Summary" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resumen"
+          }
+        }
+      }
+    },
     "System default" : {
       "localizations" : {
         "es" : {
@@ -2944,12 +3230,12 @@
         }
       }
     },
-    "The session key is missing, but encrypted data still exists that only it could read. Nothing has been deleted. Remove the stored password on the Password tab to clear both and start fresh." : {
+    "The session key is missing, but encrypted data still exists that only it could read. Nothing has been deleted. Remove the stored password on the Access page to clear both and start fresh." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Falta la clave de la sesión, pero aún existen datos cifrados que solo ella podía leer. No se ha eliminado nada. Quita la contraseña guardada en la pestaña Contraseña para borrar ambos y empezar de nuevo."
+            "value" : "Falta la clave de la sesión, pero aún existen datos cifrados que solo ella podía leer. No se ha eliminado nada. Quita la contraseña guardada en la página Acceso para borrar ambos y empezar de nuevo."
           }
         }
       }
@@ -3259,6 +3545,16 @@
         }
       }
     },
+    "Unlock the session to change these settings." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquea la sesión para cambiar estos ajustes."
+          }
+        }
+      }
+    },
     "Unlock the session to see the app list and the history." : {
       "localizations" : {
         "es" : {
@@ -3398,6 +3694,16 @@
         }
       }
     },
+    "Your face is enrolled." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu rostro está registrado."
+          }
+        }
+      }
+    },
     "Your password is required to unlock your Mac. It is encrypted and securely stored on your device. Facekey works entirely offline, so your password never leaves your Mac." : {
       "localizations" : {
         "es" : {
@@ -3414,22 +3720,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“Al presionar espacio” lee el teclado directamente para detectar la barra espaciadora en la pantalla de bloqueo, lo cual requiere Accesibilidad, el mismo permiso que Facekey usa para escribir tu contraseña. Activa Facekey en Privacidad y seguridad → Accesibilidad y luego cierra y vuelve a abrir Facekey."
-          }
-        }
-      }
-    },
-    "Default distance" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Default"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Normal"
           }
         }
       }
