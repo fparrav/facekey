@@ -130,6 +130,7 @@ final class FacekeySettings {
         static let verifyAfterExternalUnlock = "FacekeySettings.verifyAfterExternalUnlock"
         static let hapticFeedbackEnabled = "FacekeySettings.hapticFeedbackEnabled"
         static let showsInMenuBar = "FacekeySettings.showsInMenuBar"
+        static let accentChoice = "FacekeySettings.accentChoice"
         static let preferredDisplayID = "FacekeySettings.preferredDisplayID"
         static let preferredDisplayName = "FacekeySettings.preferredDisplayName"
         static let autoLockIntervalDays = "FacekeySettings.autoLockIntervalDays"
@@ -285,6 +286,9 @@ final class FacekeySettings {
             menuBarVisibilityDidChange?(showsInMenuBar)
         }
     }
+    var accentChoice: AccentChoice {
+        didSet { defaults.set(accentChoice.rawValue, forKey: Key.accentChoice) }
+    }
 
     /// Bound once by `AppDelegate` after AppKit has finished launching. The
     /// initial call applies the stored preference as well as subsequent edits.
@@ -426,6 +430,7 @@ final class FacekeySettings {
         // Keep the icon available for existing and new installs unless the
         // user explicitly opts into the background-only mode.
         showsInMenuBar = defaults.object(forKey: Key.showsInMenuBar) as? Bool ?? true
+        accentChoice = AccentChoice(storedValue: defaults.string(forKey: Key.accentChoice))
         preferredDisplayID = defaults.string(forKey: Key.preferredDisplayID)
         preferredDisplayName = defaults.string(forKey: Key.preferredDisplayName)
 

@@ -27,7 +27,7 @@ struct PillButton: View {
         let button = Button(action: action) {
             Text(title)
                 .font(FacekeyTheme.Font.button)
-                .foregroundStyle(FacekeyTheme.textPrimary)
+                .foregroundStyle(style == .primary ? FacekeyTheme.onAccent : FacekeyTheme.textPrimary)
                 .frame(width: width, height: OnboardingMetrics.pillButtonHeight)
                 .background(background)
                 .clipShape(Capsule())

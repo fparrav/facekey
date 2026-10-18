@@ -289,7 +289,7 @@ private struct SettingsActionButton: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(isDestructive ? .white : FacekeyTheme.onAccent)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
                 .background(isDestructive ? Color.red.opacity(0.85) : FacekeyTheme.accent)
@@ -438,7 +438,7 @@ struct SettingsPrimaryButton: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(FacekeyTheme.onAccent)
                 .padding(.horizontal, compact ? 14 : 16)
                 .padding(.vertical, compact ? 6 : 7)
                 .background(FacekeyTheme.accent)

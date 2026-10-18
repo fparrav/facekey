@@ -88,7 +88,7 @@ struct SudoPromptView: View {
                 .frame(width: 34, height: 34)
             Image(systemName: prompt.kind == .confirm ? "terminal.fill" : "lock.shield.fill")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(FacekeyTheme.onAccent)
         }
         .frame(height: 36)
     }
@@ -178,7 +178,7 @@ struct SudoPromptView: View {
             Text(title)
                 .font(.system(size: 13, weight: .semibold))
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(FacekeyTheme.onAccent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             Capsule().fill(LinearGradient(

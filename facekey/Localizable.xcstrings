@@ -98,6 +98,16 @@
     "Abstaining — not enough head rotation to tell a plane from a still 3D face." : {
       "shouldTranslate" : false
     },
+    "Accent colour" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color de acento"
+          }
+        }
+      }
+    },
     "Accept" : {
       "localizations" : {
         "es" : {
@@ -259,6 +269,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "También exige comprobar que es un rostro real."
+          }
+        }
+      }
+    },
+    "Amber" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ámbar"
           }
         }
       }
@@ -482,6 +502,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bloqueada"
+          }
+        }
+      }
+    },
+    "Blue" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azul"
           }
         }
       }
@@ -1482,6 +1512,26 @@
         }
       }
     },
+    "Green" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verde"
+          }
+        }
+      }
+    },
+    "Green by default, for its link to Face ID" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verde por defecto, por su vínculo con Face ID"
+          }
+        }
+      }
+    },
     "Haptic feedback" : {
       "localizations" : {
         "es" : {
@@ -1747,6 +1797,16 @@
     "Light: only the deny cues run. Anything not actively rejected is treated as live." : {
       "shouldTranslate" : false
     },
+    "Lime" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lima"
+          }
+        }
+      }
+    },
     "Liveness" : {
       "localizations" : {
         "es" : {
@@ -1858,6 +1918,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mínima"
+          }
+        }
+      }
+    },
+    "Mint" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menta"
           }
         }
       }

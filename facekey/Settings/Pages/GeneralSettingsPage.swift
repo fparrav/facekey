@@ -191,6 +191,8 @@ struct GeneralSettingsPage: View {
                 }
             }
 
+            AccentPickerSection()
+
             VStack(alignment: .leading, spacing: 8) {
                 SettingsSectionTitle(text: "Animation")
                 SettingsGroup {
@@ -285,7 +287,7 @@ struct GeneralSettingsPage: View {
                     Button(action: action) {
                         Text(buttonTitle)
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(FacekeyTheme.onAccent)
                             .frame(width: 112)
                             .padding(.vertical, 6)
                             .background(FacekeyTheme.accent)

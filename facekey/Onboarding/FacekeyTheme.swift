@@ -9,23 +9,25 @@
 import SwiftUI
 
 enum FacekeyTheme {
-    private static let accentRGB = (r: 0x34 / 255.0, g: 0x99 / 255.0, b: 0xFF / 255.0)
-    static let accent = Color(red: accentRGB.r, green: accentRGB.g, blue: accentRGB.b)
+    private static var choice: AccentChoice { FacekeySettings.shared.accentChoice }
+
+    static var accent: Color { color(AccentPalette.accent(choice)) }
+    /// Dark ink for text and glyphs drawn on an accent fill.
+    static var onAccent: Color { color(AccentPalette.ink(choice)) }
 
     /// White at 0, `accent` at 1.
     static func whiteToAccent(_ t: Double) -> Color {
-        let t = min(max(t, 0), 1)
-        return Color(
-            red: 1 + (accentRGB.r - 1) * t,
-            green: 1 + (accentRGB.g - 1) * t,
-            blue: 1 + (accentRGB.b - 1) * t
-        )
+        color(AccentPalette.whiteToAccent(choice, t))
     }
     /// Accent-derived shades for the enrollment sweep, shifted so layered streaks read
     /// as one body of light rather than several flat shapes.
-    static let accentPale   = Color(red: 0xCF / 255, green: 0xE7 / 255, blue: 0xFF / 255)
-    static let accentBright = Color(red: 0x7F / 255, green: 0xC2 / 255, blue: 0xFF / 255)
-    static let accentDeep   = Color(red: 0x1F / 255, green: 0x6B / 255, blue: 0xD1 / 255)
+    static var accentPale: Color { color(AccentPalette.pale(choice)) }
+    static var accentBright: Color { color(AccentPalette.bright(choice)) }
+    static var accentDeep: Color { color(AccentPalette.deep(choice)) }
+
+    private static func color(_ c: AccentRGB) -> Color {
+        Color(red: c.r, green: c.g, blue: c.b)
+    }
     static let surface = Color(red: 0x1E / 255, green: 0x1E / 255, blue: 0x1E / 255)
     static let surfaceRaised = Color(red: 0x32 / 255, green: 0x32 / 255, blue: 0x32 / 255)
     static let panel = Color.black
