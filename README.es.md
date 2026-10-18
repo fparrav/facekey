@@ -24,7 +24,9 @@ Facekey lleva la experiencia de FaceID de tu iPhone a la Mac que tienes frente a
 > **Este es un fork personal.** Facekey existe para que yo pueda seguir mi propio ritmo de desarrollo y agregar las funciones que me gustaría que glance tuviera. No reemplaza al original, no sigue los cambios de upstream con un calendario fijo, y solo incorporo los cambios de upstream cuando quiero. Todo lo que funciona aquí partió del trabajo de [Jonathan Zhou](https://github.com/jonnyoo). Consulta [Cómo se diferencia este fork de glance](#cómo-se-diferencia-este-fork-de-glance) para ver qué agregué o cambié.
 
 
-https://github.com/user-attachments/assets/77438826-80a9-4ab2-9fc3-42407a2d0adb
+<p align="center">
+  <video src="https://github.com/fparrav/facekey/raw/main/docs/facekey-demo.mp4" controls muted loop playsinline width="720"></video>
+</p>
 
 
 ---
