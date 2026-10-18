@@ -81,8 +81,8 @@ Open the `.dmg` file and drag Facekey to `/Applications`, then open it.
 | **Multiple identities** | Enroll several people, or several versions of yourself — with glasses, a beard, different lighting. Toggle any of them off without deleting. |
 | **Liveness checks** | Watches for the motion and reflections that separate a real face from a photo. *Light* or *Heavy* strictness, or off. |
 | **Notch UI** | A closed pill that expands into a scan animation with success and failure states. Hover to retry — or turn animations off entirely and Facekey stays invisible. |
-| **Accent colour** | Pick green, lime, mint, blue or amber in Settings → App. The notch, the pill, the sidebar and the buttons follow it, and the green app icon is the default. |
-| **Status text in the notch** | A short line under the scan says what is happening: looking for your face, unlocked, face not recognised, camera unavailable, or approving `sudo`. It never shows when animations are off. |
+| **Accent colour** | Pick green, lime, mint, blue or amber in Settings → App. The notch, the scan animations, the pill, the sidebar and the buttons follow it, and the green app icon is the default. |
+| **Status text in the notch** | A short line under the scan says what is happening: looking for your face, unlocked, face not recognised, camera unavailable, or approving `sudo`. A small animated mark leads the text: a turning arc while it works, a ring that closes into a check or a cross, a soft amber alert. It never shows when animations are off. |
 | **Camera & display** | Choose which camera to use, including different cameras for the built-in display vs. an external monitor. |
 | **Auto-locking sessions** | The Touch ID session re-locks itself after an idle period you choose, so an unattended Mac doesn't stay authorized forever. |
 | **Verify after other unlocks** | Optional, off by default. After something other than Facekey unlocks the Mac, such as an Apple Watch, a short scan checks who is at the screen and locks it again if it sees a face that isn't enrolled. It runs after the unlock, so it cannot stop the Apple Watch unlock, and an empty room leaves the Mac unlocked. |
@@ -165,7 +165,7 @@ Face recognition and liveness detection run independently and must both succeed 
 
 ### Unlocks by other methods
 
-macOS does not let an app approve or block an unlock by an Apple Watch, Touch ID or a typed password, so Facekey cannot gate them. With *Verify my face after other unlock methods* on (Settings → Recognition), Facekey looks at the screen for up to 6 seconds after such an unlock. A match with any enabled identity ends the check quietly. An unrecognised face that stays in view for 2 seconds locks the screen again. If nobody is in view, nothing happens. After a re-lock the check pauses for 2 minutes so it cannot lock you out in a loop. This is a safety net after the fact, not a gate.
+macOS does not let an app approve or block an unlock by an Apple Watch, Touch ID or a typed password, so Facekey cannot gate them. With *Verify my face after other unlock methods* on (Settings → Security), Facekey looks at the screen for up to 6 seconds after such an unlock. A match with any enabled identity ends the check quietly. An unrecognised face that stays in view for 2 seconds locks the screen again. If nobody is in view, nothing happens. After a re-lock the check pauses for 2 minutes so it cannot lock you out in a loop. This is a safety net after the fact, not a gate.
 
 ### Sudo approval
 
