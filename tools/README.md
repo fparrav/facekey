@@ -63,3 +63,42 @@ python tools/convert_arcface.py --onnx-path /path/to/w600k_mbf.onnx
 If you ever swap in a different ArcFace variant (e.g. `w600k_r50` via
 `--variant w600k_r50`), this contract stays the same — only the file size
 and latency change.
+
+# Probing the Passwords lock UI
+
+`passwords_lock_probe.swift` is a standalone, **read-only** probe for the
+Passwords app (`com.apple.Passwords`), used by the `unlock-passwords-app`
+spike to record what the lock UI looks like in the Accessibility (AX)
+hierarchy. Given the running app it prints to stdout:
+
+- whether the process is the frontmost app,
+- its windows (title, role, subrole, frame),
+- a depth-limited tree of the AX hierarchy of the first window — for every
+  element: role, subrole, title, description, value kind, enabled, focused
+  and the AX actions,
+- the app's currently focused UI element.
+
+It only reads: it performs no AX actions, writes no attributes, posts no
+events and never prints the value of a secure text field (a secure field
+shows `value=secure (hidden)`).
+
+## Run it
+
+```bash
+cd /path/to/facekey
+swiftc -O tools/passwords_lock_probe.swift -o /tmp/passwords_lock_probe
+/tmp/passwords_lock_probe [--depth N] [--delay S]   # default depth 8
+```
+
+The terminal that runs it needs Accessibility permission (System Settings
+> Privacy & Security > Accessibility). Without it the probe exits 3 and
+says so.
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | tree printed |
+| 1 | bad arguments (`--help` always exits 0) |
+| 2 | Passwords is not running |
+| 3 | Accessibility not granted — enable it in System Settings > Privacy & Security > Accessibility for the terminal, then run again |
