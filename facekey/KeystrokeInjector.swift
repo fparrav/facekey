@@ -12,9 +12,13 @@ import CoreGraphics
 enum KeystrokeError: LocalizedError {
     case accessibilityNotGranted
     case eventCreationFailed
+    /// `shouldContinue` said stop; nothing more was posted. Not shown to the user.
+    case cancelled
 
     var errorDescription: String? {
         switch self {
+        case .cancelled:
+            return nil
         case .accessibilityNotGranted:
             return String(localized: "Accessibility permission required. Open System Settings → Privacy & Security → Accessibility and enable Facekey.")
         case .eventCreationFailed:
@@ -40,6 +44,12 @@ enum KeystrokeInjector {
     /// Types the UTF-8 bytes into whatever has keyboard focus, then presses Return. Takes `Data` rather than `String` so the
     /// caller can hold the plaintext as a zero-able buffer; the brief internal `String` decode is scoped to this call. Blocking.
     nonisolated static func typeAndReturn(_ passwordBytes: Data) throws {
+        try typeAndReturn(passwordBytes, shouldContinue: { true })
+    }
+
+    /// Same, but asks `shouldContinue` before the field is cleared, between text batches and before Return. Once it
+    /// answers false nothing more is posted and this throws `KeystrokeError.cancelled`.
+    nonisolated static func typeAndReturn(_ passwordBytes: Data, shouldContinue: () -> Bool) throws {
         guard isAccessibilityTrusted() else {
             throw KeystrokeError.accessibilityNotGranted
         }
@@ -47,8 +57,10 @@ enum KeystrokeInjector {
             throw KeystrokeError.eventCreationFailed
         }
         let source = CGEventSource(stateID: .hidSystemState)
+        guard shouldContinue() else { throw KeystrokeError.cancelled }
         try clearFocusedField(source: source)
-        try postUnicodeText(text, source: source)
+        try postUnicodeText(text, source: source, shouldContinue: shouldContinue)
+        guard shouldContinue() else { throw KeystrokeError.cancelled }
         try postReturn(source: source)
     }
 
@@ -105,13 +117,14 @@ enum KeystrokeInjector {
 
     /// Posts the password in small UTF-16 batches. Splitting occurs only between
     /// surrogate pairs, so non-BMP password characters are never corrupted.
-    private nonisolated static func postUnicodeText(_ text: String, source: CGEventSource?) throws {
+    private nonisolated static func postUnicodeText(_ text: String, source: CGEventSource?, shouldContinue: () -> Bool) throws {
         let utf16 = Array(text.utf16)
         try utf16.withUnsafeBufferPointer { buffer in
             guard let base = buffer.baseAddress else { return }
             var start = 0
 
             while start < buffer.count {
+                guard shouldContinue() else { throw KeystrokeError.cancelled }
                 var end = min(start + maximumUnicodeBatchLength, buffer.count)
                 // Do not split a high/low-surrogate pair across separate key events.
                 if end < buffer.count,
