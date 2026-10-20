@@ -178,6 +178,16 @@
         }
       }
     },
+    "Accessibility access is missing. Without it Facekey can not type into Passwords. Grant it in the Permissions section of the App page." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falta el acceso de Accesibilidad. Sin él, Facekey no puede teclear en Passwords. Concédelo en la sección Permisos de la página App."
+          }
+        }
+      }
+    },
     "Accessibility and Camera are granted." : {
       "localizations" : {
         "es" : {
@@ -1446,6 +1456,16 @@
     "Face Lab — On-Device Face Recognition (Debug)" : {
       "shouldTranslate" : false
     },
+    "Face match is weaker than Touch ID. Anyone who passes the face check and clicks Accept can open everything in the Passwords app. Facekey only types into Passwords, and only after you click Accept." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El reconocimiento facial es menos seguro que Touch ID. Quien pase la verificación del rostro y haga clic en Aceptar puede abrir todo el contenido de la app Passwords. Facekey solo teclea en Passwords, y únicamente después de que haces clic en Aceptar."
+          }
+        }
+      }
+    },
     "Face not matched" : {
       "localizations" : {
         "es" : {
@@ -1562,6 +1582,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Facekey quiere hacer cambios."
+          }
+        }
+      }
+    },
+    "Facekey will check your face, then type your Mac password." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facekey verificará tu rostro y luego tecleará la contraseña de tu Mac."
           }
         }
       }
@@ -3535,6 +3565,26 @@
         }
       }
     },
+    "Unlock Passwords" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquear Passwords"
+          }
+        }
+      }
+    },
+    "Unlock Passwords?" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Desbloquear Passwords?"
+          }
+        }
+      }
+    },
     "Unlock session" : {
       "localizations" : {
         "es" : {
@@ -3567,6 +3617,16 @@
     },
     "Unlock the session to view enrolled identities." : {
       "shouldTranslate" : false
+    },
+    "Unlocking Passwords" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloqueando Passwords"
+          }
+        }
+      }
     },
     "Up" : {
       "localizations" : {
@@ -3647,6 +3707,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vision no generó una huella de características para esta imagen."
+          }
+        }
+      }
+    },
+    "When Passwords is in front and locked, Facekey asks you to accept and checks your face before typing your Mac password. With this off for the current display setup, Passwords asks for Touch ID or your password as usual." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cuando Passwords está al frente y bloqueada, Facekey te pide aceptar y verifica tu rostro antes de teclear la contraseña de tu Mac. Con esto desactivado para la configuración de pantalla actual, Passwords te pide Touch ID o tu contraseña como siempre."
           }
         }
       }
