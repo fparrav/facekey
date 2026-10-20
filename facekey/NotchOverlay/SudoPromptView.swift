@@ -25,6 +25,7 @@ struct SudoPromptView: View {
                 switch prompt.kind {
                 case .confirm: confirmText
                 case .firstUse: firstUseText
+                case .unlockPasswords: unlockPasswordsText
                 }
                 if prompt.isUnsigned { unsignedNote }
             }
@@ -39,7 +40,7 @@ struct SudoPromptView: View {
 
             HStack(spacing: 12) {
                 switch prompt.kind {
-                case .confirm:
+                case .confirm, .unlockPasswords:
                     secondaryButton("Cancel", symbol: "xmark")
                     primaryButton("Accept", symbol: "checkmark")
                 case .firstUse:
@@ -86,11 +87,19 @@ struct SudoPromptView: View {
                 ))
                 .overlay(Circle().strokeBorder(.white.opacity(0.28), lineWidth: 1))
                 .frame(width: 34, height: 34)
-            Image(systemName: prompt.kind == .confirm ? "terminal.fill" : "lock.shield.fill")
+            Image(systemName: badgeSymbol)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(FacekeyTheme.onAccent)
         }
         .frame(height: 36)
+    }
+
+    private var badgeSymbol: String {
+        switch prompt.kind {
+        case .confirm: "terminal.fill"
+        case .firstUse: "lock.shield.fill"
+        case .unlockPasswords: "key.fill"
+        }
     }
 
     private var confirmText: some View {
@@ -125,6 +134,21 @@ struct SudoPromptView: View {
             .foregroundStyle(FacekeyTheme.textPrimary)
             .lineLimit(3)
             .multilineTextAlignment(.center)
+    }
+
+    private var unlockPasswordsText: some View {
+        VStack(spacing: 8) {
+            Text("Unlock Passwords?")
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundStyle(FacekeyTheme.textPrimary)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+            Text("Facekey will check your face, then type your Mac password.")
+                .font(.system(size: 11.5, weight: .medium))
+                .foregroundStyle(.white.opacity(0.78))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+        }
     }
 
     private var unsignedNote: some View {

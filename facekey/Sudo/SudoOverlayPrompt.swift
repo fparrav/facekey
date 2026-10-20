@@ -21,6 +21,8 @@ struct SudoOverlayPrompt: Hashable {
         case confirm
         /// Ask whether the app may use Facekey for sudo, with Not now and Allow.
         case firstUse
+        /// Ask whether Facekey may unlock Passwords, with Cancel and Accept.
+        case unlockPasswords
     }
 
     var kind: Kind
@@ -49,7 +51,7 @@ enum SudoOverlayMetrics {
         guard band.contains(point) else { return nil }
         let isRight = point.x >= panel.midX
         switch kind {
-        case .confirm: return isRight ? .accept : .cancel
+        case .confirm, .unlockPasswords: return isRight ? .accept : .cancel
         case .firstUse: return isRight ? .allow : .notNow
         }
     }

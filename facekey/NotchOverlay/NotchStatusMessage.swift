@@ -6,6 +6,7 @@ enum NotchStatusState: Sendable {
     case failure
     case cameraUnavailable
     case sudoApproval
+    case passwordsUnlock
 }
 
 enum NotchStatusTone: Equatable, Sendable {
@@ -47,6 +48,8 @@ struct NotchStatusMessage: Equatable, Sendable {
             NotchStatusMessage(key: "Camera unavailable", tone: .warning, glyph: .alert)
         case .sudoApproval:
             NotchStatusMessage(key: "Approve sudo with your face", tone: .accent, glyph: .spinner)
+        case .passwordsUnlock:
+            NotchStatusMessage(key: "Unlocking Passwords", tone: .accent, glyph: .spinner)
         }
     }
 }

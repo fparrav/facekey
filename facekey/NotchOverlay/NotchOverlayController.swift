@@ -330,6 +330,14 @@ final class NotchOverlayController {
         statusState = .sudoApproval
     }
 
+    /// The Passwords variant of `showSudoScanning()`: same scan panel, but the status line
+    /// says the unlock is in progress rather than a sudo approval.
+    func showPasswordsUnlockScanning() {
+        guard phase == .sudoRequest else { return }
+        content = .scan(.idle)
+        statusState = .passwordsUnlock
+    }
+
     /// Drops the pending answer and shrinks the prompt away; a no-op when no sudo prompt is up.
     func dismissSudo() {
         onSudoChoice = nil
