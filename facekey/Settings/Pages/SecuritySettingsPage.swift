@@ -13,6 +13,9 @@ struct SecuritySettingsPage: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: SettingsMetrics.rowSpacing) {
+            // First, so it is not buried under the sudo app list and history.
+            PasswordsUnlockSection()
+
             SudoSettingsPage(environment: environment)
 
             if environment.pocController.isSessionUnlocked {
