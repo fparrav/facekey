@@ -87,6 +87,7 @@ Open the `.dmg` file and drag Facekey to `/Applications`, then open it.
 | **Auto-locking sessions** | The Touch ID session re-locks itself after an idle period you choose, so an unattended Mac doesn't stay authorized forever. |
 | **Verify after other unlocks** | Optional, off by default. After something other than Facekey unlocks the Mac, such as an Apple Watch, a short scan checks who is at the screen and locks it again if it sees a face that isn't enrolled. It runs after the unlock, so it cannot stop the Apple Watch unlock, and an empty room leaves the Mac unlocked. |
 | **Sudo approval** | Optional, off by default. When `sudo` asks for a password in a terminal, Facekey shows an Accept / Cancel overlay in the notch, checks your face and approves it, per display setup and per app. Weaker than Touch ID, so read [Sudo approval](#sudo-approval) first. |
+| **Unlock Passwords** | Optional, off by default. When Apple's Passwords app is in front and locked, Facekey shows an Accept / Cancel overlay in the notch, checks your face and types your Mac password into its unlock field, per display setup. Weaker than Touch ID, so read [Unlock Passwords](#unlock-passwords) first. |
 | **Trackpad haptics** | Hovering over the notch will trigger haptics |
 | **Notchless Mac support** | Macs without a notch will be replaced with a pill-shape, dynamic island style design. |
 | **Your data, your call** | Edit or delete your enrolment or stored password at any time. The encrypted files are removed immediately. |
@@ -101,6 +102,7 @@ Glance is a polished, focused app. This fork keeps its idea, architecture and mo
 |---|---|
 | **Verify after other unlocks** | Optional, off by default. After an unlock by an Apple Watch, Touch ID or a typed password, a short scan looks at who is at the screen and locks the Mac again if an unrecognised face stays in view for 2 seconds. See [Unlocks by other methods](#unlocks-by-other-methods). |
 | **Sudo approval** | Optional, off by default. A PAM module ahead of Touch ID in `sudo_local` asks Facekey to approve `sudo` with an overlay in the notch and a face scan, with an allow / block list of apps and an audit log. See [Sudo approval](#sudo-approval). |
+| **Unlock Passwords** | Optional, off by default. Detects the Passwords app locked and in front through Accessibility, asks for an Accept click, scans your face and types the stored Mac password only into Passwords. See [Unlock Passwords](#unlock-passwords). |
 | **Facekey identity** | A new app icon and menu bar mark, an accent colour you can change, and a vector mark used in About and onboarding. |
 | **Status text in the notch** | One line under the scan for each state, including an amber *Camera unavailable* when the camera cannot be opened on the lock screen. The failure line mentions hovering to retry only when that setting is on. |
 | **Calibrated detection distance** | The detection distance is a six-stop slider kept separately for each display setup (built-in, built-in + external, external), and a guided **Calibrate** sheet measures your face width through that setup's own camera. |
@@ -195,6 +197,29 @@ Optional, off by default, and installed from **Settings → Security**, which as
 - **There is an audit log.** Settings → Security shows when each request happened, which app asked, the command and how it ended. It is encrypted and can be cleared, and *Keep only the program name* leaves arguments out.
 - **Per display setup.** It can be switched on or off for *Built-in*, *Built-in + external* and *External* displays.
 - **It can be removed.** Remove puts `sudo_local` back exactly as it was. A macOS update can drop the entry, and Settings then offers a repair.
+
+### Unlock Passwords
+
+Optional, off by default, and switched on per display setup in **Settings → Security**. When the Passwords app is in front and shows its lock screen, Facekey shows an overlay in the notch with **Accept** and **Cancel**. Only after you click Accept does it scan your face. If an enabled identity matches and the liveness checks pass, it types your stored Mac password into the Passwords unlock field and presses Return. If Passwords is offering Touch ID or an Apple Watch and shows a "Use Password…" button instead of the field, Facekey presses that one button first, and only after the face matched. Every other outcome (Cancel, a timeout, no match, Passwords no longer in front, a locked session, a missing permission) leaves Passwords locked, and you unlock it with Touch ID or your password as usual.
+
+**Requirements**
+
+- macOS 15 or later, with Facekey running, at least one enrolled face, a stored Mac password and the Camera permission.
+- The Accessibility permission, which lets Facekey see that Passwords is locked and type into it. Settings → Security warns when it is missing.
+- An unlocked Facekey session. While it is locked, nothing is offered.
+- The feature switched on for your current display setup in Settings → Security.
+
+**Risks**
+
+- **It is weaker than Touch ID.** A face match is a softer proof than a fingerprint, and a MacBook camera sees a flat image (see the warning at the top). Anyone who gets past the face check and clicks Accept can open everything in the Passwords app: every password, passkey and code.
+- **It types your Mac password.** The password is read only at the last moment, after the face matches and only while Passwords is still in front with its unlock field focused, and it is cleared from memory right after typing. If Passwords is not in front, nothing is read or typed.
+- **It relies on Passwords' current screen.** A macOS update can change that window, and then Facekey simply shows nothing.
+
+**What to know before turning it on**
+
+- **Never automatic.** Opening, activating or locking Passwords does nothing by itself. Every unlock needs a fresh Accept click, and a click posted by a program counts as Cancel.
+- **One attempt per lock.** If Passwords rejects the password, Facekey does not try again until you leave Passwords and come back, and not within a short cool-down.
+- **Only Passwords.** The keystrokes go to the Passwords app and nowhere else. Safari AutoFill, the menu bar extra and system password prompts are not touched.
 
 ### Local by design
 

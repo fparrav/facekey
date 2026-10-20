@@ -86,6 +86,7 @@ Abre el archivo `.dmg` y arrastra Facekey a `/Applications`; luego ábrelo.
 | **Sesiones con bloqueo automático** | La sesión de Touch ID se vuelve a bloquear sola tras el periodo de inactividad que elijas, para que una Mac sin atender no quede autorizada para siempre. |
 | **Verificar tras otros desbloqueos** | Opcional, desactivada por defecto. Después de que algo distinto de Facekey desbloquee la Mac, como un Apple Watch, un escaneo breve comprueba quién está frente a la pantalla y la vuelve a bloquear si ve un rostro que no está registrado. Se ejecuta después del desbloqueo, así que no puede impedir el desbloqueo con el Apple Watch, y una habitación vacía deja la Mac desbloqueada. |
 | **Aprobación de sudo** | Opcional, desactivada por defecto. Cuando `sudo` pide una contraseña en una terminal, Facekey muestra en el notch una superposición con Aceptar / Cancelar, verifica tu rostro y lo aprueba, según la configuración de pantallas y según la app. Es más débil que Touch ID, así que lee antes [Aprobación de sudo](#aprobación-de-sudo). |
+| **Desbloquear Passwords** | Opcional, desactivado por defecto. Cuando la app Passwords de Apple está al frente y bloqueada, Facekey muestra un overlay de Aceptar / Cancelar en el notch, verifica tu rostro y teclea la contraseña de tu Mac en su campo de desbloqueo, por configuración de pantallas. Es más débil que Touch ID, así que lee primero [Desbloquear Passwords](#desbloquear-passwords). |
 | **Respuesta háptica del trackpad** | Pasar el cursor sobre el notch activa la respuesta háptica |
 | **Compatibilidad con Mac sin notch** | En las Mac sin notch se reemplaza por un diseño en forma de píldora, al estilo de la Dynamic Island. |
 | **Tus datos, tu decisión** | Edita o elimina tu registro o tu contraseña guardada en cualquier momento. Los archivos cifrados se eliminan de inmediato. |
@@ -100,6 +101,7 @@ Glance es una app pulida y enfocada. Este fork conserva su idea, su arquitectura
 |---|---|
 | **Verificar tras otros desbloqueos** | Opcional, desactivada por defecto. Después de un desbloqueo con Apple Watch, Touch ID o una contraseña escrita, un escaneo breve comprueba quién está frente a la pantalla y vuelve a bloquear la Mac si un rostro no reconocido permanece a la vista durante 2 segundos. Consulta [Desbloqueos por otros métodos](#desbloqueos-por-otros-métodos). |
 | **Aprobación de sudo** | Opcional, desactivada por defecto. Un módulo PAM colocado antes de Touch ID en `sudo_local` le pide a Facekey que apruebe `sudo` con una superposición en el notch y un escaneo del rostro, con una lista de apps permitidas y bloqueadas y un historial de auditoría. Consulta [Aprobación de sudo](#aprobación-de-sudo). |
+| **Desbloquear Passwords** | Opcional, desactivado por defecto. Detecta mediante Accesibilidad que Passwords está bloqueada y al frente, pide un clic en Aceptar, escanea tu rostro y teclea la contraseña guardada de tu Mac solo en Passwords. Consulta [Desbloquear Passwords](#desbloquear-passwords). |
 | **Identidad de Facekey** | Un ícono de la app y una marca de la barra de menús nuevos, un color de acento que puedes cambiar y una marca vectorial usada en Acerca de y en la introducción. |
 | **Texto de estado en el notch** | Una línea bajo el escaneo para cada estado, incluido un *Cámara no disponible* en ámbar cuando no se puede abrir la cámara en la pantalla de bloqueo. La línea de fallo menciona pasar el cursor para reintentar solo cuando esa opción está activada. |
 | **Distancia de detección calibrada** | La distancia de detección es un control deslizante de seis posiciones que se guarda por separado para cada configuración de pantallas (integrada, integrada + externa, externa), y una hoja guiada de **Calibrar** mide el ancho de tu rostro con la cámara de esa configuración. |
@@ -194,6 +196,29 @@ Opcional, desactivada por defecto, y se instala desde **Ajustes → Seguridad**,
 - **Hay un historial de auditoría.** Ajustes → Seguridad muestra cuándo ocurrió cada solicitud, qué app la hizo, el comando y cómo terminó. Está cifrado y se puede borrar, y *Guardar solo el nombre del programa* deja fuera los argumentos.
 - **Según la configuración de pantallas.** Se puede activar o desactivar para pantalla *Integrada*, *Integrada + externa* y *Externa*.
 - **Se puede quitar.** Quitar deja `sudo_local` exactamente como estaba. Una actualización de macOS puede eliminar la entrada, y entonces Ajustes ofrece repararla.
+
+### Desbloquear Passwords
+
+Opcional, desactivado por defecto, y se activa por configuración de pantallas en **Ajustes → Seguridad**. Cuando la app Passwords está al frente y muestra su pantalla de bloqueo, Facekey muestra un overlay en el notch con **Aceptar** y **Cancelar**. Solo después de que haces clic en Aceptar escanea tu rostro. Si una identidad habilitada coincide y pasan las verificaciones de detección de vida, teclea la contraseña guardada de tu Mac en el campo de desbloqueo de Passwords y presiona Return. Si Passwords ofrece Touch ID o un Apple Watch y muestra el botón «Usar contraseña…» en lugar del campo, Facekey pulsa solo ese botón primero, y únicamente después de que el rostro coincidió. Cualquier otro resultado (Cancelar, un tiempo agotado, sin coincidencia, Passwords que deja de estar al frente, una sesión bloqueada, un permiso faltante) deja Passwords bloqueada, y la desbloqueas con Touch ID o tu contraseña como siempre.
+
+**Requisitos**
+
+- macOS 15 o posterior, con Facekey en ejecución, al menos un rostro registrado, una contraseña de Mac guardada y el permiso de Cámara.
+- El permiso de Accesibilidad, que permite a Facekey ver que Passwords está bloqueada y teclear en ella. Ajustes → Seguridad avisa cuando falta.
+- Una sesión de Facekey desbloqueada. Con la sesión bloqueada, no se ofrece nada.
+- La función activada para tu configuración de pantallas actual en Ajustes → Seguridad.
+
+**Riesgos**
+
+- **Es más débil que Touch ID.** Una coincidencia facial es una prueba más blanda que una huella, y la cámara de un MacBook ve una imagen plana (consulta la advertencia al inicio). Quien supere la verificación del rostro y haga clic en Aceptar puede abrir todo el contenido de la app Passwords: cada contraseña, llave de acceso y código.
+- **Teclea la contraseña de tu Mac.** La contraseña se lee solo en el último momento, después de que el rostro coincide y únicamente mientras Passwords sigue al frente con su campo de desbloqueo enfocado, y se borra de la memoria justo después de teclearla. Si Passwords no está al frente, no se lee ni se teclea nada.
+- **Depende de la pantalla actual de Passwords.** Una actualización de macOS puede cambiar esa ventana, y entonces Facekey simplemente no muestra nada.
+
+**Qué saber antes de activarla**
+
+- **Nunca es automática.** Abrir, activar o bloquear Passwords no hace nada por sí solo. Cada desbloqueo necesita un clic nuevo en Aceptar, y un clic enviado por un programa cuenta como Cancelar.
+- **Un intento por bloqueo.** Si Passwords rechaza la contraseña, Facekey no lo intenta de nuevo hasta que salgas de Passwords y vuelvas, y tampoco dentro de un breve periodo de espera.
+- **Solo Passwords.** Las teclas van a la app Passwords y a ningún otro lugar. No toca el autocompletado de Safari, la extensión de la barra de menús ni los avisos de contraseña del sistema.
 
 ### Local por diseño
 
