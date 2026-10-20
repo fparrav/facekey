@@ -17,6 +17,8 @@ final class AppEnvironment {
     let sessionAutoLocker: SessionAutoLocker
     /// Held so the socket the sudo PAM module connects to stays up for the app's lifetime.
     let sudoApproval: SudoApprovalService
+    /// Held so the Passwords lock watcher and its coordinator live for the app's lifetime; it watches only while the setting is on.
+    let passwordsUnlock: PasswordsUnlockService
     /// Constructed here (not started) so the About page and `AppDelegate` share one instance; `AppDelegate` calls `updater.start()`.
     let updater = UpdaterController()
 
@@ -28,6 +30,8 @@ final class AppEnvironment {
         sessionAutoLocker = SessionAutoLocker(pocController: pocController)
         sudoApproval = SudoApprovalService(faceUnlock: faceUnlockCoordinator)
         sudoApproval.start()
+        passwordsUnlock = PasswordsUnlockService(faceUnlock: faceUnlockCoordinator)
+        passwordsUnlock.start()
 
         if FacekeySettings.shared.autoUnlockSession, SecureCredentialManager.hasStoredPassword() {
             let pocController = pocController
