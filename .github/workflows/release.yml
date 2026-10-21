@@ -1,0 +1,275 @@
+name: Release
+
+# A release is always a deliberate action: push a tag `vX.Y.Z[-suffix]`, or run
+# this workflow by hand with a version and the commit to build. Nothing runs on
+# ordinary pushes or pull requests, so the signing secrets stay out of reach.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 2.0.0 or 2.0.0-beta.1'
+        required: true
+        type: string
+      ref:
+        description: 'Commit SHA or branch to build'
+        required: false
+        default: main
+        type: string
+      dry_run:
+        description: 'Build and package, but publish nothing (uploads the DMG as an artifact)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KEYCHAIN_NAME: facekey-release.keychain-db
+    steps:
+      - name: Check out the commit to release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Resolve and validate the release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "push" ]; then
+            TAG="$REF_NAME"
+            VERSION="${TAG#v}"
+          else
+            VERSION="$INPUT_VERSION"
+            TAG="v$VERSION"
+          fi
+
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "::error::Invalid version '$VERSION': expected X.Y.Z or X.Y.Z-suffix (for example 2.0.0 or 2.0.0-beta.1)."
+            exit 1
+          fi
+
+          SHA="$(git rev-parse HEAD)"
+          PRERELEASE=false
+          case "$VERSION" in *-*) PRERELEASE=true ;; esac
+
+          # The bundle version cannot carry a suffix, so compare the base version
+          # with MARKETING_VERSION after padding both to three components.
+          BASE="${VERSION%%-*}"
+          MARKETING="$(sed -n 's/^[[:space:]]*MARKETING_VERSION = \(.*\);$/\1/p' facekey.xcodeproj/project.pbxproj | sort -u)"
+          if [ "$(printf '%s\n' "$MARKETING" | wc -l | tr -d ' ')" != "1" ]; then
+            echo "::error::MARKETING_VERSION is not the same in every configuration: $(printf '%s' "$MARKETING" | tr '\n' ' ')"
+            exit 1
+          fi
+          pad() { awk -F. '{ printf "%s.%s.%s", $1, ($2 == "" ? 0 : $2), ($3 == "" ? 0 : $3) }' <<<"$1"; }
+          if [ "$(pad "$BASE")" != "$(pad "$MARKETING")" ]; then
+            echo "::error::Version mismatch: releasing $VERSION but MARKETING_VERSION is $MARKETING at $SHA. Bump MARKETING_VERSION first."
+            exit 1
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::A GitHub Release for $TAG already exists."
+            exit 1
+          fi
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$(git ls-remote --tags origin "refs/tags/$TAG")" ]; then
+            echo "::error::The tag $TAG already exists; a tag is never moved. Push that tag instead, or pick another version."
+            exit 1
+          fi
+
+          {
+            echo "VERSION=$VERSION"
+            echo "TAG=$TAG"
+            echo "SHA=$SHA"
+            echo "BASE=$BASE"
+            echo "PRERELEASE=$PRERELEASE"
+            echo "DRY_RUN=${INPUT_DRY_RUN:-false}"
+          } >> "$GITHUB_ENV"
+          echo "Releasing $TAG ($VERSION) from $SHA, prerelease=$PRERELEASE, dry_run=${INPUT_DRY_RUN:-false}"
+
+      - name: Test the changelog generator
+        run: bash tools/release_notes_selftest.sh
+
+      - name: Select Xcode 26
+        run: |
+          set -euo pipefail
+          XCODE="$(find /Applications -maxdepth 1 -name 'Xcode_26*.app' | sort -V | tail -n 1)"
+          if [ -z "$XCODE" ]; then
+            echo "::error::No Xcode 26 found on this runner. Detected: $(xcodebuild -version | tr '\n' ' ')"
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Check the signing secrets
+        env:
+          MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          MACOS_PROVISION_PROFILE_BASE64: ${{ secrets.MACOS_PROVISION_PROFILE_BASE64 }}
+        run: |
+          missing=0
+          for name in MACOS_CERT_P12_BASE64 MACOS_CERT_PASSWORD MACOS_PROVISION_PROFILE_BASE64; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing repository secret $name."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Import the signing certificate and profile
+        env:
+          MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          MACOS_PROVISION_PROFILE_BASE64: ${{ secrets.MACOS_PROVISION_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$HOME/Library/Keychains/$KEYCHAIN_NAME"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          echo "::add-mask::$KEYCHAIN_PASSWORD"
+
+          printf '%s' "$MACOS_CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$RUNNER_TEMP/cert.p12" -P "$MACOS_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" >/dev/null
+          security list-keychains -d user -s "$KEYCHAIN_PATH" "$HOME/Library/Keychains/login.keychain-db"
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+          printf '%s' "$MACOS_PROVISION_PROFILE_BASE64" | base64 --decode > "$RUNNER_TEMP/profile.provisionprofile"
+          security cms -D -i "$RUNNER_TEMP/profile.provisionprofile" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")"
+          PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$RUNNER_TEMP/profile.provisionprofile" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.provisionprofile"
+          rm -f "$RUNNER_TEMP/profile.provisionprofile" "$RUNNER_TEMP/profile.plist"
+
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
+          security find-identity -v -p codesigning
+
+      - name: Build the universal Release app
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project facekey.xcodeproj \
+            -scheme facekey \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            -derivedDataPath build/ci \
+            ARCHS="arm64 x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            OTHER_CODE_SIGN_FLAGS="--timestamp" \
+            build
+
+      - name: Verify the signature, architectures and version
+        run: |
+          set -euo pipefail
+          APP="build/ci/Build/Products/Release/Facekey.app"
+          test -d "$APP" || { echo "::error::$APP was not produced."; exit 1; }
+
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dvv "$APP" 2>&1 | tee "$RUNNER_TEMP/codesign.txt"
+          grep -q '^Authority=Developer ID Application' "$RUNNER_TEMP/codesign.txt" \
+            || { echo "::error::The app is not signed with a Developer ID Application certificate."; exit 1; }
+          grep -q '^TeamIdentifier=CED7KEV553$' "$RUNNER_TEMP/codesign.txt" \
+            || { echo "::error::The app is not signed by team CED7KEV553."; exit 1; }
+
+          EXECUTABLE="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")"
+          ARCHS="$(lipo -archs "$APP/Contents/MacOS/$EXECUTABLE")"
+          echo "Architectures: $ARCHS"
+          case " $ARCHS " in *" arm64 "*) ;; *) echo "::error::Missing arm64 slice ($ARCHS)."; exit 1 ;; esac
+          case " $ARCHS " in *" x86_64 "*) ;; *) echo "::error::Missing x86_64 slice ($ARCHS)."; exit 1 ;; esac
+
+          BUNDLE_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")"
+          if [ "$BUNDLE_VERSION" != "$BASE" ]; then
+            echo "::error::CFBundleShortVersionString is $BUNDLE_VERSION but the release base version is $BASE."
+            exit 1
+          fi
+
+      - name: Package the DMG
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/dmg-stage"
+          rm -rf "$STAGE"
+          mkdir -p "$STAGE"
+          cp -R build/ci/Build/Products/Release/Facekey.app "$STAGE/"
+          ln -s /Applications "$STAGE/Applications"
+
+          hdiutil create -volname Facekey -srcfolder "$STAGE" -format UDZO -ov Facekey.dmg
+          codesign --sign "Developer ID Application" --timestamp Facekey.dmg
+          codesign --verify --verbose=2 Facekey.dmg
+
+          SHA256="$(shasum -a 256 Facekey.dmg | awk '{ print $1 }')"
+          echo "SHA256=$SHA256" >> "$GITHUB_ENV"
+          echo "Facekey.dmg SHA-256: $SHA256"
+
+      - name: Build the release notes
+        run: |
+          set -euo pipefail
+          {
+            echo "## Changes"
+            echo
+            bash tools/release_notes.sh "$VERSION" "$SHA"
+            echo
+            sed -e "s/{{VERSION}}/$VERSION/g" -e "s/{{SHA256}}/$SHA256/g" .github/release-install.md
+          } > notes.md
+          if grep -q '{{' notes.md; then
+            echo "::error::notes.md still has unresolved placeholders."
+            exit 1
+          fi
+          cat notes.md
+
+      - name: Upload the dry-run result
+        if: env.DRY_RUN == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: facekey-dry-run
+          path: |
+            Facekey.dmg
+            notes.md
+          if-no-files-found: error
+
+      - name: Publish the GitHub Release
+        if: env.DRY_RUN != 'true'
+        run: |
+          set -euo pipefail
+          if [ "$PRERELEASE" = "true" ]; then
+            CHANNEL="--prerelease"
+          else
+            CHANNEL="--latest"
+          fi
+          gh release create "$TAG" Facekey.dmg \
+            --target "$SHA" \
+            --title "Facekey $TAG" \
+            --notes-file notes.md \
+            $CHANNEL
+
+      - name: Remove the signing material
+        if: always()
+        run: |
+          security delete-keychain "$HOME/Library/Keychains/$KEYCHAIN_NAME" 2>/dev/null || true
+          if [ -n "${PROFILE_UUID:-}" ]; then
+            rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.provisionprofile"
+          fi
+          rm -f "$RUNNER_TEMP/cert.p12" "$RUNNER_TEMP/profile.provisionprofile" "$RUNNER_TEMP/profile.plist"
