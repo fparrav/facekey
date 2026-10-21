@@ -42,7 +42,8 @@ enum KeystrokeInjector {
     }
 
     /// Types the UTF-8 bytes into whatever has keyboard focus, then presses Return. Takes `Data` rather than `String` so the
-    /// caller can hold the plaintext as a zero-able buffer; the brief internal `String` decode is scoped to this call. Blocking.
+    /// caller can hold the plaintext as a zero-able buffer; the UTF-16 form posted to the system lives in a buffer that is
+    /// zeroed before this returns, and no `String` or array copy of the password is ever made. Blocking.
     nonisolated static func typeAndReturn(_ passwordBytes: Data) throws {
         try typeAndReturn(passwordBytes, shouldContinue: { true })
     }
@@ -53,15 +54,35 @@ enum KeystrokeInjector {
         guard isAccessibilityTrusted() else {
             throw KeystrokeError.accessibilityNotGranted
         }
-        guard let text = String(data: passwordBytes, encoding: .utf8) else {
-            throw KeystrokeError.eventCreationFailed
-        }
         let source = CGEventSource(stateID: .hidSystemState)
         guard shouldContinue() else { throw KeystrokeError.cancelled }
-        try clearFocusedField(source: source)
-        try postUnicodeText(text, source: source, shouldContinue: shouldContinue)
+        try withUTF16(passwordBytes) { utf16 in
+            try clearFocusedField(source: source)
+            try postUnicodeText(utf16, source: source, shouldContinue: shouldContinue)
+        }
         guard shouldContinue() else { throw KeystrokeError.cancelled }
         try postReturn(source: source)
+    }
+
+    /// Transcodes UTF-8 bytes to UTF-16 in a buffer this function owns and zeroes before returning, so no immutable
+    /// copy of the plaintext (a `String` or an `Array`, neither of which can be wiped) is ever created. Throws
+    /// `eventCreationFailed` for bytes that are not valid UTF-8.
+    nonisolated static func withUTF16<T>(_ utf8: Data, _ body: (UnsafeBufferPointer<UInt16>) throws -> T) throws -> T {
+        // UTF-16 never needs more code units than UTF-8 has bytes.
+        let capacity = max(utf8.count, 1)
+        let buffer = UnsafeMutableBufferPointer<UInt16>.allocate(capacity: capacity)
+        buffer.initialize(repeating: 0)
+        defer {
+            buffer.update(repeating: 0)
+            buffer.deallocate()
+        }
+        var count = 0
+        let hadError = transcode(utf8.makeIterator(), from: UTF8.self, to: UTF16.self, stoppingOnError: true) { unit in
+            buffer[count] = unit
+            count += 1
+        }
+        guard !hadError else { throw KeystrokeError.eventCreationFailed }
+        return try body(UnsafeBufferPointer(rebasing: buffer[0..<count]))
     }
 
     /// Wipes anything already typed into the focused field (e.g. a stray keypress
@@ -117,9 +138,8 @@ enum KeystrokeInjector {
 
     /// Posts the password in small UTF-16 batches. Splitting occurs only between
     /// surrogate pairs, so non-BMP password characters are never corrupted.
-    private nonisolated static func postUnicodeText(_ text: String, source: CGEventSource?, shouldContinue: () -> Bool) throws {
-        let utf16 = Array(text.utf16)
-        try utf16.withUnsafeBufferPointer { buffer in
+    private nonisolated static func postUnicodeText(_ buffer: UnsafeBufferPointer<UInt16>, source: CGEventSource?, shouldContinue: () -> Bool) throws {
+        do {
             guard let base = buffer.baseAddress else { return }
             var start = 0
 
