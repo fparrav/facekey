@@ -38,6 +38,9 @@ struct PasswordsAXState: Equatable {
     /// Whether the first window holds exactly one plain button; on the lock screen that is the "use password" button
     /// shown while Touch ID or Apple Watch is offered. Identified by structure, never by its localized title.
     var hasUsePasswordButton: Bool = false
+    /// Bundle id of the process that owns the focused element. The AutoFill popup's field belongs to an XPC
+    /// helper, not to the process whose tree is read, so a surface can require the owner to be on a list.
+    var focusedOwner: String? = nil
 }
 
 /// A read-only source of `PasswordsAXState`.
@@ -63,11 +66,17 @@ protocol PasswordsLockWatching: AnyObject {
 /// While Touch ID or Apple Watch is offered there is no field yet, only a single "use password"
 /// button and no split group: that is `lockedChoice`.
 /// Anything else — including a `nil` snapshot — is `unknown`, and the flow shows nothing.
+///
+/// `allowedFocusOwners` is nil for the Passwords app. For the AutoFill popup it lists the processes whose secure
+/// field may count as the lock screen's field; a secure field owned by anything else (a page field) is `unknown`.
 enum PasswordsLockClassifier {
-    static func state(for ax: PasswordsAXState?) -> PasswordsLockState {
+    static func state(for ax: PasswordsAXState?, allowedFocusOwners: Set<String>? = nil) -> PasswordsLockState {
         guard let ax else { return .unknown }
         guard ax.isFrontmost else { return .unknown }
         guard ax.windowCount > 0 else { return .unknown }
+        if let allowed = allowedFocusOwners, ax.focusedSubrole == "AXSecureTextField" {
+            guard let owner = ax.focusedOwner, allowed.contains(owner) else { return .unknown }
+        }
         if ax.focusedSubrole == "AXSecureTextField", !ax.hasSplitGroup {
             return .locked
         }
@@ -86,6 +95,7 @@ enum PasswordsLockClassifier {
 /// that is already `unknown` emits nothing.
 final class PasswordsLockTracker {
     private let reader: PasswordsAXReading
+    private let allowedFocusOwners: Set<String>?
     /// The change callback. Settable so a live watcher can re-wire the forwarding
     /// after its own init completes (Swift forbids capturing self in a closure that
     /// is stored during init).
@@ -94,8 +104,9 @@ final class PasswordsLockTracker {
     /// Set when a lock was followed by one `unknown` read; a second one in a row confirms the lock is gone.
     private var pendingUnknown = false
 
-    init(reader: PasswordsAXReading, onChange: @escaping (PasswordsLockState) -> Void) {
+    init(reader: PasswordsAXReading, allowedFocusOwners: Set<String>? = nil, onChange: @escaping (PasswordsLockState) -> Void) {
         self.reader = reader
+        self.allowedFocusOwners = allowedFocusOwners
         self.onChange = onChange
     }
 
@@ -106,7 +117,7 @@ final class PasswordsLockTracker {
     /// back, and only a second one in a row ends the lock. `force` skips that wait, for a moment the caller
     /// knows is real (Passwords left the front).
     func refresh(force: Bool = false) {
-        let state = PasswordsLockClassifier.state(for: reader.read())
+        let state = PasswordsLockClassifier.state(for: reader.read(), allowedFocusOwners: allowedFocusOwners)
         if state == .unknown, !force, last == .locked || last == .lockedChoice, !pendingUnknown {
             pendingUnknown = true
             return

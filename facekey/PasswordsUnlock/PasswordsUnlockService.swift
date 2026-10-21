@@ -19,6 +19,9 @@ final class PasswordsUnlockService {
     private let coordinator: PasswordsUnlockCoordinator
     /// A fresh watcher per enable, so a lock that is already showing is reported when the feature is turned on.
     private var watcher: LivePasswordsLockWatcher?
+    /// One per browser surface; they exist only while the browser switch and Unlock Passwords are both on for the current setup.
+    private var browserWatchers: [PasswordsSurface: LivePasswordsLockWatcher] = [:]
+    private static let browserSurfaces: [PasswordsSurface] = [.autofillPopup, .browserSheet]
     private var observers: [NSObjectProtocol] = []
 
     init(faceUnlock: FaceUnlockCoordinator) {
@@ -32,6 +35,7 @@ final class PasswordsUnlockService {
                 matchThreshold: { [weak faceUnlock] in faceUnlock?.matchThreshold ?? FacekeySettings.shared.matchThreshold }
             ),
             focus: LivePasswordsFocusChecker(),
+            browserFocus: Dictionary(uniqueKeysWithValues: Self.browserSurfaces.map { ($0, LivePasswordsFocusChecker(surface: $0)) }),
             credentials: LivePasswordsCredentialReader(),
             typer: LiveKeystrokeTyper(),
             clock: SudoLiveClock()
@@ -57,27 +61,55 @@ final class PasswordsUnlockService {
         stopWatching()
     }
 
-    /// Starts or stops the watcher to match the setting for the current display setup.
+    /// Starts or stops the watchers to match the settings for the current display setup.
     private func refresh() {
         let enabled = settings.isEnabled(for: DisplayContext.current())
         if enabled, watcher == nil {
-            let watcher = LivePasswordsLockWatcher()
-            watcher.onChange = { [weak self] state in
-                guard let self else { return }
-                log.notice("passwords lock state: \(String(describing: state), privacy: .public)")
-                Task { await self.coordinator.lockStateChanged(state) }
-            }
-            self.watcher = watcher
-            watcher.start()
+            watcher = makeWatcher(for: .app)
         } else if !enabled, watcher != nil {
-            stopWatching()
+            watcher?.stop()
+            watcher = nil
+            // A flow still waiting on the user ends: the lock is no longer being followed.
+            Task { await coordinator.lockStateChanged(.unknown, surface: .app) }
         }
+        let browserEnabled = enabled && settings.isBrowserEnabled
+        for surface in Self.browserSurfaces {
+            if browserEnabled, browserWatchers[surface] == nil {
+                browserWatchers[surface] = makeWatcher(for: surface)
+            } else if !browserEnabled, let existing = browserWatchers[surface] {
+                existing.stop()
+                browserWatchers[surface] = nil
+                Task { await coordinator.lockStateChanged(.unknown, surface: surface) }
+            }
+        }
+    }
+
+    /// A fresh watcher per enable, started so a lock that is already showing is reported at once.
+    private func makeWatcher(for surface: PasswordsSurface) -> LivePasswordsLockWatcher {
+        let watcher = LivePasswordsLockWatcher(surface: surface)
+        let label: String
+        switch surface {
+        case .app: label = "passwords"
+        case .autofillPopup: label = "autofill popup"
+        case .browserSheet: label = "browser sheet"
+        }
+        watcher.onChange = { [weak self] state in
+            guard let self else { return }
+            log.notice("\(label, privacy: .public) lock state: \(String(describing: state), privacy: .public)")
+            Task { await self.coordinator.lockStateChanged(state, surface: surface) }
+        }
+        watcher.start()
+        return watcher
     }
 
     private func stopWatching() {
         watcher?.stop()
         watcher = nil
-        // A flow still waiting on the user ends: the lock is no longer being followed.
-        Task { await coordinator.lockStateChanged(.unknown) }
+        for watcher in browserWatchers.values { watcher.stop() }
+        browserWatchers.removeAll()
+        Task {
+            await coordinator.lockStateChanged(.unknown, surface: .app)
+            for surface in Self.browserSurfaces { await coordinator.lockStateChanged(.unknown, surface: surface) }
+        }
     }
 }

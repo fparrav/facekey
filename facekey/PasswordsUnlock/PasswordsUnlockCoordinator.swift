@@ -24,6 +24,8 @@ final class PasswordsUnlockCoordinator {
     private let overlay: PasswordsUnlockOverlayPresenting
     private let scanner: SudoFaceScanning
     private let focus: PasswordsFocusChecking
+    /// The focus checkers for the browser surfaces; a surface that is not listed is declined.
+    private let browserFocus: [PasswordsSurface: PasswordsFocusChecking]
     private let credentials: PasswordsCredentialReading
     private let typer: KeystrokeTyping
     private let clock: SudoClock
@@ -33,8 +35,10 @@ final class PasswordsUnlockCoordinator {
     private var requestTimedOut = false
     /// Set when the lock is no longer seen while a flow runs (the user left Passwords).
     private var lockLost = false
-    /// True from the start of an attempt until the lock is seen to end, so one lock gets one attempt.
-    private var attemptedThisLock = false
+    /// The surface the running flow serves; events from the other surface do not disturb it.
+    private var activeSurface: PasswordsSurface?
+    /// Surfaces with an attempt since their lock was last seen to end, so one lock gets one attempt.
+    private var attemptedSurfaces: Set<PasswordsSurface> = []
     private var lastAttemptEnd: Date?
     /// Set when Passwords is seen unlocked while a flow runs: the typed password was accepted.
     private var unlockedDuringFlow = false
@@ -49,6 +53,7 @@ final class PasswordsUnlockCoordinator {
          overlay: PasswordsUnlockOverlayPresenting,
          scanner: SudoFaceScanning,
          focus: PasswordsFocusChecking,
+         browserFocus: [PasswordsSurface: PasswordsFocusChecking] = [:],
          credentials: PasswordsCredentialReading,
          typer: KeystrokeTyping,
          clock: SudoClock) {
@@ -57,6 +62,7 @@ final class PasswordsUnlockCoordinator {
         self.overlay = overlay
         self.scanner = scanner
         self.focus = focus
+        self.browserFocus = browserFocus
         self.credentials = credentials
         self.typer = typer
         self.clock = clock
@@ -65,39 +71,41 @@ final class PasswordsUnlockCoordinator {
     /// Feed every state the watcher reports. Returns the outcome when a locked state ran or
     /// declined a flow, and nil for the states that only update bookkeeping.
     @discardableResult
-    func lockStateChanged(_ state: PasswordsLockState) async -> PasswordsUnlockOutcome? {
+    func lockStateChanged(_ state: PasswordsLockState, surface: PasswordsSurface = .app) async -> PasswordsUnlockOutcome? {
         guard state == .locked || state == .lockedChoice else {
             // The lock is gone (unlocked, hidden or in the background): the next lock is a new one.
-            attemptedThisLock = false
+            attemptedSurfaces.remove(surface)
             if state == .unlocked {
-                // Passwords accepted the password, so the cool-down meant for a rejected one has nothing to guard.
-                if isBusy { unlockedDuringFlow = true } else { lastAttemptEnd = nil }
+                // The password was accepted, so the cool-down meant for a rejected one has nothing to guard.
+                if isBusy, activeSurface == surface { unlockedDuringFlow = true } else if !isBusy { lastAttemptEnd = nil }
             }
-            if isBusy {
+            if isBusy, activeSurface == surface {
                 lockLost = true
                 overlay.close() // resolves a prompt still waiting for a click
                 scanTask?.cancel()
             }
             return nil
         }
-        return await run()
+        return await run(surface)
     }
 
-    private func run() async -> PasswordsUnlockOutcome {
+    private func run(_ surface: PasswordsSurface) async -> PasswordsUnlockOutcome {
         if !setup.isUnlockEnabled { return decline(.setupDisabled) }
+        if surface != .app, !setup.isBrowserUnlockEnabled || browserFocus[surface] == nil { return decline(.setupDisabled) }
         if session.isScreenLocked { return decline(.screenLocked) }
         if !session.isSessionUnlocked { return decline(.sessionLocked) }
         if !focus.isAccessibilityTrusted { return decline(.accessibilityMissing) }
         // A second lock event must not touch the state of the flow in flight.
         if isBusy { return decline(.busy) }
         if session.isLockScreenScanArming { return decline(.cameraBusy) }
-        if attemptedThisLock { return decline(.alreadyTried) }
+        if attemptedSurfaces.contains(surface) { return decline(.alreadyTried) }
         if let last = lastAttemptEnd, clock.now.timeIntervalSince(last) < PasswordsUnlockTimeouts.cooldown {
             return decline(.coolingDown)
         }
 
         isBusy = true
-        attemptedThisLock = true
+        activeSurface = surface
+        attemptedSurfaces.insert(surface)
         lockLost = false
         requestTimedOut = false
         unlockedDuringFlow = false
@@ -112,6 +120,7 @@ final class PasswordsUnlockCoordinator {
             flowTimer.cancel()
             scanTask = nil
             isBusy = false
+            activeSurface = nil
             session.setSudoRequestActive(false)
             overlay.close()
         }
@@ -141,14 +150,14 @@ final class PasswordsUnlockCoordinator {
         if session.isScreenLocked { return decline(.screenLocked) }
         if !session.isSessionUnlocked { return decline(.sessionLocked) }
 
-        return finish(await readAndType())
+        return finish(await readAndType(surface))
     }
 
     /// Re-checks focus immediately before reading the password, then reads and types it in one
     /// step off the main actor so the plaintext never crosses an actor. The bytes are wiped on
     /// every way out. Typing stops between batches if focus leaves Passwords.
-    private func readAndType() async -> PasswordsUnlockOutcome {
-        let focus = self.focus
+    private func readAndType(_ surface: PasswordsSurface) async -> PasswordsUnlockOutcome {
+        let focus = browserFocus[surface] ?? self.focus
         let credentials = self.credentials
         let typer = self.typer
         let polls = Self.fieldWaitPolls

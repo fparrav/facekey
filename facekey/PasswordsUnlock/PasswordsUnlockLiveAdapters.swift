@@ -27,21 +27,29 @@ final class PasswordsUnlockLiveSetup: PasswordsUnlockSetupProviding {
     }
 
     var isUnlockEnabled: Bool { settings.isEnabled(for: DisplayContext.current()) }
+
+    var isBrowserUnlockEnabled: Bool { settings.isBrowserEnabled }
 }
 
 /// Reads Accessibility and the lock signal fresh every time, so the answer is the state at the
 /// moment the password is about to be read or the next batch typed.
 struct LivePasswordsFocusChecker: PasswordsFocusChecking {
-    private let reader = LivePasswordsAXReader()
+    private let reader: LivePasswordsAXReader
+    private let allowedFocusOwners: Set<String>?
+
+    init(surface: PasswordsSurface = .app) {
+        reader = LivePasswordsAXReader(surface: surface)
+        allowedFocusOwners = surface.allowedFocusOwners
+    }
 
     var isAccessibilityTrusted: Bool { KeystrokeInjector.isAccessibilityTrusted() }
 
     func isPasswordsLockedAndFocused() -> Bool {
-        PasswordsLockClassifier.state(for: reader.read()) == .locked
+        PasswordsLockClassifier.state(for: reader.read(), allowedFocusOwners: allowedFocusOwners) == .locked
     }
 
     func isPasswordsAtUsePasswordChoice() -> Bool {
-        PasswordsLockClassifier.state(for: reader.read()) == .lockedChoice
+        PasswordsLockClassifier.state(for: reader.read(), allowedFocusOwners: allowedFocusOwners) == .lockedChoice
     }
 
     func pressUsePassword() -> Bool {
