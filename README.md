@@ -52,7 +52,16 @@ https://github.com/user-attachments/assets/1e0c1c91-3991-4224-8fd7-318a6127ef7e
 
 <a href="https://github.com/fparrav/facekey/releases/latest/download/Facekey.dmg" target="_self"><img width="200" src="https://github.com/user-attachments/assets/cdb8af97-1ee2-4669-b7cb-dcfb56c9dd61" alt="Download for Mac" /></a>
 
-Open the `.dmg` file and drag Facekey to `/Applications`, then open it.
+Open the `.dmg` file and drag Facekey to `/Applications`.
+
+Releases are signed with a Developer ID certificate but **not notarized**, so macOS asks for confirmation the first time you open the app. Do either of these:
+
+- **Terminal:** run `xattr -dr com.apple.quarantine /Applications/Facekey.app`, then open Facekey.
+- **System Settings:** open Facekey and dismiss the warning, then go to **System Settings → Privacy & Security**, scroll to **Security**, click **Open Anyway** and confirm with your password or Touch ID (macOS 15).
+
+Beta versions are published as [pre-releases](https://github.com/fparrav/facekey/releases) and are never offered by the download button above. Every release lists the SHA-256 of `Facekey.dmg` in its notes.
+
+**Maintainers:** to publish a release, first bump `MARKETING_VERSION` in the Xcode project to the base version, then either push a tag `vX.Y.Z` (or `vX.Y.Z-beta.N` for a pre-release) or run the **Release** workflow manually with the version and the commit to build. Use the `dry_run` option to build and download the DMG without publishing.
 
 
 ## Permissions
