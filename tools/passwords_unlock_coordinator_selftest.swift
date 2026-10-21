@@ -49,6 +49,7 @@ final class FakeSession: SudoSessionState {
 final class FakeSetup: PasswordsUnlockSetupProviding {
     var setupName = "built-in"
     var isUnlockEnabled = true
+    var isBrowserUnlockEnabled = true
 }
 
 @MainActor
@@ -245,6 +246,8 @@ struct Rig {
     let overlay: FakeOverlay
     let scanner: FakeScanner
     let focus: FakeFocus
+    let popupFocus: FakeFocus
+    let sheetFocus: FakeFocus
     let credentials: FakeCredentials
     let typer: FakeTyper
     let clock: FakeClock
@@ -257,6 +260,8 @@ func make() -> Rig {
     let overlay = FakeOverlay()
     let scanner = FakeScanner()
     let focus = FakeFocus()
+    let popupFocus = FakeFocus()
+    let sheetFocus = FakeFocus()
     let credentials = FakeCredentials()
     let typer = FakeTyper()
     let clock = FakeClock()
@@ -266,12 +271,13 @@ func make() -> Rig {
         overlay: overlay,
         scanner: scanner,
         focus: focus,
+        browserFocus: [.autofillPopup: popupFocus, .browserSheet: sheetFocus],
         credentials: credentials,
         typer: typer,
         clock: clock
     )
     return Rig(coordinator: coordinator, session: session, setup: setup, overlay: overlay, scanner: scanner,
-               focus: focus, credentials: credentials, typer: typer, clock: clock)
+               focus: focus, popupFocus: popupFocus, sheetFocus: sheetFocus, credentials: credentials, typer: typer, clock: clock)
 }
 
 /// Yields until `condition` holds, so a case can act only once the flow is waiting on something.
@@ -549,6 +555,108 @@ enum PasswordsUnlockCoordinatorSelfTest {
             _ = await rig.coordinator.lockStateChanged(.unknown)
             rig.scanner.answer = SudoScanResult(matched: true, similarity: 0.9, liveness: 1)
             check(await rig.coordinator.lockStateChanged(.locked) == .typed, "after a non-match, leaving and coming back is offered at once, with no cool-down")
+        }
+
+        // MARK: AutoFill popup surface
+
+        do {
+            let rig = make()
+            rig.setup.isBrowserUnlockEnabled = false
+            let outcome = await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup)
+            check(outcome == .declined(.setupDisabled), "popup switch off declines the popup lock")
+            check(untouched(rig), "popup switch off shows nothing and touches nothing")
+        }
+
+        do {
+            let rig = make()
+            rig.setup.isUnlockEnabled = false
+            let outcome = await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup)
+            check(outcome == .declined(.setupDisabled), "Unlock Passwords off declines the popup even with the popup switch on")
+        }
+
+        do {
+            let rig = make()
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup) == .typed, "a locked popup is typed into")
+            check(rig.popupFocus.checkCount > 0 && rig.focus.checkCount == 0, "the popup flow checks the popup's focus, never the app's")
+            check(rig.credentials.lastSecret?.isWiped == true, "the popup flow wipes the password")
+        }
+
+        do {
+            let rig = make()
+            rig.popupFocus.lockedAndFocused = false
+            rig.popupFocus.atChoice = true
+            check(await rig.coordinator.lockStateChanged(.lockedChoice, surface: .autofillPopup) == .typed, "the popup's use-password screen is pressed and typed into")
+            check(rig.popupFocus.pressCalls == 1 && rig.focus.pressCalls == 0, "only the popup's button is pressed")
+        }
+
+        do {
+            let rig = make()
+            rig.popupFocus.lockedAndFocused = false
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup) == .focusLost, "focus not in the popup's field reads and types nothing")
+            check(rig.credentials.readCalls == 0 && rig.typer.typeCalls == 0, "no password was read for a popup that lost focus")
+        }
+
+        do {
+            let rig = make()
+            let popupFocus = rig.popupFocus
+            rig.typer.afterBatch = { index in if index == 1 { popupFocus.lockedAndFocused = false } }
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup) == .focusLost, "popup focus leaving between batches stops typing")
+            check(rig.typer.postedBatches < rig.typer.totalBatches, "no further batch is posted after the popup lost focus")
+            check(rig.credentials.lastSecret?.isWiped == true, "the password is wiped when popup typing stops")
+        }
+
+        do {
+            let rig = make()
+            rig.overlay.gateEnabled = true
+            let appFlow = Task { await rig.coordinator.lockStateChanged(.locked, surface: .app) }
+            await waitUntil { rig.overlay.confirmCalls == 1 }
+            let popup = await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup)
+            check(popup == .declined(.busy), "a popup lock during an app flow declines as busy")
+            let closesBefore = rig.overlay.closeCalls
+            _ = await rig.coordinator.lockStateChanged(.unknown, surface: .autofillPopup)
+            check(rig.overlay.closeCalls == closesBefore, "the popup surface going away does not disturb the app flow")
+            rig.overlay.release(.cancelled)
+            check(await appFlow.value == .cancelled, "the app flow still ends on its own answer")
+        }
+
+        do {
+            let rig = make()
+            rig.overlay.confirmAnswer = .cancelled
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup) == .cancelled, "the popup overlay is cancelled")
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .autofillPopup) == .declined(.alreadyTried), "the same popup lock is offered once")
+            rig.overlay.confirmAnswer = .accepted(clickSource: "pid=0 stateID=1")
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .app) == .typed, "a popup attempt does not use up the app's attempt")
+        }
+
+        // MARK: Safari lock sheet surface
+
+        do {
+            let rig = make()
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .browserSheet) == .typed, "a locked Safari sheet is typed into")
+            check(rig.sheetFocus.checkCount > 0 && rig.focus.checkCount == 0 && rig.popupFocus.checkCount == 0, "the sheet flow checks only the sheet's focus")
+        }
+
+        do {
+            let rig = make()
+            rig.setup.isBrowserUnlockEnabled = false
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .browserSheet) == .declined(.setupDisabled), "the browser switch off declines the sheet")
+            check(untouched(rig), "the sheet declined by the switch touches nothing")
+        }
+
+        do {
+            let rig = make()
+            rig.sheetFocus.lockedAndFocused = false
+            rig.sheetFocus.atChoice = true
+            check(await rig.coordinator.lockStateChanged(.lockedChoice, surface: .browserSheet) == .typed, "the sheet's use-password screen is pressed and typed into")
+            check(rig.sheetFocus.pressCalls == 1 && rig.popupFocus.pressCalls == 0 && rig.focus.pressCalls == 0, "only the sheet's button is pressed")
+        }
+
+        do {
+            let rig = make()
+            let sheetFocus = rig.sheetFocus
+            rig.typer.afterBatch = { index in if index == 1 { sheetFocus.lockedAndFocused = false } }
+            check(await rig.coordinator.lockStateChanged(.locked, surface: .browserSheet) == .focusLost, "focus leaving the sheet between batches stops typing")
+            check(rig.typer.postedBatches < rig.typer.totalBatches, "no further batch is posted after the sheet lost focus")
         }
 
         if failures == 0 {

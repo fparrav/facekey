@@ -40,9 +40,12 @@ final class FakeAXReader: PasswordsAXReading {
     }
 }
 
-func axState(frontmost: Bool = true, windows: Int = 1, focused: String? = nil, splitGroup: Bool = false, useButton: Bool = false) -> PasswordsAXState {
-    PasswordsAXState(isFrontmost: frontmost, windowCount: windows, focusedSubrole: focused, hasSplitGroup: splitGroup, hasUsePasswordButton: useButton)
+func axState(frontmost: Bool = true, windows: Int = 1, focused: String? = nil, splitGroup: Bool = false, useButton: Bool = false, owner: String? = nil) -> PasswordsAXState {
+    PasswordsAXState(isFrontmost: frontmost, windowCount: windows, focusedSubrole: focused, hasSplitGroup: splitGroup, hasUsePasswordButton: useButton, focusedOwner: owner)
 }
+
+/// The owners the AutoFill popup's field may have, as `PasswordsSurface.autofillPopup` lists them.
+let popupOwners: Set<String> = ["com.apple.AutoFillPanelService", "com.apple.SafariPlatformSupport.Helper"]
 
 @main
 enum PasswordsLockWatchingSelfTest {
@@ -178,6 +181,68 @@ enum PasswordsLockWatchingSelfTest {
             r.state = axState(focused: "AXSearchField", splitGroup: true)
             t.refresh()
             check(ev == [.lockedChoice, .locked, .unlocked], "unlocking is reported at once")
+        }
+
+        // MARK: - 5. The AutoFill popup: the focused field's owner must be on the list
+
+        check(
+            PasswordsLockClassifier.state(for: axState(focused: "AXSecureTextField", owner: "com.apple.SafariPlatformSupport.Helper"), allowedFocusOwners: popupOwners) == .locked,
+            "the popup's field owned by the remote-view helper is locked"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(focused: "AXSecureTextField", owner: "com.apple.AutoFillPanelService"), allowedFocusOwners: popupOwners) == .locked,
+            "the popup's field owned by the panel service is locked"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(focused: "AXSecureTextField", owner: "com.apple.Safari"), allowedFocusOwners: popupOwners) == .unknown,
+            "a secure field owned by the browser is rejected"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(focused: "AXSecureTextField", owner: "com.apple.WebKit.WebContent"), allowedFocusOwners: popupOwners) == .unknown,
+            "a secure field owned by a web content process is rejected"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(focused: "AXSecureTextField", owner: nil), allowedFocusOwners: popupOwners) == .unknown,
+            "a secure field with no known owner is rejected"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(focused: "AXSecureTextField", owner: "com.apple.Safari"), allowedFocusOwners: nil) == .locked,
+            "without an owner list (the Passwords app) the owner is not checked"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(useButton: true), allowedFocusOwners: popupOwners) == .lockedChoice,
+            "the popup's use-password screen is the choice"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(), allowedFocusOwners: popupOwners) == .unknown,
+            "a popup with no button and no field (a credential list) is unknown"
+        )
+        check(
+            PasswordsLockClassifier.state(for: axState(frontmost: false, focused: "AXSecureTextField", owner: "com.apple.SafariPlatformSupport.Helper"), allowedFocusOwners: popupOwners) == .unknown,
+            "the popup's field is unknown while the panel service is not frontmost"
+        )
+
+        do {
+            let r = FakeAXReader(state: axState(useButton: true))
+            var ev: [PasswordsLockState] = []
+            let t = PasswordsLockTracker(reader: r, allowedFocusOwners: popupOwners) { ev.append($0) }
+            t.refresh()
+            r.state = axState(focused: nil) // the popup's tree between screens
+            t.refresh()
+            r.state = axState(focused: "AXSecureTextField", owner: "com.apple.SafariPlatformSupport.Helper")
+            t.refresh()
+            check(ev == [.lockedChoice, .locked], "popup sequence choice, one stray unknown, field")
+            r.state = axState(frontmost: false)
+            t.refresh(force: true)
+            check(ev == [.lockedChoice, .locked, .unknown], "the popup going away ends the lock at once")
+        }
+
+        do {
+            let r = FakeAXReader(state: axState(focused: "AXSecureTextField", owner: "com.apple.Safari"))
+            var ev: [PasswordsLockState] = []
+            let t = PasswordsLockTracker(reader: r, allowedFocusOwners: popupOwners) { ev.append($0) }
+            t.refresh()
+            check(ev.isEmpty, "a page field never produces a popup lock event")
         }
 
         if failures == 0 {

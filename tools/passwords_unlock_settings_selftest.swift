@@ -75,6 +75,16 @@ enum PasswordsUnlockSettingsSelfTest {
         reloaded.setEnabled(false, for: .builtInAndExternal)
         check(!PasswordsUnlockSettings(defaults: defaults).isEnabled(for: .builtInAndExternal), "turning a setup off persists")
 
+        // MARK: - 4. The popup switch
+
+        check(!settings.isBrowserEnabled, "the popup switch defaults off")
+        settings.isBrowserEnabled = true
+        check(PasswordsUnlockSettings(defaults: defaults).isBrowserEnabled, "the popup switch persists in a new instance")
+        check(contexts.allSatisfy { !settings.isEnabled(for: $0.0) }, "the popup switch does not turn any setup on")
+        settings.setEnabled(true, for: .externalOnly)
+        settings.isBrowserEnabled = false
+        check(settings.isEnabled(for: .externalOnly), "turning the popup off leaves Unlock Passwords as it was")
+
         if failures == 0 {
             print("All passwords unlock settings self-tests passed.")
         } else {
