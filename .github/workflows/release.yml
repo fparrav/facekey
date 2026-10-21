@@ -157,12 +157,11 @@ jobs:
           security cms -D -i "$RUNNER_TEMP/profile.provisionprofile" > "$RUNNER_TEMP/profile.plist"
           PROFILE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$RUNNER_TEMP/profile.plist")"
           PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
           cp "$RUNNER_TEMP/profile.provisionprofile" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.provisionprofile"
           rm -f "$RUNNER_TEMP/profile.provisionprofile" "$RUNNER_TEMP/profile.plist"
-
-          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
-          echo "PROFILE_UUID=$PROFILE_UUID" >> "$GITHUB_ENV"
           security find-identity -v -p codesigning
 
       - name: Build the universal Release app
@@ -176,6 +175,7 @@ jobs:
             -derivedDataPath build/ci \
             ARCHS="arm64 x86_64" \
             ONLY_ACTIVE_ARCH=NO \
+            DEVELOPMENT_TEAM=CED7KEV553 \
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Developer ID Application" \
             PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
@@ -252,6 +252,8 @@ jobs:
 
       - name: Publish the GitHub Release
         if: env.DRY_RUN != 'true'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           if [ "$PRERELEASE" = "true" ]; then
@@ -259,11 +261,22 @@ jobs:
           else
             CHANNEL="--latest"
           fi
-          gh release create "$TAG" Facekey.dmg \
+          # Validation guaranteed no release existed, so a failure here left at most a
+          # partial one from this run. Remove it (and the tag only when this run created
+          # it, i.e. a manual run) so the run can be repeated.
+          if ! gh release create "$TAG" Facekey.dmg \
             --target "$SHA" \
             --title "Facekey $TAG" \
             --notes-file notes.md \
-            $CHANNEL
+            $CHANNEL; then
+            echo "::error::Publishing $TAG failed; rolling back the partial release."
+            if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+              gh release delete "$TAG" --cleanup-tag --yes || true
+            else
+              gh release delete "$TAG" --yes || true
+            fi
+            exit 1
+          fi
 
       - name: Remove the signing material
         if: always()
