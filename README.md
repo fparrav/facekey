@@ -219,7 +219,15 @@ Optional, off by default, and switched on per display setup in **Settings → Se
 
 - **Never automatic.** Opening, activating or locking Passwords does nothing by itself. Every unlock needs a fresh Accept click, and a click posted by a program counts as Cancel.
 - **One attempt per lock.** If Passwords rejects the password, Facekey does not try again until you leave Passwords and come back, and not within a short cool-down.
-- **Only Passwords.** The keystrokes go to the Passwords app and nowhere else. Safari AutoFill, the menu bar extra and system password prompts are not touched.
+- **Only Passwords, and optionally its AutoFill popup.** The keystrokes go to the Passwords app and, if you turn on the popup switch below, to the AutoFill popup's password field, and nowhere else. The menu bar extra and system password prompts are not touched.
+
+**Browser surfaces (separate switch)**
+
+When a browser asks Passwords for a login and Passwords is locked, it shows its lock in two places: the AutoFill popup, drawn by a system service, and a "Passwords is locked" sheet inside the Safari window (for example when you pick another saved password for a filled-in field). A second switch in **Settings → Security**, off by default and effective only where Unlock Passwords is on, lets Facekey serve both with the same flow: Accept, face check, then your Mac password typed into their password field.
+
+- **Facekey types while the browser is not the app in front.** While the popup shows, macOS makes its service the frontmost app. Facekey types only if that service is in front and the focused element is a secure field owned by it or by its remote-view helper. For Safari's sheet, the focus must be inside a sheet with the lock screen's layout. A password field in a web page does not qualify, and typing stops the moment the focus leaves.
+- **A web page can make them appear**, which only opens the Accept overlay. Nothing is typed without your own click on Accept and a matching face.
+- **Verified in Safari only.** Other browsers are untested.
 
 ### Local by design
 

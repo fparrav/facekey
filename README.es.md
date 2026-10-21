@@ -218,7 +218,15 @@ Opcional, desactivado por defecto, y se activa por configuración de pantallas e
 
 - **Nunca es automática.** Abrir, activar o bloquear Passwords no hace nada por sí solo. Cada desbloqueo necesita un clic nuevo en Aceptar, y un clic enviado por un programa cuenta como Cancelar.
 - **Un intento por bloqueo.** Si Passwords rechaza la contraseña, Facekey no lo intenta de nuevo hasta que salgas de Passwords y vuelvas, y tampoco dentro de un breve periodo de espera.
-- **Solo Passwords.** Las teclas van a la app Passwords y a ningún otro lugar. No toca el autocompletado de Safari, la extensión de la barra de menús ni los avisos de contraseña del sistema.
+- **Solo Passwords y, si lo activas, su popup de autorrelleno.** Las teclas van a la app Passwords y, si activas el interruptor del popup que se describe abajo, al campo de contraseña del popup de autorrelleno, y a ningún otro lugar. No toca la extensión de la barra de menús ni los avisos de contraseña del sistema.
+
+**Superficies del navegador (interruptor aparte)**
+
+Cuando un navegador pide un inicio de sesión a Passwords y esta está bloqueada, muestra su bloqueo en dos lugares: el popup de autorrelleno, que dibuja un servicio del sistema, y una hoja «Contraseñas está bloqueada» dentro de la ventana de Safari (por ejemplo, al elegir otra contraseña guardada para un campo ya rellenado). Un segundo interruptor en **Ajustes → Seguridad**, desactivado por defecto y efectivo solo donde Desbloquear Passwords está activo, permite que Facekey atienda ambos con el mismo flujo: Aceptar, verificación del rostro y luego tu contraseña de Mac tecleada en su campo de contraseña.
+
+- **Facekey teclea mientras el navegador no es la app al frente.** Mientras el popup se muestra, macOS pone su servicio como app al frente. Facekey solo teclea si ese servicio está al frente y el elemento enfocado es un campo seguro que le pertenece a él o a su ayudante de vista remota. Para la hoja de Safari, el foco debe estar dentro de una hoja con la estructura de la pantalla de bloqueo. Un campo de contraseña de una página web no cumple, y el tecleo se detiene en cuanto el foco sale.
+- **Una página web puede hacer que aparezcan**, lo que solo abre el overlay de Aceptar. No se teclea nada sin tu propio clic en Aceptar y un rostro que coincida.
+- **Verificado solo en Safari.** Otros navegadores no se han probado.
 
 ### Local por diseño
 

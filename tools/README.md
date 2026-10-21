@@ -64,6 +64,26 @@ If you ever swap in a different ArcFace variant (e.g. `w600k_r50` via
 `--variant w600k_r50`), this contract stays the same — only the file size
 and latency change.
 
+# Probing the AutoFill popup
+
+`autofill_keystroke_spike.swift` is the throwaway spike for the
+`unlock-passwords-autofill-panel` change. It waits for the AutoFill popup's
+secure password field to take the focus, asks for the focused element through
+the system, the focused application, the frontmost app and the panel service,
+and types the dummy text `facekey` (never the Mac password, no Return) only
+when the field's owner is `com.apple.AutoFillPanelService` or
+`com.apple.SafariPlatformSupport.Helper`. It never reads a field's value.
+
+```bash
+swiftc -O tools/autofill_keystroke_spike.swift -o /tmp/autofill_keystroke_spike
+/tmp/autofill_keystroke_spike [--seconds N] [--no-type]   # default 60 s
+```
+
+Exit codes: 0 typed (or accepted with `--no-type`), 1 bad arguments, 2 timed
+out, 3 Accessibility not granted, 4 the focused secure field is not an allowed
+owner (nothing typed). `--no-type` only reports the decision, which is how to
+check that a login field in a web page is rejected.
+
 # Probing the Passwords lock UI
 
 `passwords_lock_probe.swift` is a standalone, **read-only** probe for the
