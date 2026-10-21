@@ -353,6 +353,16 @@
         }
       }
     },
+    "Also unlock Passwords in the browser" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "También desbloquear Passwords en el navegador"
+          }
+        }
+      }
+    },
     "Amber" : {
       "localizations" : {
         "es" : {
@@ -642,6 +652,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Acerca más tu rostro"
+          }
+        }
+      }
+    },
+    "Browsers ask for Passwords in two places: an AutoFill popup drawn by a system service, and a \"Passwords is locked\" sheet inside the Safari window. With this on, Facekey types your Mac password into the password field of either one after you accept and your face matches, only while it is showing and its field has the focus. A web page can make them appear, but it can not accept for you." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los navegadores piden Passwords en dos lugares: un popup de autorrelleno que dibuja un servicio del sistema y una hoja «Contraseñas está bloqueada» dentro de la ventana de Safari. Con esto activado, Facekey teclea tu contraseña del Mac en el campo de contraseña de cualquiera de las dos después de que aceptes y tu rostro coincida, solo mientras se muestra y su campo tiene el foco. Una página web puede hacer que aparezcan, pero no puede aceptar por ti."
           }
         }
       }
