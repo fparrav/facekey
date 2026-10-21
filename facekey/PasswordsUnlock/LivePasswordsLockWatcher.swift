@@ -26,6 +26,10 @@ struct LivePasswordsAXReader: PasswordsAXReading {
     /// The Passwords app's bundle identifier.
     static let bundleID = "com.apple.Passwords"
 
+    /// Accessibility calls to an unresponsive app wait six seconds by default, and these run on the main thread once a
+    /// second, so they give up much sooner. A timed-out read comes back as missing data, which classifies as unknown.
+    private static let messagingTimeout: Float = 0.5
+
     /// True when Passwords is the frontmost app.
     func isFrontmost() -> Bool {
         guard let frontmost = NSWorkspace.shared.frontmostApplication else { return false }
@@ -40,16 +44,19 @@ struct LivePasswordsAXReader: PasswordsAXReading {
             return nil
         }
         let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        AXUIElementSetMessagingTimeout(axApp, Self.messagingTimeout)
 
         var windowCount = 0
         var hasSplitGroup = false
         var hasUsePasswordButton = false
+        var firstWindow: AXUIElement?
         var windowsValue: CFTypeRef?
         if AXUIElementCopyAttributeValue(axApp, kAXWindowsAttribute as CFString, &windowsValue) == .success,
            let windows = windowsValue as? [AXUIElement] {
             windowCount = windows.count
-            if let firstWindow = windows.first {
-                let scan = Self.scan(window: firstWindow)
+            if let window = windows.first {
+                firstWindow = window
+                let scan = Self.scan(window: window)
                 hasSplitGroup = scan.hasSplitGroup
                 hasUsePasswordButton = scan.plainButtons.count == 1
             }
@@ -58,6 +65,12 @@ struct LivePasswordsAXReader: PasswordsAXReading {
         var focusedSubrole: String?
         if let focused = axElement(axApp, kAXFocusedUIElementAttribute) {
             focusedSubrole = axString(focused, kAXSubroleAttribute)
+            // The structure above was read from the first window, so the focused element must belong to it: a secure
+            // field in another window of the app must not make this window read as the lock screen. An element that
+            // does not say which window it is in is accepted, since there is nothing to contradict.
+            if let firstWindow, let focusedWindow = axElement(focused, kAXWindowAttribute), !CFEqual(firstWindow, focusedWindow) {
+                focusedSubrole = nil
+            }
         }
 
         return PasswordsAXState(
@@ -77,6 +90,7 @@ struct LivePasswordsAXReader: PasswordsAXReading {
               let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == Self.bundleID })
         else { return false }
         let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        AXUIElementSetMessagingTimeout(axApp, Self.messagingTimeout)
         var windowsValue: CFTypeRef?
         guard AXUIElementCopyAttributeValue(axApp, kAXWindowsAttribute as CFString, &windowsValue) == .success,
               let window = (windowsValue as? [AXUIElement])?.first else { return false }
